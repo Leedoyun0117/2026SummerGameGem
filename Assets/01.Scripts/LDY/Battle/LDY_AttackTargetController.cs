@@ -224,21 +224,29 @@ public class LDY_AttackTargetController : MonoBehaviour
 
     // ----------------- 공격 실행 -----------------
 
-    // 무기 UI의 "공격" 버튼 등에서 호출. 일반전이므로 맞으면 그냥 즉사 - 대상 슬롯에 적이 있으면
-    // 오브젝트를 파괴하고 슬롯을 비운다.
+    // 무기 UI의 "공격" 버튼 등에서 호출. 대상 슬롯에 적(LDY_Enemy)이 있으면:
+    // - 맞은 무기 모양이 그 적의 반사 모양과 일치하면(WeaponReflector) 죽이지 않고 플레이어가 반사 데미지를 입는다.
+    // - 그 외에는 그냥 즉사시키고 슬롯을 비운다.
     public void ExecuteAttack()
     {
         if (!IsTargeting || CurrentWeapon == null) return;
 
         // OnAttackExecuted 구독자(예: LDY_WeaponUIController)가 이 이벤트 안에서 ClearWeapon()을 불러
-        // CurrentWeapon이 곧바로 null이 될 수 있으므로, 로그에 쓸 이름은 미리 복사해둔다.
+        // CurrentWeapon이 곧바로 null이 될 수 있으므로, 로그에 쓸 이름/모양은 미리 복사해둔다.
         string weaponName = CurrentWeapon.weaponName;
+        LDY_WeaponAttackShape weaponShape = CurrentWeapon.shape;
         List<RingSlot> targeted = GetTargetedSlots();
 
         int hitCount = 0;
         foreach (RingSlot slot in targeted)
         {
             if (slot.occupant == null) continue;
+
+            LDY_Enemy enemy = slot.occupant.GetComponent<LDY_Enemy>();
+            if (enemy != null && enemy.TryReflect(weaponShape))
+            {
+                continue; // 반사됨 - 적은 그대로 두고(안 죽음) 플레이어만 데미지를 입는다(TryReflect 내부 처리).
+            }
 
             hitCount++;
             Destroy(slot.occupant);

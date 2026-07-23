@@ -597,6 +597,11 @@ public static class LDY_BattleSceneBuilder
         renderer.sortingOrder = -10;
 
         ScaleToWorldDiameter(visualGO.transform, wheelSprite, outerBound * 2f);
+
+        // 회전할 때 이 그림도 슬롯 한 칸만큼 같이 돌아서 "판 자체가 도는" 것처럼 보이게 연결해준다.
+        SerializedObject so = new SerializedObject(controller);
+        so.FindProperty("wheelVisualTransform").objectReferenceValue = visualGO.transform;
+        so.ApplyModifiedProperties();
     }
 
     // 이 링이 선택됐을 때 활성화되는 노란 테두리들을 만들어서 컨트롤러의 selectionHighlightRoot 필드에 연결한다.

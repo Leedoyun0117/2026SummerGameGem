@@ -83,10 +83,10 @@ public class LDY_WeaponUIController : MonoBehaviour
         }
     }
 
-    // 공격이 실행되면(공격 버튼 클릭이든 스페이스바든) 무기 패널/공격 버튼을 원래대로 감춘다.
+    // 공격이 실행되면(공격 버튼 클릭이든 스페이스바든) 공격 버튼/하이라이트/설명창은 원래대로 감추지만,
+    // 무기 패널(무기 목록)은 계속 열어둔다 - 바로 다음 무기를 고르거나 같은 무기를 다시 쓸 수 있게.
     private void HandleAttackExecuted(List<RingSlot> targeted)
     {
-        if (weaponPanel != null) weaponPanel.SetActive(false);
         CloseAttackUI();
     }
 
