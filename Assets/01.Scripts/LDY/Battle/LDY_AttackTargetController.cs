@@ -230,6 +230,9 @@ public class LDY_AttackTargetController : MonoBehaviour
     {
         if (!IsTargeting || CurrentWeapon == null) return;
 
+        // OnAttackExecuted 구독자(예: LDY_WeaponUIController)가 이 이벤트 안에서 ClearWeapon()을 불러
+        // CurrentWeapon이 곧바로 null이 될 수 있으므로, 로그에 쓸 이름은 미리 복사해둔다.
+        string weaponName = CurrentWeapon.weaponName;
         List<RingSlot> targeted = GetTargetedSlots();
 
         int hitCount = 0;
@@ -244,6 +247,6 @@ public class LDY_AttackTargetController : MonoBehaviour
 
         OnAttackExecuted?.Invoke(targeted);
 
-        Debug.Log($"[LDY_AttackTargetController] '{CurrentWeapon.weaponName}' 공격 실행 - 대상 슬롯 {targeted.Count}개 중 {hitCount}개 처치");
+        Debug.Log($"[LDY_AttackTargetController] '{weaponName}' 공격 실행 - 대상 슬롯 {targeted.Count}개 중 {hitCount}개 처치");
     }
 }

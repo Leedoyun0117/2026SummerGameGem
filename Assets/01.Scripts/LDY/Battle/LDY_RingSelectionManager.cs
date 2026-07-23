@@ -134,6 +134,7 @@ public class LDY_RingSelectionManager : MonoBehaviour
 
     // 숫자키 1~4로 안쪽부터 바깥쪽 순서의 링을, 5로 지름선(RadialLine)을 바로 선택한다.
     // 탭 판정과 별개로 항상 확실하게 동작하는 선택 수단.
+    // 이미 선택되어 있는 것과 같은 숫자를 다시 누르면 선택을 취소(토글)한다.
     private void HandleNumberKeySelection()
     {
         for (int i = 0; i < NumberKeys.Length; i++)
@@ -147,12 +148,21 @@ public class LDY_RingSelectionManager : MonoBehaviour
                 LDY_RadialLineController radial = LDY_BattleBoardManager.Instance != null
                     ? LDY_BattleBoardManager.Instance.RadialLine
                     : null;
-                if (radial != null) SelectRadialLine(radial);
+
+                if (radial != null)
+                {
+                    if (SelectedRadialLine == radial) Deselect();
+                    else SelectRadialLine(radial);
+                }
             }
             else
             {
                 LDY_RingController ring = GetRingByLayerIndex(i);
-                if (ring != null) SelectRing(ring);
+                if (ring != null)
+                {
+                    if (SelectedRing == ring) Deselect();
+                    else SelectRing(ring);
+                }
             }
             return;
         }
