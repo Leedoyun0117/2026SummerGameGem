@@ -40,6 +40,7 @@ public class JCY_Potion : MonoBehaviour
 
             case "RerollPoton":
                 {
+                    JCY_ShopManager.instance.DisplayItems();
                     Debug.Log("리롤");
                 }
                 break;
