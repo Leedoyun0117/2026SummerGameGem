@@ -19,7 +19,7 @@ public class JCY_ShopManager : MonoBehaviour
         {
             int index = Random.Range(0 , _items.Length);
             Instantiate(_items[index], _displayPoint[i].transform.position, Quaternion.identity);
-            _displayCost[i].text = _items[index].
+            //_displayCost[i].text = _items[index].
         }
     }
 }
