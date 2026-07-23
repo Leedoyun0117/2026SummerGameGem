@@ -20,13 +20,13 @@ public class StarPieceManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    public void MoneyUP(int value)
+    public void StarPieceUP(int value)
     {
         _starPiece += value;
         _starUI.text = _starPiece.ToString();
     }
 
-    public void MoneyDown(int value)
+    public void StarPieceDown(int value)
     {
         _starPiece -= value;
         _starUI.text = _starPiece.ToString();
