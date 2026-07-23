@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class JCY_Potion : MonoBehaviour
 {
-    public JCY_ItemSO itemSO;
+    public JCY_PotionSO itemSO;
 
     public void UsePotion()
     {
