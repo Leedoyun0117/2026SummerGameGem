@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Item", menuName = "JCY_SO/Item")]
+[CreateAssetMenu(fileName = "Item", menuName = "JCY_SO/Potion")]
 public class JCY_PotionSO : ScriptableObject
 {
    
