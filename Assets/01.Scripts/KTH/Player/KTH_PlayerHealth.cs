@@ -7,8 +7,11 @@ public class KTH_PlayerHealth : MonoBehaviour
     [SerializeField]private int maxhp;
     private int curhp;
 
+    public static KTH_PlayerHealth Instance;
+
     private void Awake()
     {
+        Instance = this;
         curhp=maxhp;
     }
 
@@ -24,4 +27,7 @@ public class KTH_PlayerHealth : MonoBehaviour
         curhp-=damage;
         if(curhp <= 0) Destroy(gameObject);
     }
+    public void PlusMaxHp(int plushp)=>
+        maxhp += plushp;
+    
 }
