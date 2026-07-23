@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class DontDestroy : MonoBehaviour
+public class JCYDontDestroy : MonoBehaviour
 {
     private void Awake()
     {
