@@ -24,9 +24,6 @@ public class KTH_EventSystem : MonoBehaviour
         public string ex;
         public Type type;
         public int per; // 가중치 (확률 비율)
-
-        [Tooltip("타입별 효과에 쓰이는 수치 (골드량, 회복량, 도박 배팅액 등)")]
-        public int value;
     }
 
     [SerializeField] private Image image;
@@ -150,11 +147,11 @@ public class KTH_EventSystem : MonoBehaviour
             switch (currentEvent.type)
             {
                 case Type.Gold:
-                    HandleGold(currentEvent.value);
+                    HandleGold(2);
                     break;
 
                 case Type.Gambling:
-                    HandleGambling(currentEvent.value);
+                    HandleGambling(2,3,1);
                     break;
 
                 case Type.None:
@@ -183,28 +180,32 @@ public class KTH_EventSystem : MonoBehaviour
     private void HandleGold(int amount)
     {
         StartCoroutine(TypeText("이건 나의 작은 선물이라네 (별의 조각 +2)", 0.7f));
+        StarPieceManager.instance.StarPieceUP(amount);
     }
 
 
-    private void HandleGambling(int stake)
+    private void HandleGambling(int startP, int winP,int loseP)
     {
+        StarPieceManager.instance.StarPieceDown(startP);
+
         bool win = Random.value < gamblingWinChance;
 
         if (win)
         {
             StartCoroutine(TypeText("덜컹! 자판기에서 별의 조각 꾸러미가 떨어졌다! (별의 조각 +3)",0.7f));
+            StarPieceManager.instance.StarPieceUP(winP);
         }
         else
         {
             StartCoroutine(TypeText("화면에 ‘상품 준비 중’이라는 문구만 계속 깜빡인다. 아무 일도 일어나지 않았다. 경고음과 함께 자판기가 별의 조각을 삼켜버렸다. 환불 버튼은 고장 난 것 같다. (별의 조각 1 소실)", 0.7f));
+            StarPieceManager.instance.StarPieceDown(loseP);
         }
     }
 
     private IEnumerator CloseEvent()
     {
         yield return new WaitForSeconds(4f);
-        // TODO: 필요하면 여기서 씬 전환(SceneManager.LoadScene) 등 처리
-        gameObject.SetActive(false);
+        SceneManager.LoadScene("LDY_TestScene");
     }
 
    
