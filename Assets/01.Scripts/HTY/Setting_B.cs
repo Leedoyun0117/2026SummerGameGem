@@ -13,7 +13,6 @@ public class Setting_B : MonoBehaviour
     [SerializeField] private Ease _closeEase = Ease.InBack;
 
     [Header("사운드 설정")]
-    [SerializeField] private AudioSource _audioSource;
     [SerializeField] private AudioClip _clickSound;
 
     private bool _isOpen = false;
@@ -21,18 +20,6 @@ public class Setting_B : MonoBehaviour
 
     private void Awake()
     {
-        if (_audioSource == null)
-        {
-            _audioSource = GetComponent<AudioSource>();
-
-            if (_audioSource == null)
-            {
-                _audioSource = gameObject.AddComponent<AudioSource>();
-            }
-        }
-
-        _audioSource.playOnAwake = false;
-
         // 게임 시작 시 설정 창 닫기
         _panel.transform.localScale = Vector3.zero;
         _panel.SetActive(false);
@@ -128,9 +115,9 @@ public class Setting_B : MonoBehaviour
 
     private void PlayClickSound()
     {
-        if (_clickSound != null)
+        if (_clickSound != null && SoundManager.Instance != null)
         {
-            _audioSource.PlayOneShot(_clickSound);
+            SoundManager.Instance.PlaySFX(_clickSound);
         }
     }
 
