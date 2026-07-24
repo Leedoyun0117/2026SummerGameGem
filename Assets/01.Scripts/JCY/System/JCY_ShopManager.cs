@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class JCY_ShopManager : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public class JCY_ShopManager : MonoBehaviour
     [Header("상점 애니메이션")]
     [SerializeField] private Animator animator;
     [SerializeField] private CanvasGroup canvasGroup;
+    [SerializeField] private GameObject shop;
 
 
 
@@ -33,22 +35,20 @@ public class JCY_ShopManager : MonoBehaviour
 
         itemList = new List<GameObject>(_items);
     }
-    private void OnEnable()
+    private void Start()
     {
-        DisplayItems();
+        shop.SetActive(false);
     }
+
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.C))
-        {
+        if(Keyboard.current.oKey.wasPressedThisFrame)
             OpenShop();
-        }
 
-        if (Input.GetKeyDown(KeyCode.D))
-        {
+        if (Keyboard.current.cKey.wasPressedThisFrame)
             CloseShop();
-        }
     }
+
 
     public void DisplayItems()
     {
@@ -98,7 +98,8 @@ public class JCY_ShopManager : MonoBehaviour
 
     public void OpenShop()
     {
-        gameObject.SetActive(true);
+        Debug.Log("상점 오픈");
+        shop.SetActive(true);
 
         canvasGroup.interactable = true;
         canvasGroup.blocksRaycasts = true;
@@ -110,6 +111,7 @@ public class JCY_ShopManager : MonoBehaviour
 
     public void CloseShop()
     {
+        Debug.Log("상점 닫힘");
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
 
@@ -117,6 +119,6 @@ public class JCY_ShopManager : MonoBehaviour
     }
     public void CloseEnd()
     {
-        gameObject.SetActive(false);
+        shop.SetActive(false);
     }
 }
