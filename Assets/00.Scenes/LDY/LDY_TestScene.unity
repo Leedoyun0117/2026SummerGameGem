@@ -878,6 +878,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::JCY_ItemManager
   countTxt: {fileID: 1222983473}
+  _useSound: {fileID: 0}
 --- !u!4 &259759301
 Transform:
   m_ObjectHideFlags: 0
@@ -4817,6 +4818,8 @@ MonoBehaviour:
   animator: {fileID: 527880079}
   canvasGroup: {fileID: 527880078}
   shop_UI: {fileID: 527880076}
+  _shopBGM: {fileID: 0}
+  _normalBGM: {fileID: 0}
 --- !u!4 &1445402250
 Transform:
   m_ObjectHideFlags: 0
