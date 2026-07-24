@@ -15,7 +15,7 @@ public class JCY_Potion : MonoBehaviour
         Debug.Log("포션 사용");
         switch (itemSO.itemName)
         {
-            case "GoldPotion":
+            case "랜덤 박스":
                 {
                     int backCost = Random.Range(0, itemSO.cost * 2);
                     StarPieceManager.instance.StarPieceUP(backCost);
@@ -23,7 +23,7 @@ public class JCY_Potion : MonoBehaviour
                 }
                 break;
 
-            case "HealthPotion":
+            case "체력 포션":
                 {
                     KTH_PlayerHealth PH = FindFirstObjectByType<KTH_PlayerHealth>();
 
@@ -38,7 +38,7 @@ public class JCY_Potion : MonoBehaviour
                 }
                 break;
 
-            case "RerollPoton":
+            case "리롤 포션":
                 {
                     JCY_ShopManager.instance.DisplayItems();
                     Debug.Log("리롤");
