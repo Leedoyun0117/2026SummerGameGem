@@ -5,7 +5,8 @@
       "Bash(xargs -I{} echo {})",
       "Bash(git checkout *)",
       "Bash(grep -n \"&527880076$\\\\|&527880077$\\\\|&527880078$\\\\|&527880079$\" \"c:/Dev/2026SummerGameGem/Assets/00.Scenes/LDY/LDY_TestScene.unity\")",
-      "Bash(grep -n \"&256707867$\" \"c:/Dev/2026SummerGameGem/Assets/00.Scenes/LDY/LDY_TestScene.unity\")"
+      "Bash(grep -n \"&256707867$\" \"c:/Dev/2026SummerGameGem/Assets/00.Scenes/LDY/LDY_TestScene.unity\")",
+      "Bash(xargs grep -liE \"soundmanager|audiomanager\")"
     ]
   }
 }
