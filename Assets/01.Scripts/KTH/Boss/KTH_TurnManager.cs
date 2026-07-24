@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 
@@ -35,7 +36,6 @@ public class KTH_TurnManager : MonoBehaviour
     private bool wasRingRotating;
     private bool wasRadialShifting;
 
-    // 🔥 플레이어 시작 위치 및 회전 저장 변수
     private Vector3 playerStartPosition;
     private Quaternion playerStartRotation;
 
@@ -48,7 +48,6 @@ public class KTH_TurnManager : MonoBehaviour
     {
         UpdateRemainingTurnUI();
 
-        // 🔥 게임 시작 시 플레이어의 최초 위치/회전값 저장
         if (playerMovement != null)
         {
             playerStartPosition = playerMovement.transform.position;
@@ -58,7 +57,6 @@ public class KTH_TurnManager : MonoBehaviour
 
     private void Update()
     {
-        // 플레이어 조작 상태가 아니거나 남은 턴이 0 이하인 경우 입력 차단
         if (currentState != TurnState.PlayerInput || RemainingTurns <= 0) return;
         if (LDY_RingSelectionManager.Instance == null) return;
 
@@ -87,7 +85,6 @@ public class KTH_TurnManager : MonoBehaviour
 
         UpdateRemainingTurnUI();
 
-        // 턴을 모두 소비했을 때
         if (moveCount >= movesPerPlayerTurn)
         {
             currentState = TurnState.PlayerMove;
@@ -105,7 +102,6 @@ public class KTH_TurnManager : MonoBehaviour
                 LDY_RingSelectionManager.Instance.enabled = false;
             }
 
-            // 🔥 이동 시작 전, 현재(시작) 위치를 다시 한번 확실하게 저장
             if (playerMovement != null)
             {
                 playerStartPosition = playerMovement.transform.position;
@@ -123,11 +119,10 @@ public class KTH_TurnManager : MonoBehaviour
     {
         switch (currentState)
         {
-            // 플레이어 이동 중 최종 콜라이더 충돌 -> 보스 턴 시작
             case TurnState.PlayerMove:
             case TurnState.PlayerInput:
                 currentState = TurnState.BossTurn;
-                Debug.Log("[TurnManager] 최종 콜라이더 충돌! -> 보스 턴 시작");
+                Debug.Log("[TurnManager] 보스 턴 시작!");
 
                 if (bossTurn != null)
                 {
@@ -135,19 +130,16 @@ public class KTH_TurnManager : MonoBehaviour
                 }
                 break;
 
-            // 보스 턴 종료 -> 다시 플레이어 조작 턴으로 복귀, 위치 리셋 및 턴 충전
             case TurnState.BossTurn:
                 currentState = TurnState.PlayerInput;
                 moveCount = 0;
 
-                // 🔥 보스 턴 종료 후 플레이어를 시작 원위치로 복귀시키기!
                 KTH_PlayerMovement player = FindFirstObjectByType<KTH_PlayerMovement>();
                 if (player != null)
                 {
-                    player.ResetToInitialPosition(); // 이 호출에 의해 원위치 복귀 실행
+                    player.ResetToInitialPosition();
                 }
 
-                // 새로운 적/화살표 랜덤 스폰
                 KTH_RandomEnemySpawner[] spawners = FindObjectsByType<KTH_RandomEnemySpawner>(FindObjectsSortMode.None);
                 foreach (KTH_RandomEnemySpawner spawner in spawners)
                 {

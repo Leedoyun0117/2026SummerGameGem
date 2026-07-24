@@ -678,6 +678,11 @@ MonoBehaviour:
   movesPerPlayerTurn: 5
   remainingTurnText: {fileID: 1731386894}
   remainingTurnFormat: "\uB0A8\uC740 \uD134 : {0}"
+  mainCamera: {fileID: 889131227}
+  playerTurnZoomSize: 5
+  bossTurnZoomSize: 7
+  cameraMoveDuration: 0.8
+  cameraEase: 7
 --- !u!1 &370353834
 GameObject:
   m_ObjectHideFlags: 0
@@ -1110,6 +1115,9 @@ MonoBehaviour:
   checkDelay: 0.1
   angleOffset: 0
   endZoneTag: EndZone
+  warningTextName: WarningText
+  noTileMessage: "\uC774\uB3D9\uD560 \uD0C0\uC77C\uC774 \uC5C6\uC2B5\uB2C8\uB2E4!"
+  textDuration: 2
 --- !u!61 &566603262
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1154,7 +1162,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1.31, y: 1.06}
+  m_Size: {x: 0.1, y: 0.1}
   m_EdgeRadius: 0
 --- !u!50 &566603263
 Rigidbody2D:
@@ -1383,7 +1391,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87a69dd7f7bdcb347a5bdd1c09adb210, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KTH_BossTurn
-  actionDelay: 1
+  attackPatterns:
+  - {fileID: 1051798139}
   randomSpawner: {fileID: 0}
 --- !u!4 &673228287
 Transform:
@@ -2198,6 +2207,56 @@ RectTransform:
   m_AnchoredPosition: {x: 20, y: -200}
   m_SizeDelta: {x: 140, y: 60}
   m_Pivot: {x: 0, y: 1}
+--- !u!1 &1051798137
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1051798138}
+  - component: {fileID: 1051798139}
+  m_Layer: 0
+  m_Name: Transform
+  m_TagString: Untagged
+  m_Icon: {fileID: 3443629218296621865, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1051798138
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1051798137}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.3, y: 6.75, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1379396627649611103}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1051798139
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1051798137}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ebc711f7b1c3cf47a90b19f2f5a43b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KTH_BossAttack2
+  attackDuration: 1.5
+  animator: {fileID: 7956582824783935386}
+  attackParamName: isAttack2
+  attackPrefab: {fileID: 6606642905382346460, guid: 56bce56db46b42444978a05c49cc745b, type: 3}
+  spawnPoint: {fileID: 1051798138}
+  spawnCount: 3
 --- !u!1 &1091169996
 GameObject:
   m_ObjectHideFlags: 0
@@ -4241,6 +4300,7 @@ MonoBehaviour:
   shiftBackwardKey: 63
   swipeThreshold: 0.5
   attackKey: 1
+  radialLineKey: 51
 --- !u!114 &1754200128
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4999,6 +5059,8 @@ MonoBehaviour:
   - weaponName: "\uC138\uB85C 1x4"
     shape: 0
     description: 
+    damage: 10
+    forgedDescription: 
     hitEffectPrefab: {fileID: 0}
     hitEffectDuration: 0
     hitEffectScale: 0
@@ -5016,6 +5078,8 @@ MonoBehaviour:
   - weaponName: "\uC0AC\uAC01\uD615 2x2"
     shape: 1
     description: 
+    damage: 10
+    forgedDescription: 
     hitEffectPrefab: {fileID: 0}
     hitEffectDuration: 0
     hitEffectScale: 0
@@ -5033,6 +5097,8 @@ MonoBehaviour:
   - weaponName: "\uAC00\uB85C 4x1"
     shape: 2
     description: 
+    damage: 10
+    forgedDescription: 
     hitEffectPrefab: {fileID: 0}
     hitEffectDuration: 0
     hitEffectScale: 0
@@ -6373,6 +6439,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1482969462}
+  - {fileID: 1051798138}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2218413569335815482
@@ -6386,6 +6453,8 @@ GameObject:
   - component: {fileID: 1379396627649611103}
   - component: {fileID: 5486643338669337270}
   - component: {fileID: 7956582824783935386}
+  - component: {fileID: 7956582824783935388}
+  - component: {fileID: 7956582824783935389}
   m_Layer: 0
   m_Name: Boss
   m_TagString: Untagged
@@ -6474,6 +6543,34 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &7956582824783935388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2218413569335815482}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e968da9d46fe3d945b93fa1f5ebce615, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KTH_NormalAttack
+  attackDuration: 1.5
+  animator: {fileID: 7956582824783935386}
+  attackParamName: isAttack
+--- !u!114 &7956582824783935389
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2218413569335815482}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2592770f9b66dd44e872c8fefdc5fd61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KTH_Boss
+  playerTransform: {fileID: 566603260}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
