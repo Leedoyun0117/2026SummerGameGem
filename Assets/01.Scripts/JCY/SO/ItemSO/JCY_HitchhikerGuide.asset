@@ -12,10 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f0ff30234db8b544ba01c18198a1bbc, type: 3}
   m_Name: JCY_HitchhikerGuide
   m_EditorClassIdentifier: Assembly-CSharp::JCY_ItemSO
-  itemName: "\uD788\uD0A4\uD558\uC774\uCEE4 \uC548\uB0B4\uC11C"
+  itemName: "히치하이커 안내서"
   icon: {fileID: -1895107926291468567, guid: 44a443188b06db044ae468827d3c51b9, type: 3}
-  cost: 0
+  cost: 10
   maxHealthUP: 0
   curHealthUP: 0
+  Description: "돈이 0이 되면 50골드를 얻습니다."
   backStarPiece: 0
   maxTimeUP: 0
+  effectType: 9
+  effectAmount: 0

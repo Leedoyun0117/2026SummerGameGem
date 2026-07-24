@@ -242,13 +242,18 @@ public class LDY_MapCameraController : MonoBehaviour, IBeginDragHandler, IDragHa
         }
     }
 
+    // 씬 전환(아이리스) 연출이 재생 중이면 맵을 드래그/스크롤로 못 움직이게 막음
+    private bool IsInputLocked => LDY_SceneTransition.Instance != null && LDY_SceneTransition.Instance.IsPlaying;
+
     public void OnBeginDrag(PointerEventData eventData)
     {
+        if (IsInputLocked) return;
         CancelIntro();
     }
 
     public void OnDrag(PointerEventData eventData)
     {
+        if (IsInputLocked) return;
         CancelIntro();
         float scaleFactor = canvas != null ? canvas.scaleFactor : 1f;
         SetPanZoom(currentPan + eventData.delta / Mathf.Max(scaleFactor, 0.01f), currentZoom);
@@ -256,6 +261,7 @@ public class LDY_MapCameraController : MonoBehaviour, IBeginDragHandler, IDragHa
 
     public void OnScroll(PointerEventData eventData)
     {
+        if (IsInputLocked) return;
         CancelIntro();
         SetPanZoom(currentPan, currentZoom + eventData.scrollDelta.y * scrollZoomSpeed);
     }

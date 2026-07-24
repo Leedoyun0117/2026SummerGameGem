@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "PowerShell(powershell -NoProfile -ExecutionPolicy Bypass -File \"C:\\\\Users\\\\이도윤\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Dev-2026SummerGameGem\\\\bdc97c82-e18a-45ec-b6d4-43e4022a15e8\\\\scratchpad\\\\generate_battle_art.ps1\")"
+      "PowerShell(powershell -NoProfile -ExecutionPolicy Bypass -File \"C:\\\\Users\\\\이도윤\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Dev-2026SummerGameGem\\\\bdc97c82-e18a-45ec-b6d4-43e4022a15e8\\\\scratchpad\\\\generate_battle_art.ps1\")",
+      "Bash(xargs -I{} echo {})"
     ]
   }
 }

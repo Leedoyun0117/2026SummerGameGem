@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f0ff30234db8b544ba01c18198a1bbc, type: 3}
   m_Name: JCY_BlackHoleShards
   m_EditorClassIdentifier: Assembly-CSharp::JCY_ItemSO
-  itemName: "\uBE14\uB799\uD640 \uC870\uAC01"
+  itemName: "블랙홀 조각"
   icon: {fileID: 1090824304778294936, guid: 44a443188b06db044ae468827d3c51b9, type: 3}
-  cost: 0
+  cost: 40
   maxHealthUP: 0
   curHealthUP: 0
-  Description: 
+  Description: "전투 턴 제한시간이 10초 늘어납니다."
   backStarPiece: 0
-  maxTimeUP: 0
+  maxTimeUP: 10
+  effectType: 1
+  effectAmount: 0

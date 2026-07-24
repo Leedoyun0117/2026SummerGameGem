@@ -31,6 +31,9 @@ public class LDY_RingSelectionManager : MonoBehaviour
     [Header("무기 조준 중 공격 확정 키")]
     [SerializeField] private Key attackKey = Key.Space;
 
+    [Header("지름선(밀기) 선택 키")]
+    [SerializeField] private Key radialLineKey = Key.LeftShift;
+
     public LDY_RingController SelectedRing { get; private set; }
     public LDY_RadialLineController SelectedRadialLine { get; private set; }
 
@@ -38,20 +41,16 @@ public class LDY_RingSelectionManager : MonoBehaviour
     private bool isDragging;
     private Vector3 dragStartWorld;
 
-    // 숫자키 1~4 = Ring_Layer1~4, 5번 = 지름선(RadialLine) 선택.
+    // 숫자키 1~4 = Ring_Layer1~4 선택. 지름선(RadialLine) 선택은 radialLineKey(Shift)로 따로 처리한다.
     private static readonly Key[] NumberKeys =
     {
-        Key.Digit1, Key.Digit2, Key.Digit3, Key.Digit4, Key.Digit5,
-        Key.Digit6, Key.Digit7, Key.Digit8, Key.Digit9,
+        Key.Digit1, Key.Digit2, Key.Digit3, Key.Digit4,
     };
 
     private static readonly Key[] NumpadKeys =
     {
-        Key.Numpad1, Key.Numpad2, Key.Numpad3, Key.Numpad4, Key.Numpad5,
-        Key.Numpad6, Key.Numpad7, Key.Numpad8, Key.Numpad9,
+        Key.Numpad1, Key.Numpad2, Key.Numpad3, Key.Numpad4,
     };
-
-    private const int RadialLineNumberKeyIndex = 4; // 5번 키(인덱스 4)
 
     private void Awake()
     {
@@ -139,37 +138,36 @@ public class LDY_RingSelectionManager : MonoBehaviour
         SelectedRadialLine = null;
     }
 
-    // 숫자키 1~4로 안쪽부터 바깥쪽 순서의 링을, 5로 지름선(RadialLine)을 바로 선택한다.
+    // 숫자키 1~4로 안쪽부터 바깥쪽 순서의 링을, radialLineKey(Shift)로 지름선(RadialLine)을 바로 선택한다.
     // 탭 판정과 별개로 항상 확실하게 동작하는 선택 수단.
-    // 이미 선택되어 있는 것과 같은 숫자를 다시 누르면 선택을 취소(토글)한다.
+    // 이미 선택되어 있는 것과 같은 걸 다시 누르면 선택을 취소(토글)한다.
     private void HandleNumberKeySelection()
     {
+        if (IsKeyPressedThisFrame(radialLineKey))
+        {
+            LDY_RadialLineController radial = LDY_BattleBoardManager.Instance != null
+                ? LDY_BattleBoardManager.Instance.RadialLine
+                : null;
+
+            if (radial != null)
+            {
+                if (SelectedRadialLine == radial) Deselect();
+                else SelectRadialLine(radial);
+            }
+            return;
+        }
+
         for (int i = 0; i < NumberKeys.Length; i++)
         {
             bool pressed = Keyboard.current[NumberKeys[i]].wasPressedThisFrame
                 || Keyboard.current[NumpadKeys[i]].wasPressedThisFrame;
             if (!pressed) continue;
 
-            if (i == RadialLineNumberKeyIndex)
+            LDY_RingController ring = GetRingByLayerIndex(i);
+            if (ring != null)
             {
-                LDY_RadialLineController radial = LDY_BattleBoardManager.Instance != null
-                    ? LDY_BattleBoardManager.Instance.RadialLine
-                    : null;
-
-                if (radial != null)
-                {
-                    if (SelectedRadialLine == radial) Deselect();
-                    else SelectRadialLine(radial);
-                }
-            }
-            else
-            {
-                LDY_RingController ring = GetRingByLayerIndex(i);
-                if (ring != null)
-                {
-                    if (SelectedRing == ring) Deselect();
-                    else SelectRing(ring);
-                }
+                if (SelectedRing == ring) Deselect();
+                else SelectRing(ring);
             }
             return;
         }

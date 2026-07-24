@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f0ff30234db8b544ba01c18198a1bbc, type: 3}
   m_Name: JCY_AlienCactus
   m_EditorClassIdentifier: Assembly-CSharp::JCY_ItemSO
-  itemName: "\uC678\uACC4 \uC120\uC778\uC7A5"
+  itemName: "외계 선인장"
   icon: {fileID: -7357854619991785799, guid: 44a443188b06db044ae468827d3c51b9, type: 3}
   cost: 20
-  maxHealthUP: 0
-  curHealthUP: -5
-  Description: 
+  maxHealthUP: -5
+  curHealthUP: 0
+  Description: "최대체력이 5 감소하고, 현재체력이 가득 찹니다."
   backStarPiece: 0
   maxTimeUP: 0
+  effectType: 0
+  effectAmount: 0

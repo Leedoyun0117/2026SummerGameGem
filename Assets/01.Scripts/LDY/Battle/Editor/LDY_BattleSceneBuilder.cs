@@ -131,7 +131,8 @@ public static class LDY_BattleSceneBuilder
         // 왼쪽 상단 "무기" 버튼 -> 3칸 팔레트 -> 공격 버튼 UI.
         EnsureEventSystem();
         Canvas uiCanvas = CreateWeaponCanvas();
-        CreateWeaponUI(uiCanvas.transform, attackController);
+        Canvas hintCanvas = CreateHintOverlayCanvas();
+        CreateWeaponUI(uiCanvas.transform, attackController, hintCanvas.transform);
 
         float outermostVisualRadius = LayerRadii[LayerRadii.Length - 1] + 2f;
         Bounds contentBounds = new Bounds(boardGO.transform.position,
@@ -154,7 +155,7 @@ public static class LDY_BattleSceneBuilder
             "· 각 링에 데모 적 배치 완료 (슬롯 간격에 맞게 적 크기 조절됨)\n" +
             "· 메인 카메라를 보드 전체가 화면 안에 들어오도록 자동 조절\n\n" +
             "선택 방법 (둘 다 가능):\n" +
-            "· 숫자키 1/2/3/4 = Ring_Layer1~4를 바로 선택, 5 = 지름선 모드 선택 (항상 확실하게 동작)\n" +
+            "· 숫자키 1/2/3/4 = Ring_Layer1~4를 바로 선택, Shift = 지름선 모드 선택 (항상 확실하게 동작)\n" +
             "· 링 클릭(탭) = 클릭 지점의 콜라이더 중 반지름이 가장 작은(=가장 안쪽) 링을 자동으로 선택\n\n" +
             "선택된 것은 노란 표시로 강조됩니다 (링은 경계선, 지름선은 회전하는 막대).\n\n" +
             "Play를 눌러 숫자키/클릭으로 선택한 뒤:\n" +
@@ -390,9 +391,29 @@ public static class LDY_BattleSceneBuilder
         return canvas;
     }
 
+    // 월드 스페이스 공격 하이라이트(LDY_AttackTargetController)가 렌더 큐/카메라 거리 순서 때문에
+    // Screen Space - Camera인 BattleUICanvas를 가릴 수 있어서(공격 이펙트는 ForceRenderOnTop으로 이미
+    // 대응돼 있음), "SPACE : 공격" 힌트만큼은 렌더 큐 계산과 무관하게 항상 맨 위에 합성되는
+    // Screen Space - Overlay 캔버스에 따로 둔다.
+    private static Canvas CreateHintOverlayCanvas()
+    {
+        GameObject canvasGO = new GameObject("HintOverlayCanvas", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler));
+        Undo.RegisterCreatedObjectUndo(canvasGO, "Build Battle Scene");
+
+        Canvas canvas = canvasGO.GetComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 100; // 다른 모든 UI/월드 렌더링보다 확실하게 위
+
+        CanvasScaler scaler = canvasGO.GetComponent<CanvasScaler>();
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = new Vector2(1920f, 1080f);
+
+        return canvas;
+    }
+
     // 왼쪽 상단 "무기" 토글 버튼 -> 무기 3칸 팔레트(세로1x4/사각형2x2/가로4x1) -> "공격" 확정 버튼까지 전부 만들고
-    // LDY_WeaponUIController에 연결한다.
-    private static void CreateWeaponUI(Transform canvasParent, LDY_AttackTargetController attackController)
+    // LDY_WeaponUIController에 연결한다. hintParent(Overlay 캔버스)에는 공격 힌트 라벨만 따로 둔다.
+    private static void CreateWeaponUI(Transform canvasParent, LDY_AttackTargetController attackController, Transform hintParent)
     {
         Button toggleButton = CreateUIButton(canvasParent, "WeaponToggleButton", "무기",
             new Vector2(20f, -30f), new Vector2(140f, 60f));
@@ -428,7 +449,7 @@ public static class LDY_BattleSceneBuilder
         Button attackButton = CreateUIButton(canvasParent, "AttackConfirmButton", "공격",
             new Vector2(20f, -200f), new Vector2(140f, 60f));
 
-        GameObject attackHintGO = CreateUILabel(canvasParent, "AttackHintLabel", "SPACE : 공격",
+        GameObject attackHintGO = CreateUILabel(hintParent, "AttackHintLabel", "SPACE : 공격",
             new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 40f), new Vector2(320f, 60f));
 
         GameObject uiControllerGO = new GameObject("WeaponUIController");

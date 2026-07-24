@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f0ff30234db8b544ba01c18198a1bbc, type: 3}
   m_Name: JCY_HickeyHickeyBag
   m_EditorClassIdentifier: Assembly-CSharp::JCY_ItemSO
-  itemName: "\uD788\uD0A4\uD558\uC774\uCEE4 \uAC00\uBC29"
+  itemName: "히키하이커 가방"
   icon: {fileID: 5464633932813282996, guid: 44a443188b06db044ae468827d3c51b9, type: 3}
-  cost: 0
+  cost: 20
   maxHealthUP: 0
   curHealthUP: 0
-  Description: 
+  Description: "아이템 소지 한도가 10 늘어납니다."
   backStarPiece: 0
   maxTimeUP: 0
+  effectType: 8
+  effectAmount: 10

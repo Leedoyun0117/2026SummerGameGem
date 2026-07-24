@@ -13,6 +13,9 @@ public class LDY_BattleTurnManager : MonoBehaviour
     public float TimeRemaining { get; private set; }
     public float TurnDuration => turnDuration;
 
+    // 이번 턴에 실제로 적용된 총 시간(turnDuration + 아이템 보너스) - 파편 충전 진행도 계산에 쓴다.
+    private float effectiveDuration;
+
     private void Awake()
     {
         Instance = this;
@@ -36,7 +39,7 @@ public class LDY_BattleTurnManager : MonoBehaviour
     // 턴이 흐르는 동안(0~1) NoAbility 적들 몸 옆에 파편이 점점 모이는 것처럼 보이게 진행도를 넘겨준다.
     private void UpdateFragmentCharge()
     {
-        float progress = 1f - Mathf.Clamp01(TimeRemaining / turnDuration);
+        float progress = 1f - Mathf.Clamp01(TimeRemaining / effectiveDuration);
 
         LDY_Enemy[] enemies = Object.FindObjectsByType<LDY_Enemy>(FindObjectsSortMode.None);
         foreach (LDY_Enemy enemy in enemies)
@@ -81,6 +84,9 @@ public class LDY_BattleTurnManager : MonoBehaviour
 
     private void ResetTimer()
     {
-        TimeRemaining = turnDuration;
+        // 블랙홀 조각 / 백조자리의 깃털로 쌓인 턴 시간 보너스를 매 턴 반영한다.
+        float bonus = JCY_RunProgress.Instance != null ? JCY_RunProgress.Instance.turnDurationBonus : 0f;
+        effectiveDuration = turnDuration + bonus;
+        TimeRemaining = effectiveDuration;
     }
 }

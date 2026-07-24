@@ -23,6 +23,14 @@ public class LDY_UIShootingStars : MonoBehaviour
     private void Start()
     {
         if (container == null) container = (RectTransform)transform;
+
+        // 자그마한 소행성 - 소지 개수만큼 등장 빈도가 늘어난다(스택당 대기 시간 ×0.8).
+        if (JCY_RunProgress.Instance != null && JCY_RunProgress.Instance.tinyAsteroidCount > 0)
+        {
+            float multiplier = Mathf.Pow(0.8f, JCY_RunProgress.Instance.tinyAsteroidCount);
+            intervalRange *= multiplier;
+        }
+
         StartCoroutine(SpawnLoop());
     }
 

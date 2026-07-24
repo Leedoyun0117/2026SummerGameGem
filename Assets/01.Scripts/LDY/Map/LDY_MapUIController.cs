@@ -16,8 +16,11 @@ public class LDY_MapUIController : MonoBehaviour
     [SerializeField] private LDY_MapNodeView nodeViewPrefab;
     [SerializeField] private Image linePrefab;
     [SerializeField] private Image backgroundPanel;
+    [SerializeField] private LDY_MapPlayerToken playerTokenPrefab;
 
     private readonly List<LDY_MapNodeView> nodeViews = new List<LDY_MapNodeView>();
+    private LDY_MapPlayerToken playerToken;
+    private int currentPlayerNodeIndex = -1;
 
     private void Start()
     {
@@ -33,10 +36,38 @@ public class LDY_MapUIController : MonoBehaviour
 
         mapManager.onMapChanged.AddListener(RefreshAll);
 
+        // 노드뷰가 참조를 들고 있어야 하므로 플레이어 토큰을 먼저 만들고,
+        // 노드들이 다 생긴 뒤에 형제 순서만 맨 뒤로 옮겨서 항상 위에 그려지게 함
+        SpawnPlayerToken();
         SpawnNodeViews();
         DrawConnections();
+        if (playerToken != null) playerToken.transform.SetAsLastSibling();
         RefreshAll();
     }
+
+    private void SpawnPlayerToken()
+    {
+        if (playerTokenPrefab == null) return;
+
+        List<LDY_MapNode> nodes = mapManager.Nodes;
+        if (nodes.Count == 0) return;
+
+        int startIndex = nodes.FindIndex(n => n.type == LDY_NodeType.Start);
+        if (startIndex < 0) startIndex = 0;
+
+        playerToken = Instantiate(playerTokenPrefab, nodeContainer);
+        playerToken.SetPosition(nodes[startIndex].position);
+        currentPlayerNodeIndex = startIndex;
+    }
+
+    // 노드 뷰가 플레이어 도착 시 알려주면, 글로우 색을 다시 계산하도록 전체 갱신
+    public void OnPlayerArrivedAt(int nodeIndex)
+    {
+        currentPlayerNodeIndex = nodeIndex;
+        RefreshAll();
+    }
+
+    public bool IsPlayerAt(int nodeIndex) => nodeIndex == currentPlayerNodeIndex;
 
     private void OnDestroy()
     {
@@ -50,7 +81,7 @@ public class LDY_MapUIController : MonoBehaviour
         for (int i = 0; i < nodes.Count; i++)
         {
             LDY_MapNodeView view = Instantiate(nodeViewPrefab, nodeContainer);
-            view.Initialize(mapManager, nodes[i], i, theme);
+            view.Initialize(mapManager, nodes[i], i, theme, playerToken, this);
             nodeViews.Add(view);
         }
     }

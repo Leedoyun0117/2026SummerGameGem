@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f0ff30234db8b544ba01c18198a1bbc, type: 3}
   m_Name: JCY_Magnetite
   m_EditorClassIdentifier: Assembly-CSharp::JCY_ItemSO
-  itemName: "\uBCC4\uBE5B\uC5C6\uB294  \uC790\uCCA0\uC11D"
+  itemName: "별빛없는 자철석"
   icon: {fileID: 7327367632806418437, guid: b15b692b771d36247b59d9d262f2747a, type: 3}
-  cost: 0
+  cost: 40
   maxHealthUP: 0
   curHealthUP: 0
-  Description: 
+  Description: "적을 3마리 처치할 때마다 현재체력이 1 회복됩니다."
   backStarPiece: 0
   maxTimeUP: 0
+  effectType: 10
+  effectAmount: 0

@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f0ff30234db8b544ba01c18198a1bbc, type: 3}
   m_Name: JCY_HickeyHicerScroll
   m_EditorClassIdentifier: Assembly-CSharp::JCY_ItemSO
-  itemName: "\uD788\uCE58\uD558\uC774\uCEE4 \uB450\uB8E8\uB9C8\uB9AC"
+  itemName: "히치하이커 두루마리"
   icon: {fileID: -6123642585694585083, guid: 44a443188b06db044ae468827d3c51b9, type: 3}
-  cost: 0
+  cost: 30
   maxHealthUP: 0
   curHealthUP: 0
-  Description: 
+  Description: "상점에서 포션 구매 한도가 1 늘어납니다."
   backStarPiece: 0
   maxTimeUP: 0
+  effectType: 7
+  effectAmount: 1

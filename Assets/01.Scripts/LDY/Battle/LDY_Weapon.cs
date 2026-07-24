@@ -9,6 +9,14 @@ public class LDY_Weapon
     public LDY_WeaponAttackShape shape;
     [TextArea(2, 4)] public string description;
 
+    [Header("보스 전투 전용 데미지 - 사수자리의 활/태양빛 촛불/가시물고기의 뼛조각 아이템이 이 값을 올려준다")]
+    public int damage = 10;
+    [Tooltip("isForged가 true면(데미지 보너스를 하나라도 얻었으면) description 대신 이 텍스트가 표시됨. 비워두면 description을 계속 씀")]
+    [TextArea(2, 4)] public string forgedDescription;
+    // 무기 데미지 보너스를 하나라도 적용받았는지 - 씬 시작 시(LDY_WeaponUIController/KTH_BossWeaponUIController)
+    // JCY_RunProgress의 보너스 값을 damage에 더하면서 같이 세팅된다. 저장되는 값이 아니라 런타임에만 쓰는 표시.
+    [System.NonSerialized] public bool isForged;
+
     [Header("발사 이펙트 (발사 위치 -> 맞은 적까지 이어지는 레이저 등) - 비워두면 기존처럼 맞자마자 즉사")]
     public GameObject hitEffectPrefab;
     [Tooltip("이 이펙트가 재생되는 동안 적이 죽지 않고 버틴다. 발사 이펙트가 없으면 사용되지 않는다.")]

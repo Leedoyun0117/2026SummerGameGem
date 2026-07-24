@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f0ff30234db8b544ba01c18198a1bbc, type: 3}
   m_Name: JCY_OrionArmor
   m_EditorClassIdentifier: Assembly-CSharp::JCY_ItemSO
-  itemName: "\uC624\uB9AC\uC628      \uD310\uAE08\uAC11\uC637"
+  itemName: "오리온 판금갑옷"
   icon: {fileID: -8501138333136526401, guid: b15b692b771d36247b59d9d262f2747a, type: 3}
-  cost: 0
-  maxHealthUP: 0
+  cost: 40
+  maxHealthUP: 10
   curHealthUP: 0
-  Description: 
+  Description: "최대체력이 10 증가합니다."
   backStarPiece: 0
   maxTimeUP: 0
+  effectType: 12
+  effectAmount: 0

@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f0ff30234db8b544ba01c18198a1bbc, type: 3}
   m_Name: JCY_SpringWaterAquarius
   m_EditorClassIdentifier: Assembly-CSharp::JCY_ItemSO
-  itemName: "\uBB3C\uBCD1\uC790\uB9AC\uC758 \uC0D8\uBB3C"
+  itemName: "물병자리의 샘물"
   icon: {fileID: -8681050800745392574, guid: 44a443188b06db044ae468827d3c51b9, type: 3}
-  cost: 0
-  maxHealthUP: 0
-  curHealthUP: 0
-  Description: 
+  cost: 20
+  maxHealthUP: 10
+  curHealthUP: -20
+  Description: "현재체력이 20 감소하고, 최대체력이 10 증가합니다."
   backStarPiece: 0
   maxTimeUP: 0
+  effectType: 15
+  effectAmount: 0

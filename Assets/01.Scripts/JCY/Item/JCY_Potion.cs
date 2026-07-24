@@ -12,6 +12,13 @@ public class JCY_Potion : MonoBehaviour
             return;
         }
 
+        // 히치하이커 두루마리 - 상점당 포션 구매 한도(기본 2회 + 보너스)를 넘으면 더 못 산다.
+        if (JCY_RunProgress.Instance != null && !JCY_RunProgress.Instance.TryConsumePotionPurchase())
+        {
+            Debug.Log("이번 상점에서 포션 구매 한도를 다 썼어요");
+            return;
+        }
+
         Debug.Log("포션 사용");
         switch (itemSO.itemName)
         {
