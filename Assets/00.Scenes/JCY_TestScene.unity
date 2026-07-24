@@ -1758,6 +1758,7 @@ MonoBehaviour:
   - {fileID: 461521837}
   animator: {fileID: 1498028166}
   canvasGroup: {fileID: 1498028167}
+  shop: {fileID: 1498028162}
 --- !u!1 &1238239602
 GameObject:
   m_ObjectHideFlags: 0
