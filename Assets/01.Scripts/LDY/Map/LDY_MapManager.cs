@@ -35,6 +35,10 @@ public class LDY_MapManager : MonoBehaviour
     public List<LDY_MapNode> Nodes { get; private set; } = new List<LDY_MapNode>();
     public LDY_NodeConnection[] Connections => connections;
 
+    // 전투(Battle) 노드에 들어간 횟수. 이 매니저는 DontDestroyOnLoad라서 Map -> Battle 씬 전환에도
+    // 값이 유지된다 - 전투 씬에서 이 값을 읽어 적 숫자 등 난이도를 올리는 데 쓰면 된다(예: LDY_BattleDifficultyManager).
+    public int BattleEntryCount { get; private set; }
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -87,7 +91,8 @@ public class LDY_MapManager : MonoBehaviour
             CompleteNode(startIndex);
     }
 
-    public void OnNodeClicked(int index)
+    // screenUV: 클릭한 노드의 화면상 위치(0~1). 씬 전환 아이리스 연출의 중심점으로 씀
+    public void OnNodeClicked(int index, Vector2 screenUV)
     {
         if (!IsValidIndex(index)) return;
 
@@ -99,10 +104,11 @@ public class LDY_MapManager : MonoBehaviour
         switch (node.type)
         {
             case LDY_NodeType.Battle:
-                LoadScene(battleSceneName);
+                BattleEntryCount++;
+                RequestSceneLoad(battleSceneName, screenUV);
                 break;
             case LDY_NodeType.Boss:
-                LoadScene(bossSceneName);
+                RequestSceneLoad(bossSceneName, screenUV);
                 break;
             case LDY_NodeType.Shop:
                 onShopNodeSelected?.Invoke(node);
@@ -141,9 +147,14 @@ public class LDY_MapManager : MonoBehaviour
 
     private bool IsValidIndex(int index) => index >= 0 && index < Nodes.Count;
 
-    private void LoadScene(string sceneName)
+    // 씬 전환 연출(LDY_SceneTransition)이 씬에 있으면 그걸 거쳐서, 없으면 곧바로 씬을 로드
+    private void RequestSceneLoad(string sceneName, Vector2 screenUV)
     {
         if (string.IsNullOrEmpty(sceneName)) return;
-        SceneManager.LoadScene(sceneName);
+
+        if (LDY_SceneTransition.Instance != null)
+            LDY_SceneTransition.Instance.PlayIrisCloseThenLoad(screenUV, sceneName);
+        else
+            SceneManager.LoadScene(sceneName);
     }
 }

@@ -148,7 +148,14 @@ public class LDY_MapNodeView : MonoBehaviour
 
     private void HandleClick()
     {
-        manager.OnNodeClicked(NodeIndex);
+        manager.OnNodeClicked(NodeIndex, GetScreenUV());
+    }
+
+    // 씬 전환 아이리스 연출의 중심점으로 쓰기 위한, 이 노드의 화면상 위치(0~1)
+    private Vector2 GetScreenUV()
+    {
+        Vector3 screenPoint = RectTransformUtility.WorldToScreenPoint(null, RectTransform.position);
+        return new Vector2(screenPoint.x / Screen.width, screenPoint.y / Screen.height);
     }
 
     private Sprite GetIcon(LDY_NodeType type)
