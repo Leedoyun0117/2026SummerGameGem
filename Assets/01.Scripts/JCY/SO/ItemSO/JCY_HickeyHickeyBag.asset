@@ -17,7 +17,7 @@ MonoBehaviour:
   cost: 20
   maxHealthUP: 0
   curHealthUP: 0
-  Description: "아이템 소지 한도가 10 늘어납니다."
+  Description: "전투구역(보스 포함)에 진입할 때마다 현재체력이 10 회복됩니다."
   backStarPiece: 0
   maxTimeUP: 0
   effectType: 8

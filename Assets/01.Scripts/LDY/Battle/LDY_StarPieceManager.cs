@@ -126,7 +126,7 @@ public class LDY_StarPieceManager : MonoBehaviour
             overrideCanvas.sortingOrder = 1000;
 
             Vector2 scatterOffset = Random.insideUnitCircle * scatterRadius;
-            //PositionInParent(rt, screenPos + scatterOffset);
+            PositionInParent(rt, (Vector2)screenPos + scatterOffset);
 
             Debug.Log($"[LDY_StarPieceManager] 조각 생성됨: name={go.name}, active={go.activeInHierarchy}, " +
                 $"rt.position={rt.position}, rt.anchoredPosition={rt.anchoredPosition}, rt.localScale={rt.localScale}, " +
@@ -134,6 +134,20 @@ public class LDY_StarPieceManager : MonoBehaviour
 
             LDY_StarPieceDrop drop = go.GetComponent<LDY_StarPieceDrop>();
             if (drop != null) drop.Init(flyTarget, 1);
+        }
+    }
+
+    // CanvasScaler 등으로 dropUIParent의 lossyScale이 1이 아니면(예: 0.03), rt.position(월드 좌표)을
+    // 직접 설정할 경우 anchoredPosition이 극단적인 값(수만 단위)으로 튀어서 렌더링이 깨진다.
+    // RectTransformUtility로 스크린 좌표 -> 로컬(anchoredPosition) 변환을 제대로 거쳐야 한다.
+    private void PositionInParent(RectTransform rt, Vector2 screenPosition)
+    {
+        Canvas canvas = dropUIParent.GetComponentInParent<Canvas>();
+        Camera uiCamera = (canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay) ? worldCamera : null;
+
+        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(dropUIParent, screenPosition, uiCamera, out Vector2 localPoint))
+        {
+            rt.anchoredPosition = localPoint;
         }
     }
 

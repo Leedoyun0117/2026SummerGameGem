@@ -59,50 +59,49 @@ public class LDY_BattleDifficultyManager : MonoBehaviour
             return;
         }
 
-        int remaining = count;
-
-        // 안쪽 링(rings[0] = 1번)부터 순서대로, 그 링의 한도(layerMaxEnemyCount, 없으면 그 링의 전체 칸 수)를
-        // 넘지 않는 선에서 채우고 남은 개수를 다음 링으로 넘긴다.
-        for (int layer = 0; layer < rings.Count && remaining > 0; layer++)
+        // 모든 링의 모든 칸을 하나의 풀로 모은 뒤 무작위로 섞는다 - "어느 칸에 배치되는지"는 완전히 랜덤.
+        List<(LDY_RingController ring, int layer, int tileIndex)> allSlots = new List<(LDY_RingController, int, int)>();
+        for (int layer = 0; layer < rings.Count; layer++)
         {
             LDY_RingController ring = rings[layer];
             if (ring == null || ring.Ring == null) continue;
 
-            int slotCount = ring.Ring.SlotCount;
-            int layerCap = (layerMaxEnemyCount != null && layer < layerMaxEnemyCount.Length)
-                ? Mathf.Min(layerMaxEnemyCount[layer], slotCount)
-                : slotCount;
-
-            int spawnInThisLayer = Mathf.Min(layerCap, remaining);
-            if (spawnInThisLayer <= 0) continue;
-
-            SpawnInRing(ring, spawnInThisLayer);
-            remaining -= spawnInThisLayer;
+            for (int i = 0; i < ring.Ring.SlotCount; i++)
+                allSlots.Add((ring, layer, i));
         }
-    }
 
-    // 링 하나의 칸을 무작위 순서로 섞은 뒤 앞에서부터 spawnCount개만 채운다.
-    private void SpawnInRing(LDY_RingController ring, int spawnCount)
-    {
-        List<int> tileIndices = new List<int>(ring.Ring.SlotCount);
-        for (int i = 0; i < ring.Ring.SlotCount; i++) tileIndices.Add(i);
-
-        for (int i = tileIndices.Count - 1; i > 0; i--)
+        for (int i = allSlots.Count - 1; i > 0; i--)
         {
             int j = Random.Range(0, i + 1);
-            (tileIndices[i], tileIndices[j]) = (tileIndices[j], tileIndices[i]);
+            (allSlots[i], allSlots[j]) = (allSlots[j], allSlots[i]);
         }
 
-        int n = Mathf.Min(spawnCount, tileIndices.Count);
-        for (int i = 0; i < n; i++)
+        // 링(레이어)마다 이번에 최대 몇 마리까지 받을 수 있는지 - 순서를 강제하는 게 아니라
+        // 섞인 순서대로 채워가다가 이미 한도를 채운 링이 나오면 그 칸만 건너뛰는 "제한" 용도로만 씀.
+        int[] remainingCapPerLayer = new int[rings.Count];
+        for (int layer = 0; layer < rings.Count; layer++)
         {
-            int tileIndex = tileIndices[i];
-            GameObject prefab = enemyPrefabPool[Random.Range(0, enemyPrefabPool.Length)];
+            LDY_RingController ring = rings[layer];
+            int slotCount = (ring != null && ring.Ring != null) ? ring.Ring.SlotCount : 0;
+            remainingCapPerLayer[layer] = (layerMaxEnemyCount != null && layer < layerMaxEnemyCount.Length)
+                ? Mathf.Min(layerMaxEnemyCount[layer], slotCount)
+                : slotCount;
+        }
 
+        int spawned = 0;
+        foreach ((LDY_RingController ring, int layer, int tileIndex) in allSlots)
+        {
+            if (spawned >= count) break;
+            if (remainingCapPerLayer[layer] <= 0) continue;
+
+            GameObject prefab = enemyPrefabPool[Random.Range(0, enemyPrefabPool.Length)];
             GameObject instance = Instantiate(prefab, ring.transform);
             RingSlot slot = ring.Ring.GetSlot(tileIndex);
             instance.transform.position = slot.worldPosition;
             ring.Ring.PlaceOccupant(tileIndex, instance);
+
+            remainingCapPerLayer[layer]--;
+            spawned++;
         }
     }
 }

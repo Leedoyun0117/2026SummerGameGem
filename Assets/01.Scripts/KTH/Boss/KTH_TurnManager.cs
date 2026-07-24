@@ -46,6 +46,9 @@ public class KTH_TurnManager : MonoBehaviour
 
     private void Start()
     {
+        // 히키하이커 가방 - 전투구역(보스 포함) 진입 시 현재체력 회복
+        if (JCY_RunProgress.Instance != null) JCY_RunProgress.Instance.NotifyCombatZoneEntered();
+
         UpdateRemainingTurnUI();
 
         // 🔥 게임 시작 시 플레이어의 최초 위치/회전값 저장

@@ -23,6 +23,9 @@ public class LDY_BattleTurnManager : MonoBehaviour
 
     private void Start()
     {
+        // 히키하이커 가방 - 전투구역 진입 시 현재체력 회복
+        if (JCY_RunProgress.Instance != null) JCY_RunProgress.Instance.NotifyCombatZoneEntered();
+
         ResetTimer();
     }
 
