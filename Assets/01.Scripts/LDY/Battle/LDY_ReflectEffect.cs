@@ -7,9 +7,10 @@ using UnityEngine;
 // 연출: 1) 적 위치에서 별빛(작은 반짝임)이 위로 짤랑 튀어오르며 사라짐
 //      2) 동시에 레이저가 적 -> 플레이어 방향으로 짧은 시간(travelDuration) 안에 빠르게 뻗어나간다.
 // 별도 프리팹 설정 없이 빈 GameObject에 이 스크립트 하나만 붙여서 저장하면 바로 동작한다.
-public class LDY_ReflectEffect : MonoBehaviour, ILDY_EffectTarget
+public class LDY_ReflectEffect : MonoBehaviour, ILDY_EffectTarget, ILDY_TravelEffect
 {
     public Vector3 TargetPosition { get; set; }
+    public float TravelDuration => travelDuration;
 
     [Header("별빛(스파클)")]
     [SerializeField] private int starCount = 8;
