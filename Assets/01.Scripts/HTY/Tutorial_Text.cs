@@ -1,20 +1,18 @@
-using System.Collections;
 using TMPro;
 using UnityEngine;
+using System.Collections;
 
-public class MainStory : MonoBehaviour
+public class Tutorial_Text : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _storyBox;
     [SerializeField] private string[] _storyText;
     [SerializeField] private float _typingSpeed = 0.05f;
     [SerializeField] private float _outTextSpeed = 1;
     [SerializeField] private FadeOut _fadeOut;
-    [SerializeField] private Tutorial_Text _next;
 
+    public GameObject _panel1;
 
-    
-
-    private void Start()
+    public void TextStart()
     {
         StartCoroutine(WaitTime());
     }
@@ -24,24 +22,18 @@ public class MainStory : MonoBehaviour
         yield return new WaitForSeconds(1.5f);
         for (int i = 0; i < _storyText.Length; i++)
         {
+            if(i>=0&&i<=2)
+            {
+                _panel1.SetActive(true);
+            }
+            else
+            {
+                _panel1.SetActive(false);
+            }
             yield return StartCoroutine(TypeText(_storyText[i]));//DoText대용 코르틴
             yield return new WaitForSeconds(_outTextSpeed);
         }
-        yield return new WaitForSeconds(1f);
-
-        if(_fadeOut!=null)//페이드아웃 전용
-        {
-            _fadeOut.Fade_Out();
-        }
-        else if(_next!=null)
-        {
-            _next.TextStart();
-            _storyBox.SetText("");
-        }
-        else
-        {
-            _storyBox.SetText("");
-        }
+        
     }
 
     private IEnumerator TypeText(string text)
