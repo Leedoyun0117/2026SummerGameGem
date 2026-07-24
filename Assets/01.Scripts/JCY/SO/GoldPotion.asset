@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a66c3578b22d3054db886a3c253e332d, type: 3}
   m_Name: GoldPotion
   m_EditorClassIdentifier: Assembly-CSharp::JCY_ItemSO
-  itemName: GoldPotion
+  itemName: "\uB79C\uB364 \uBC15\uC2A4"
   itemImage: {fileID: 4166379850747399888, guid: 44a443188b06db044ae468827d3c51b9, type: 3}
-  cost: 0
+  cost: 2
   health: 0
   time: 0

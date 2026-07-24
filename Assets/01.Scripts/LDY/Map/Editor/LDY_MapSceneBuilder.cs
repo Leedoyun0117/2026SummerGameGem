@@ -215,6 +215,11 @@ public static class LDY_MapSceneBuilder
         so.FindProperty("theme").objectReferenceValue = theme;
         so.FindProperty("container").objectReferenceValue = rt;
         so.ApplyModifiedProperties();
+
+        LDY_UIShootingStars shootingStars = go.AddComponent<LDY_UIShootingStars>();
+        SerializedObject shootingSo = new SerializedObject(shootingStars);
+        shootingSo.FindProperty("container").objectReferenceValue = rt;
+        shootingSo.ApplyModifiedProperties();
     }
 
     private static Image CreateStretchImage(string name, Transform parent)

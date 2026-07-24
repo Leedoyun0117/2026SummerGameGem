@@ -68,6 +68,13 @@ public class LDY_RingSelectionManager : MonoBehaviour
     {
         if (Keyboard.current == null || Mouse.current == null) return; // 키보드/마우스 장치가 아직 연결 안 됨
 
+        // 공격 이펙트(빔/관통 연출)가 재생되는 동안은 어떤 입력도 받지 않는다 - 연출이 끝날 때까지 조작 불가.
+        if (LDY_AttackTargetController.Instance != null && LDY_AttackTargetController.Instance.IsResolvingEffect)
+        {
+            isDragging = false;
+            return;
+        }
+
         // 무기가 선택되어 조준 중이면 방향키는 전부 공격 대상 커서를 옮기는 데 쓰고,
         // 링 탭/회전/지름선 입력은 전혀 받지 않는다(서로 입력이 겹치면 안 되므로 최우선으로 분기).
         if (LDY_AttackTargetController.Instance != null && LDY_AttackTargetController.Instance.IsTargeting)

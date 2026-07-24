@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2744649013318459492
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 580614113815683912}
+  - component: {fileID: 4941963191643640736}
+  m_Layer: 0
+  m_Name: ReflectEffect
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &580614113815683912
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2744649013318459492}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 19.62594, y: 12.10102, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4941963191643640736
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2744649013318459492}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c063da87a26fe2a478fca45f82b0810d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LDY_ReflectEffect
+  starCount: 8
+  starSpread: 0.35
+  starRiseHeight: 0.5
+  starLifetime: 0.3
+  starSize: 0.22
+  starColor: {r: 1, g: 1, b: 0.6, a: 1}
+  coreColor: {r: 1, g: 0.55, b: 0.4, a: 1}
+  glowColor: {r: 1, g: 0.25, b: 0.15, a: 0.45}
+  coreWidth: 0.08
+  glowWidth: 0.3
+  travelDuration: 0.15
+  segmentCount: 14
+  jitterAmount: 0.12
+  jitterSpeed: 30
+  reflectText: "\uBC18\uC0AC!"
+  reflectTextColor: {r: 1, g: 0, b: 0.06594753, a: 1}
+  reflectTextSize: 4
+  reflectTextOffset: {x: 1.2, y: 0.3, z: 0}
+  reflectTextRiseHeight: 0.6
+  reflectTextLifetime: 1
