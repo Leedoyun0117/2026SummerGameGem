@@ -35,7 +35,7 @@ public static class KTH_BossSceneBuilder
         Undo.RegisterCreatedObjectUndo(bossRoot, "Build Boss Scene");
 
         GameObject boss = CreateBoss(bossRoot.transform);
-        BossTurn bossTurn = bossRoot.AddComponent<BossTurn>();
+        //BossTurn bossTurn = bossRoot.AddComponent<BossTurn>();
 
         EnsureEventSystem();
         Canvas canvas = CreateCanvas();

@@ -105,12 +105,17 @@ public class LDY_StarPieceManager : MonoBehaviour
 
         int count = Random.Range(minDropCount, maxDropCount + 1);
         Vector3 screenPos = worldCamera.WorldToScreenPoint(worldPosition);
+        Debug.Log($"[LDY_StarPieceManager] SpawnDrops: worldPos={worldPosition}, camera={worldCamera.name}, screenPos={screenPos}, count={count}, dropUIParent={dropUIParent.name}(active={dropUIParent.gameObject.activeInHierarchy}, lossyScale={dropUIParent.lossyScale})");
 
         for (int i = 0; i < count; i++)
         {
             GameObject go = Instantiate(starPieceDropPrefab, dropUIParent);
             RectTransform rt = go.GetComponent<RectTransform>();
-            if (rt == null) continue;
+            if (rt == null)
+            {
+                Debug.LogWarning("[LDY_StarPieceManager] 스폰된 오브젝트에 RectTransform이 없습니다.");
+                continue;
+            }
 
             // dropUIParent가 속한 Canvas가 다른 UI(예: 화면 아래 SPACE 힌트가 있는 BattleUICanvas)와
             // Sort Order가 같으면 어느 게 위로 그려질지 안 정해진다 - 이 조각만 오버라이드 캔버스를
@@ -121,10 +126,25 @@ public class LDY_StarPieceManager : MonoBehaviour
             overrideCanvas.sortingOrder = 1000;
 
             Vector2 scatterOffset = Random.insideUnitCircle * scatterRadius;
-            rt.position = screenPos + (Vector3)scatterOffset;
+            //PositionInParent(rt, screenPos + scatterOffset);
+
+            Debug.Log($"[LDY_StarPieceManager] 조각 생성됨: name={go.name}, active={go.activeInHierarchy}, " +
+                $"rt.position={rt.position}, rt.anchoredPosition={rt.anchoredPosition}, rt.localScale={rt.localScale}, " +
+                $"parentChain={GetParentChainNames(go.transform)}");
 
             LDY_StarPieceDrop drop = go.GetComponent<LDY_StarPieceDrop>();
             if (drop != null) drop.Init(flyTarget, 1);
         }
+    }
+
+    private static string GetParentChainNames(Transform t)
+    {
+        var names = new System.Collections.Generic.List<string>();
+        for (Transform current = t; current != null; current = current.parent)
+        {
+            names.Add($"{current.name}(scale={current.localScale})");
+        }
+        names.Reverse();
+        return string.Join(" > ", names);
     }
 }
