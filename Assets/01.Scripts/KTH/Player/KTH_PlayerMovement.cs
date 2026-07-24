@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using TMPro; // 🔥 TextMeshPro 사용을 위한 네임스페이스
 using UnityEngine;
 
 public class KTH_PlayerMovement : MonoBehaviour
@@ -25,6 +26,15 @@ public class KTH_PlayerMovement : MonoBehaviour
 
     [Header("최종 목적지 콜라이더 태그")]
     [SerializeField] private string endZoneTag = "EndZone";
+
+    // 🔥 [추가] 이름 기반 UI 탐색 및 메시지 설정
+    [Header("안내 UI 설정")]
+    [SerializeField] private string warningTextName = "WarningText"; // 씬에서 찾을 UI 오브젝트 이름
+    [SerializeField] private string noTileMessage = "이동할 타일이 없습니다!"; // 출력할 메시지
+    [SerializeField] private float textDuration = 2f; // 텍스트 유지 시간
+
+    private TMP_Text warningText;
+    private Coroutine textCoroutine;
 
     private Tween currentTween;
     private bool isMoving;
@@ -51,6 +61,36 @@ public class KTH_PlayerMovement : MonoBehaviour
         initialPosition = transform.position;
         initialRotation = transform.rotation;
         initialStraightDir = transform.up;
+
+        // 🔥 이름으로 UI 텍스트 탐색 후 초기화
+        FindWarningTextByName();
+    }
+
+    /// <summary>
+    /// 🔥 씬 내에서 지정한 이름의 TMP_Text 컴포넌트를 탐색 (비활성화 상태도 검색 가능)
+    /// </summary>
+    private void FindWarningTextByName()
+    {
+        TMP_Text[] allTexts = Resources.FindObjectsOfTypeAll<TMP_Text>();
+
+        foreach (TMP_Text txt in allTexts)
+        {
+            // 실제 씬에 존재하는 오브젝트인지 체크 및 이름 비교
+            if (txt.gameObject.scene.isLoaded && txt.gameObject.name == warningTextName)
+            {
+                warningText = txt;
+                break;
+            }
+        }
+
+        if (warningText != null)
+        {
+            warningText.gameObject.SetActive(false);
+        }
+        else
+        {
+            Debug.LogWarning($"[PlayerMovement] '{warningTextName}' 이름을 가진 TMP_Text 오브젝트를 찾지 못했습니다.");
+        }
     }
 
     public void ResetToInitialPosition()
@@ -66,6 +106,11 @@ public class KTH_PlayerMovement : MonoBehaviour
         straightDir = initialStraightDir;
 
         visitedTiles.Clear();
+
+        if (warningText != null)
+        {
+            warningText.gameObject.SetActive(false);
+        }
 
         Debug.Log("[PlayerMovement] 플레이어가 초기 시작 위치 및 방향으로 복귀했습니다.");
     }
@@ -92,6 +137,10 @@ public class KTH_PlayerMovement : MonoBehaviour
         if (checkTransform != null && !hasTile)
         {
             Debug.Log("[PlayerMovement] 패널 없음 -> 체크 위치 이동 후 보스 턴");
+
+            // 🔥 타일 없음 안내 텍스트 출력
+            ShowWarningMessage(noTileMessage);
+
             MoveToCheckTransformAndEndTurn();
             yield break;
         }
@@ -103,6 +152,32 @@ public class KTH_PlayerMovement : MonoBehaviour
 
         isMoving = false;
         MoveStep();
+    }
+
+    /// <summary>
+    /// 🔥 UI 텍스트 출력 및 타이머 처리
+    /// </summary>
+    private void ShowWarningMessage(string message)
+    {
+        if (warningText == null) return;
+
+        if (textCoroutine != null)
+        {
+            StopCoroutine(textCoroutine);
+        }
+
+        textCoroutine = StartCoroutine(WarningTextRoutine(message));
+    }
+
+    private IEnumerator WarningTextRoutine(string message)
+    {
+        warningText.text = message;
+        warningText.gameObject.SetActive(true);
+
+        yield return new WaitForSeconds(textDuration);
+
+        warningText.gameObject.SetActive(false);
+        textCoroutine = null;
     }
 
     private bool HasTileAtCheckTransform()
@@ -206,13 +281,11 @@ public class KTH_PlayerMovement : MonoBehaviour
             return;
         }
 
-        // 🔥 새 KTH_Tile 컴포넌트 감지
         KTH_Tile tile = other.GetComponentInParent<KTH_Tile>();
-        if (tile == null) return;
+        if (tile == null || tile.IsUsed) return;
 
         GameObject tileObj = tile.gameObject;
 
-        // 🔥 이미 밟았던 패널 재방문 처리
         if (visitedTiles.Contains(tileObj))
         {
             Debug.Log($"[PlayerMovement] 이미 밟았던 패널({tileObj.name}) 재방문! -> 이동 종료");
@@ -222,24 +295,27 @@ public class KTH_PlayerMovement : MonoBehaviour
 
         visitedTiles.Add(tileObj);
 
-        // 🔥 Enum 타입에 따른 분기 처리
         switch (tile.CurrentTileType)
         {
             case TileType.Arrow:
-                // 1. 화살표인 경우: 기존대로 경로 변경 후 이동 지속
                 ProcessArrowTile(tile);
                 break;
 
             case TileType.Attack:
-                // 2. 공격 타일인 경우: 보스 공격 후 이동 멈춤 & 턴 전환
                 ProcessAttackTile(tile);
                 break;
+
+            case TileType.Treasure:
+                ProcessTreasureTile(tile);
+                break;
+        }
+
+        if (tile.IsConsumable)
+        {
+            tile.UseTile();
         }
     }
 
-    /// <summary>
-    /// 화살표 타일 발판 로직
-    /// </summary>
     private void ProcessArrowTile(KTH_Tile tile)
     {
         transform.position = tile.transform.position;
@@ -271,21 +347,105 @@ public class KTH_PlayerMovement : MonoBehaviour
         MoveStep();
     }
 
-    /// <summary>
-    /// 공격 타일 발판 로직
-    /// </summary>
     private void ProcessAttackTile(KTH_Tile tile)
     {
         currentTween?.Kill();
         isMoving = false;
 
-        // 플레이어 위치를 공격 타일 중앙으로 보정
         transform.position = tile.transform.position;
 
-        Debug.Log($"[PlayerMovement] 공격 타일({tile.gameObject.name}) 도달 -> 이동 중단 및 보스 턴 전환");
+        Debug.Log($"[PlayerMovement] 공격 타일 밟음! 보스에게 데미지 전달");
 
-        // 바로 카메라 줌아웃 및 보스 턴으로 전환
         EndMovementAndNextTurn();
+    }
+
+    private void ProcessTreasureTile(KTH_Tile tile)
+    {
+        currentTween?.Kill();
+        isMoving = true;
+
+        transform.position = tile.transform.position;
+
+        Debug.Log("[PlayerMovement] 보물상자 밟음! 아이템 소환 후 계속 이동");
+
+        if (tile.ItemPrefabs != null && tile.ItemPrefabs.Count > 0)
+        {
+            LDY_RingController ringController = tile.GetComponentInParent<LDY_RingController>();
+
+            List<RingSlot> emptySlots = GetEmptySlots(ringController);
+            int spawnCount = Mathf.Min(tile.ItemSpawnCount, emptySlots.Count);
+
+            for (int i = 0; i < spawnCount; i++)
+            {
+                RingSlot targetSlot = emptySlots[i];
+                GameObject randomItemPrefab = tile.ItemPrefabs[Random.Range(0, tile.ItemPrefabs.Count)];
+
+                Transform parentTransform = (ringController != null) ? ringController.transform : tile.transform.parent;
+                GameObject itemInstance = Instantiate(randomItemPrefab, tile.transform.position, Quaternion.identity, parentTransform);
+
+                targetSlot.occupant = itemInstance;
+
+                Collider2D itemCollider = itemInstance.GetComponent<Collider2D>();
+                if (itemCollider != null)
+                {
+                    itemCollider.enabled = false;
+                }
+
+                Vector3 targetPos = targetSlot.worldPosition;
+                itemInstance.transform.localScale = Vector3.zero;
+
+                Sequence itemSeq = DOTween.Sequence();
+                itemSeq.Join(itemInstance.transform.DOMove(targetPos, 0.5f).SetEase(Ease.OutQuad));
+                itemSeq.Join(itemInstance.transform.DOScale(Vector3.one, 0.5f).SetEase(Ease.OutBack));
+
+                itemSeq.OnComplete(() =>
+                {
+                    if (itemCollider != null)
+                    {
+                        itemCollider.enabled = true;
+                    }
+                });
+            }
+        }
+
+        DOVirtual.DelayedCall(0.5f, () =>
+        {
+            isMoving = false;
+            MoveStep();
+        });
+    }
+
+    private List<RingSlot> GetEmptySlots(LDY_RingController ringController)
+    {
+        List<RingSlot> emptySlots = new List<RingSlot>();
+
+        if (ringController != null && ringController.Ring != null)
+        {
+            for (int i = 0; i < ringController.Ring.SlotCount; i++)
+            {
+                RingSlot slot = ringController.Ring.GetSlot(i);
+
+                if (slot != null && slot.occupant == null)
+                {
+                    Collider2D hit = Physics2D.OverlapCircle(slot.worldPosition, 0.3f);
+
+                    if (hit == null || (hit.gameObject != gameObject && hit.GetComponentInParent<KTH_Tile>() == null))
+                    {
+                        emptySlots.Add(slot);
+                    }
+                }
+            }
+        }
+
+        for (int i = emptySlots.Count - 1; i > 0; i--)
+        {
+            int rnd = Random.Range(0, i + 1);
+            RingSlot temp = emptySlots[i];
+            emptySlots[i] = emptySlots[rnd];
+            emptySlots[rnd] = temp;
+        }
+
+        return emptySlots;
     }
 
     private void EndMovementAndNextTurn()
@@ -295,7 +455,7 @@ public class KTH_PlayerMovement : MonoBehaviour
 
         if (KTH_CameraMoving.Instance != null)
         {
-            KTH_CameraMoving.Instance.ZoomOut();
+            KTH_CameraMoving.Instance.ZoomIn();
         }
 
         if (KTH_TurnManager.Instance != null)
