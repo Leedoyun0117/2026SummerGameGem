@@ -11,6 +11,7 @@ public class JCY_ItemManager : MonoBehaviour
 {
     public static JCY_ItemManager instance;
     [SerializeField] private TextMeshProUGUI countTxt;
+    [SerializeField] private AudioClip _useSound;
 
 
     private void Awake()
@@ -37,7 +38,10 @@ public class JCY_ItemManager : MonoBehaviour
         int index = item.DisplayIndex;
         JCY_ShopManager.instance._displayCost[index].text = "";
         JCY_ShopManager.instance._displayName[index].text = "품절";
-
+        if (_useSound != null && SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(_useSound);
+        }
         // 버튼 비활성화
         item.GetComponent<UnityEngine.UI.Button>().interactable = false;
         // 원본 프리팹도 목록에서 지움

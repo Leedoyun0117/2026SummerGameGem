@@ -5,6 +5,7 @@ public class JCY_Potion : MonoBehaviour
 {
     public JCY_PotionSO itemSO;
     [SerializeField] private TextMeshProUGUI countTxt;
+    [SerializeField] private AudioClip _potionSound;
     
     public void UsePotion()
     {
@@ -26,6 +27,12 @@ public class JCY_Potion : MonoBehaviour
         int Limit = JCY_RunProgress.Instance.PotionPurchaseLimit;
         int point = Limit - count;
         Debug.Log(Limit - count);
+
+        if (_potionSound != null && SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(_potionSound);
+        }
+
         countTxt.text = $"현재 포션 구매 한도:{point.ToString()}";
 
         Debug.Log("포션 사용");
@@ -34,6 +41,7 @@ public class JCY_Potion : MonoBehaviour
             case "랜덤 박스":
                 {
                     int backCost = Random.Range(0, itemSO.cost * 2);
+                    StarPieceManager.instance.StarPieceDown(itemSO.cost);
                     StarPieceManager.instance.StarPieceUP(backCost);
                     Debug.Log($"{backCost}획득");
                 }
@@ -56,6 +64,7 @@ public class JCY_Potion : MonoBehaviour
 
             case "리롤 포션":
                 {
+                    StarPieceManager.instance.StarPieceDown(itemSO.cost);
                     JCY_ShopManager.instance.DisplayItems();
                     Debug.Log("리롤");
                 }
