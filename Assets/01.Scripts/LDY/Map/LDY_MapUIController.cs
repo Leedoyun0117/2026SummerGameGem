@@ -24,7 +24,10 @@ public class LDY_MapUIController : MonoBehaviour
 
     private void Start()
     {
-        if (mapManager == null) mapManager = LDY_MapManager.Instance;
+        // 씬을 다시 로드하면 씬에 새로 생성된 MapManager는 Awake()에서 중복으로 판정되어
+        // BuildNodes() 없이 곧 파괴되지만, 이 시점(Start)엔 아직 완전히 파괴되지 않아 null이 아닐 수 있다.
+        // 그래서 인스펙터에 연결된 값보다 항상 영속(DontDestroyOnLoad) 인스턴스를 우선한다.
+        if (LDY_MapManager.Instance != null) mapManager = LDY_MapManager.Instance;
         if (mapManager == null)
         {
             Debug.LogError("[LDY_MapUIController] LDY_MapManager를 찾을 수 없습니다.", this);
@@ -55,9 +58,16 @@ public class LDY_MapUIController : MonoBehaviour
         int startIndex = nodes.FindIndex(n => n.type == LDY_NodeType.Start);
         if (startIndex < 0) startIndex = 0;
 
+        // 전투 씬 등을 갔다 오면 이 컨트롤러(씬 로컬)는 통째로 새로 생기지만, LDY_MapManager는
+        // DontDestroyOnLoad라 CurrentNodeIndex에 "마지막으로 도착한 노드"가 그대로 남아있다 - 이게
+        // 없으면(-1, 최초 진입) 시작 노드를 기본값으로 쓴다.
+        int spawnIndex = (mapManager.CurrentNodeIndex >= 0 && mapManager.CurrentNodeIndex < nodes.Count)
+            ? mapManager.CurrentNodeIndex
+            : startIndex;
+
         playerToken = Instantiate(playerTokenPrefab, nodeContainer);
-        playerToken.SetPosition(nodes[startIndex].position);
-        currentPlayerNodeIndex = startIndex;
+        playerToken.SetPosition(nodes[spawnIndex].position);
+        currentPlayerNodeIndex = spawnIndex;
     }
 
     // 노드 뷰가 플레이어 도착 시 알려주면, 글로우 색을 다시 계산하도록 전체 갱신

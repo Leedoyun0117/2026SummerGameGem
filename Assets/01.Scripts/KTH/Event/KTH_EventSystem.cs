@@ -87,6 +87,12 @@ public class KTH_EventSystem : MonoBehaviour
         {
             sb.Append(fullText[i]);
             text.text = sb.ToString();
+
+            if (SoundManager.Instance != null)
+            {
+                SoundManager.Instance.PlaySFX(SfxId.Typing);
+            }
+
             yield return new WaitForSeconds(delayPerChar);
         }
     }

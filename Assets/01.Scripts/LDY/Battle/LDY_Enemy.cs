@@ -80,6 +80,11 @@ public class LDY_Enemy : MonoBehaviour
         GameObject effect = Instantiate(timeoutAttackEffectPrefab, transform.position, Quaternion.identity);
         if (effect.TryGetComponent(out ILDY_EffectTarget effectTarget)) effectTarget.TargetPosition = targetPosition;
 
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(SfxId.FragmentFire);
+        }
+
         // Screen Space Camera Canvas의 UI는 실제 거리와 상관없이 렌더 큐 순서로 겹침이 정해지는 경우가
         // 있어서, 이 이펙트가 화면 아래쪽 등 UI와 겹칠 때도 항상 보이도록 렌더 큐를 확실히 뒤(위)로 민다.
         foreach (Renderer renderer in effect.GetComponentsInChildren<Renderer>())

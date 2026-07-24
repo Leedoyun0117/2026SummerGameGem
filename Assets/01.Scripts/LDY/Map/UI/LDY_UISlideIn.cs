@@ -59,6 +59,11 @@ public class LDY_UISlideIn : MonoBehaviour
         rt.anchoredPosition = startPos;
         if (canvasGroup != null) canvasGroup.alpha = 0f;
 
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(SfxId.Slide);
+        }
+
         float t = 0f;
         while (t < duration)
         {

@@ -178,6 +178,12 @@ public class LDY_WeaponUIController : MonoBehaviour
             for (int i = 0; i < description.Length; i++)
             {
                 descriptionText.text += description[i];
+
+                if (SoundManager.Instance != null)
+                {
+                    SoundManager.Instance.PlaySFX(SfxId.Typing);
+                }
+
                 yield return new WaitForSeconds(typingInterval);
             }
         }
@@ -195,6 +201,11 @@ public class LDY_WeaponUIController : MonoBehaviour
 
     private IEnumerator SlideRoutine(Vector2 target)
     {
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(SfxId.Slide);
+        }
+
         Vector2 start = descriptionBox.anchoredPosition;
         float elapsed = 0f;
 
@@ -240,6 +251,11 @@ public class LDY_WeaponUIController : MonoBehaviour
         }
 
         selectedWeaponIndex = index;
+
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(SfxId.WeaponEquip);
+        }
 
         if (LDY_AttackTargetController.Instance != null)
         {

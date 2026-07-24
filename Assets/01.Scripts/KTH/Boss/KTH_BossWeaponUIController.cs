@@ -71,6 +71,11 @@ public class KTH_BossWeaponUIController : MonoBehaviour
         selectedIndex = index;
         LDY_Weapon weapon = weapons[index];
 
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(SfxId.WeaponEquip);
+        }
+
         if (attackButton != null) attackButton.gameObject.SetActive(true);
 
         HideAllHighlights();

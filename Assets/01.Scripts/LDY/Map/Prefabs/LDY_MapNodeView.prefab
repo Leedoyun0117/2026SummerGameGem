@@ -179,11 +179,11 @@ MonoBehaviour:
   borderImage: {fileID: 3885836230080927309}
   iconImage: {fileID: 2304303932146262602}
   cornerStarImage: {fileID: 2568519071572257396}
-  startIcon: {fileID: 0}
-  battleIcon: {fileID: 0}
-  eventIcon: {fileID: 0}
-  shopIcon: {fileID: 0}
-  bossIcon: {fileID: 0}
+  startIcon: {fileID: 2660195087753647290, guid: bf59f123781c1b745a8cd703de595593, type: 3}
+  battleIcon: {fileID: -6156517315365662215, guid: c92b6e440c9796d48a32e8058796f641, type: 3}
+  eventIcon: {fileID: -2273958870705210090, guid: e4ef29bb120031641b85a17e7a8feaac, type: 3}
+  shopIcon: {fileID: -1328324072035983204, guid: c4a51ed25fa198846b5e3397644b97f7, type: 3}
+  bossIcon: {fileID: -6248741079362886434, guid: eef0b2ab9c0d559498ad69fbc6c41a57, type: 3}
   iconFillRatio: 0.9
 --- !u!1 &4417308226236528071
 GameObject:

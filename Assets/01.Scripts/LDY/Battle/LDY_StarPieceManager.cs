@@ -56,6 +56,21 @@ public class LDY_StarPieceManager : MonoBehaviour
         SceneManager.sceneLoaded += (scene, mode) => worldCamera = Camera.main;
     }
 
+    // 이 매니저는 DontDestroyOnLoad라 씬이 바뀌어도 안 죽지만, dropUIParent/countText/flyTarget/worldCamera는
+    // 원래 그 씬에 있던 오브젝트라서 씬이 바뀌면 같이 파괴된다 - 그대로 두면 다음 씬에서는 죽은 참조를 들고
+    // 있게 되어(적을 죽여도 조각이 안 나오는 원인) worldCamera만 sceneLoaded로 갱신하던 걸로는 부족했다.
+    // 별 UI가 있는 씬마다 LDY_StarPieceUIBinding을 하나 붙여두면, 그 씬이 로드될 때 여기로 자기 씬의
+    // UI를 다시 등록해준다.
+    public void BindUI(RectTransform newDropUIParent, TextMeshProUGUI newCountText, RectTransform newFlyTarget, Camera newWorldCamera)
+    {
+        dropUIParent = newDropUIParent;
+        countText = newCountText;
+        flyTarget = newFlyTarget;
+        if (newWorldCamera != null) worldCamera = newWorldCamera;
+
+        UpdateCountText();
+    }
+
     // 조각 하나가 목적지에 도착할 때마다 호출된다(LDY_StarPieceDrop에서). 상점에서 아이템 보상으로
     // 골드를 지급할 때도(JCY_ItemManager 등) 이 메서드를 그대로 쓴다 - 화폐가 하나로 통합되어 있다.
     public void NotifyPieceCollected(int amount)
@@ -63,6 +78,11 @@ public class LDY_StarPieceManager : MonoBehaviour
         Count += amount;
         OnCountChanged?.Invoke(Count);
         UpdateCountText();
+
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(SfxId.CoinGain);
+        }
 
         // 운석의 파편 - 골드를 얻을 때마다 30% 확률로 1을 추가로 더 준다.
         if (JCY_RunProgress.Instance != null) JCY_RunProgress.Instance.NotifyGoldGained();
@@ -87,9 +107,28 @@ public class LDY_StarPieceManager : MonoBehaviour
         if (countText != null) countText.text = Count.ToString();
     }
 
+    // dropUIParent는 원래 있던 씬의 Canvas를 가리키는데, 그 씬이 언로드되면 Unity가 파괴해서 "Missing"
+    // 참조가 된다(LDY_StarPieceUIBinding으로 씬마다 다시 연결해줄 수도 있지만, 깜빡하거나 씬 설정이
+    // 안 맞으면 또 끊긴다) - 그래서 아예 스폰 시점에 매번 확인해서, 없으면 지금 활성 씬에 전체화면
+    // Canvas를 즉석에서 만들어 쓴다. 코드만으로 항상 보장되므로 씬마다 수동으로 연결 안 해도 된다.
+    private void EnsureDropUIParent()
+    {
+        if (dropUIParent != null) return;
+
+        GameObject canvasGO = new GameObject("StarPieceDropCanvas(Auto)", typeof(RectTransform), typeof(Canvas));
+        Canvas canvas = canvasGO.GetComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 1000;
+
+        dropUIParent = (RectTransform)canvasGO.transform;
+        Debug.Log("[LDY_StarPieceManager] dropUIParent가 없어서(Missing/None) 자동으로 새 Canvas를 만들어 대신 씁니다.");
+    }
+
     // 적이 죽은 월드 좌표에서 1~3개의 StarPiece 조각을 스폰한다.
     public void SpawnDrops(Vector3 worldPosition)
     {
+        EnsureDropUIParent();
+
         if (starPieceDropPrefab == null || dropUIParent == null)
         {
             Debug.LogWarning("[LDY_StarPieceManager] Star Piece Drop Prefab 또는 Drop UI Parent가 비어있어서 조각을 스폰하지 못했습니다.");
@@ -101,6 +140,11 @@ public class LDY_StarPieceManager : MonoBehaviour
         {
             Debug.LogWarning("[LDY_StarPieceManager] 카메라를 찾지 못해 조각을 스폰하지 못했습니다.");
             return;
+        }
+
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(SfxId.CoinDrop);
         }
 
         int count = Random.Range(minDropCount, maxDropCount + 1);

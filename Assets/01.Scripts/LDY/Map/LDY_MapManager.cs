@@ -32,6 +32,11 @@ public class LDY_MapManager : MonoBehaviour
     [SerializeField] private int activeNodeIndex = -1;
     public int ActiveNodeIndex => activeNodeIndex;
 
+    // 플레이어가 맵 위에서 "지금 서 있는" 노드 - activeNodeIndex와 달리 완료되어도 -1로 안 돌아간다.
+    // LDY_MapUIController(씬 로컬이라 전투 씬을 갔다 오면 통째로 새로 생김)가 이 값을 읽어서 플레이어
+    // 토큰을 항상 시작 노드가 아니라 마지막으로 도착한 노드에 놓기 위해 씀.
+    public int CurrentNodeIndex { get; private set; } = -1;
+
     public List<LDY_MapNode> Nodes { get; private set; } = new List<LDY_MapNode>();
     public LDY_NodeConnection[] Connections => connections;
 
@@ -86,6 +91,7 @@ public class LDY_MapManager : MonoBehaviour
         if (startIndex < 0) startIndex = 0;
 
         Nodes[startIndex].isUnlocked = true;
+        CurrentNodeIndex = startIndex;
 
         if (Nodes[startIndex].type == LDY_NodeType.Start)
             CompleteNode(startIndex);
@@ -97,9 +103,19 @@ public class LDY_MapManager : MonoBehaviour
         if (!IsValidIndex(index)) return;
 
         LDY_MapNode node = Nodes[index];
-        if (!node.isUnlocked || node.isCleared) return;
+        if (!node.isUnlocked) return;
+
+        // 이미 지나온(클리어된) 노드는 되돌아가는 것만 허용하고, 전투/상점/이벤트 등 실제 효과는 다시
+        // 발동시키지 않는다 - 플레이어가 서 있는 자리만 그쪽으로 옮겨준다.
+        if (node.isCleared)
+        {
+            CurrentNodeIndex = index;
+            onMapChanged?.Invoke();
+            return;
+        }
 
         activeNodeIndex = index;
+        CurrentNodeIndex = index;
 
         switch (node.type)
         {
@@ -158,12 +174,22 @@ public class LDY_MapManager : MonoBehaviour
             SceneManager.LoadScene(sceneName);
     }
 
-    // 상점/이벤트처럼 씬은 안 넘어가고 팝업만 여는 경우에도, 아이리스가 다 닫힌 뒤에 팝업 이벤트를 발생시킴
+    // 상점/이벤트처럼 씬은 안 넘어가고 팝업만 여는 경우에도, 아이리스가 다 닫힌 뒤에 팝업 이벤트를 발생시킴.
+    // 전투/보스와 달리 상점/이벤트는 "실패"가 없으므로, 팝업을 연 시점에 바로 완료 처리해서 그 다음
+    // 노드들이 갈라진 길 전부 잠금 해제되게 한다(안 그러면 CompleteActiveNode를 부르는 곳이 아무 데도
+    // 없어서 이 노드 뒤로는 영원히 진행이 안 막힌다).
     private void RequestPopup(Vector2 screenUV, LDY_MapNode node, LDY_MapNodeUnityEvent popupEvent)
     {
         if (LDY_SceneTransition.Instance != null)
-            LDY_SceneTransition.Instance.PlayIrisCloseThen(screenUV, node.type, () => popupEvent?.Invoke(node));
+            LDY_SceneTransition.Instance.PlayIrisCloseThen(screenUV, node.type, () =>
+            {
+                popupEvent?.Invoke(node);
+                CompleteActiveNode();
+            });
         else
+        {
             popupEvent?.Invoke(node);
+            CompleteActiveNode();
+        }
     }
 }

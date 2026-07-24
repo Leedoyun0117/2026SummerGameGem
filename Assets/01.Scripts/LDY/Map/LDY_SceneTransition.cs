@@ -126,6 +126,10 @@ public class LDY_SceneTransition : MonoBehaviour
             isPlaying = false;
             yield break;
         }
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(SfxId.Iris);
+        }
 
         overlay.gameObject.SetActive(true);
         float aspect = Screen.height > 0 ? (float)Screen.width / Screen.height : 1f;

@@ -81,6 +81,11 @@ public class Battle_Tutorial : MonoBehaviour
         {
             _storyBox.maxVisibleCharacters = i;
 
+            if (SoundManager.Instance != null)
+            {
+                SoundManager.Instance.PlaySFX(SfxId.Typing);
+            }
+
             yield return new WaitForSecondsRealtime(_typingInterval);
         }
 
