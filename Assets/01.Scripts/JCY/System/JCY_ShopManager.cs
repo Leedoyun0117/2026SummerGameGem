@@ -55,7 +55,19 @@ public class JCY_ShopManager : MonoBehaviour
 
         DisplayItems();
     }
-  
+
+    private void Update()
+    {
+        if(Keyboard.current.oKey.wasPressedThisFrame)
+            OpenShop();
+
+        if (Keyboard.current.cKey.wasPressedThisFrame)
+            CloseShop();
+
+        if (Keyboard.current.mKey.wasPressedThisFrame)
+            StarPieceManager.instance.StarPieceUP(100);
+    }
+
 
     public void DisplayItems()
     {

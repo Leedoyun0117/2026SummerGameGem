@@ -130,7 +130,6 @@ public class LDY_SceneTransition : MonoBehaviour
         if (_ilesSound != null && SoundManager.Instance != null)
         {
             SoundManager.Instance.PlaySFX(_ilesSound);
-            Debug.Log("BGM 바뀜");
         }
 
         overlay.gameObject.SetActive(true);
