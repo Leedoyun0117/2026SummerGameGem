@@ -204,9 +204,7 @@ public class KTH_EventSystem : MonoBehaviour
 
     private IEnumerator CloseEvent()
     {
-
-        KTH_CloseEye.Instance.CloseEye();
-        yield return new WaitForSeconds(1.3f);
+        yield return new WaitForSeconds(4f);
         SceneManager.LoadScene("LDY_TestScene");
     }
 
