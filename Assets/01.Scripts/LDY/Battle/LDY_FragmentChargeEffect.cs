@@ -56,6 +56,20 @@ public class LDY_FragmentChargeEffect : MonoBehaviour
         releaseTimer = 0f;
     }
 
+    // 사망 연출처럼 줄어드는 연출(releaseDuration) 없이 즉시 안 보이게 해야 할 때 씀.
+    public void ForceHide()
+    {
+        released = false;
+        progress = 0f;
+        transform.localScale = Vector3.one;
+
+        if (fragments == null) return;
+        foreach (LineRenderer line in fragments)
+        {
+            if (line != null) line.gameObject.SetActive(false);
+        }
+    }
+
     private void Update()
     {
         if (released)

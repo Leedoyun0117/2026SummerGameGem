@@ -50,7 +50,8 @@ public class LDY_MapCameraController : MonoBehaviour, IBeginDragHandler, IDragHa
 
     private void Start()
     {
-        if (mapManager == null) mapManager = LDY_MapManager.Instance;
+        // 씬 재로드 시 로컬(파괴 예정) MapManager보다 영속 인스턴스를 우선한다 - LDY_MapUIController와 동일한 이유
+        if (LDY_MapManager.Instance != null) mapManager = LDY_MapManager.Instance;
 
         if (mapManager == null)
         {
@@ -64,7 +65,7 @@ public class LDY_MapCameraController : MonoBehaviour, IBeginDragHandler, IDragHa
         }
         if (mapManager.Nodes == null || mapManager.Nodes.Count == 0)
         {
-            Debug.LogError("[LDY_MapCameraController] MapManager에 노드가 하나도 없습니다. 별자리 맵 에디터로 노드를 배치했는지 확인하세요.", this);
+            Debug.LogWarning("[LDY_MapCameraController] MapManager에 노드가 하나도 없습니다. 별자리 맵 에디터로 노드를 배치했는지 확인하세요.", this);
             return;
         }
 

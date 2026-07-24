@@ -109,7 +109,9 @@ public class LDY_MapNodeView : MonoBehaviour
 
         SetPulse(glowActive, ringActive);
 
-        button.interactable = isCurrent;
+        // 이미 클리어한 노드도 되돌아갈 수 있게 클릭 가능하게 둔다(잠긴 노드만 막음) -
+        // 실제로 눌렀을 때 효과가 다시 발동되는지는 LDY_MapManager.OnNodeClicked가 판단함.
+        button.interactable = nodeData.isUnlocked;
     }
 
     private void SetPulse(bool glowActive, bool ringActive)

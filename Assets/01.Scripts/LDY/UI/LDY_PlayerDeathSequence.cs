@@ -40,6 +40,10 @@ public class LDY_PlayerDeathSequence : MonoBehaviour
     [SerializeField] private float fallDistance = 400f;
     [SerializeField] private float fallDuration = 0.5f;
 
+    [Header("Defeat 연출 중 가려야 할 전투 UI (무기 패널, 턴 타이머 등) - 사망 시 자동으로 비활성화됨. " +
+        "무기 조준 하이라이트는 여기 넣지 않아도 LDY_AttackTargetController.ClearWeapon()으로 자동 정리됨")]
+    [SerializeField] private GameObject[] hideOnDeath;
+
     [Header("Defeat 텍스트 및 이동할 씬")]
     [Tooltip("Defeat 캔버스를 씬에 기본 비활성화 상태로 놔두고 싶으면 그 캔버스(또는 최상위) GameObject를 연결 - " +
         "사망 시 자동으로 켜준다. 비워두면 defeatGroup이 붙은 오브젝트 자신을 켬")]
@@ -101,7 +105,24 @@ public class LDY_PlayerDeathSequence : MonoBehaviour
 
     private IEnumerator DeathRoutine()
     {
-        Vector2 screenUV = ComputeScreenUV();
+        // 무기 조준 하이라이트(빨간 칸 테두리)가 죽는 순간까지 켜져 있던 상태로 남아있으면 아이리스/Defeat
+        // 위로 그대로 겹쳐 보인다 - 사망 연출을 시작하기 전에 확실히 꺼준다.
+        if (LDY_AttackTargetController.Instance != null) LDY_AttackTargetController.Instance.ClearWeapon();
+
+        // NoAbility 적의 파편 충전 이펙트(작은 다이아몬드들)도 같은 이유로 애니메이션 없이 즉시 꺼버린다.
+        foreach (LDY_FragmentChargeEffect charge in FindObjectsByType<LDY_FragmentChargeEffect>(FindObjectsSortMode.None))
+        {
+            charge.ForceHide();
+        }
+
+        foreach (GameObject go in hideOnDeath)
+        {
+            if (go != null) go.SetActive(false);
+        }
+
+        // 화면 정중앙(0.5, 0.5)을 기준으로 구멍을 만든다 - 플레이어 오브젝트의 실제 스크린 좌표를 추적하려던
+        // 방식은 Canvas 종류(Overlay/Camera)나 좌표계에 따라 어긋나기 쉬워서 더 단순하고 확실한 중앙 고정으로 바꿈.
+        Vector2 screenUV = new Vector2(0.5f, 0.5f);
         Vector2 originalStartPos = GetCurrentPos();
 
         yield return StartCoroutine(PlayIrisRoutine(screenUV));
@@ -145,30 +166,6 @@ public class LDY_PlayerDeathSequence : MonoBehaviour
         if (remainingHold > 0f) yield return new WaitForSecondsRealtime(remainingHold);
 
         yield return AnimateRadius(screenUV, startRadius, 0f, closeDuration, aspect);
-    }
-
-    // screenUV: 화면상 위치(0~1, 좌하단 기준) - Screen Space Overlay UI는 world position이 곧 스크린 픽셀 좌표이고,
-    // 그 외(Camera/World 캔버스, 또는 월드 스프라이트)는 카메라를 거쳐 스크린 좌표로 변환해야 한다.
-    private Vector2 ComputeScreenUV()
-    {
-        if (playerImage == null) return new Vector2(0.5f, 0.5f);
-
-        Vector3 screenPos;
-        RectTransform rt = playerImage as RectTransform;
-        if (rt != null)
-        {
-            Canvas canvas = rt.GetComponentInParent<Canvas>();
-            screenPos = (canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay)
-                ? RectTransformUtility.WorldToScreenPoint(canvas.worldCamera, rt.position)
-                : rt.position;
-        }
-        else
-        {
-            Camera cam = Camera.main;
-            screenPos = cam != null ? cam.WorldToScreenPoint(playerImage.position) : playerImage.position;
-        }
-
-        return new Vector2(screenPos.x / Mathf.Max(Screen.width, 1), screenPos.y / Mathf.Max(Screen.height, 1));
     }
 
     private IEnumerator RiseThenFall()

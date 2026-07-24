@@ -56,6 +56,21 @@ public class LDY_StarPieceManager : MonoBehaviour
         SceneManager.sceneLoaded += (scene, mode) => worldCamera = Camera.main;
     }
 
+    // 이 매니저는 DontDestroyOnLoad라 씬이 바뀌어도 안 죽지만, dropUIParent/countText/flyTarget/worldCamera는
+    // 원래 그 씬에 있던 오브젝트라서 씬이 바뀌면 같이 파괴된다 - 그대로 두면 다음 씬에서는 죽은 참조를 들고
+    // 있게 되어(적을 죽여도 조각이 안 나오는 원인) worldCamera만 sceneLoaded로 갱신하던 걸로는 부족했다.
+    // 별 UI가 있는 씬마다 LDY_StarPieceUIBinding을 하나 붙여두면, 그 씬이 로드될 때 여기로 자기 씬의
+    // UI를 다시 등록해준다.
+    public void BindUI(RectTransform newDropUIParent, TextMeshProUGUI newCountText, RectTransform newFlyTarget, Camera newWorldCamera)
+    {
+        dropUIParent = newDropUIParent;
+        countText = newCountText;
+        flyTarget = newFlyTarget;
+        if (newWorldCamera != null) worldCamera = newWorldCamera;
+
+        UpdateCountText();
+    }
+
     // 조각 하나가 목적지에 도착할 때마다 호출된다(LDY_StarPieceDrop에서). 상점에서 아이템 보상으로
     // 골드를 지급할 때도(JCY_ItemManager 등) 이 메서드를 그대로 쓴다 - 화폐가 하나로 통합되어 있다.
     public void NotifyPieceCollected(int amount)

@@ -45,6 +45,11 @@ public class LDY_AttackTargetController : MonoBehaviour
     // 이 이벤트에 연결하면 됨 - 지금은 로그만 남긴다.
     public event Action<List<RingSlot>> OnAttackExecuted;
 
+    // 공격 하나가 완전히 끝난 뒤(연출까지 다 재생된 뒤) 씬에 남은 LDY_Enemy가 하나도 없으면 호출된다 -
+    // LDY_PlayerWinSequence가 이걸 구독해서 승리 연출을 재생한다. 반사(WeaponReflector)만 남아있으면
+    // 죽지 않으므로 호출되지 않는다(플레이어가 맞는 무기로 마저 처치해야 함).
+    public event Action OnAllEnemiesDefeated;
+
     private int anchorRingIndex;
     private int anchorSegmentIndex;
     private readonly List<LineRenderer> highlightPool = new List<LineRenderer>();
@@ -289,6 +294,30 @@ public class LDY_AttackTargetController : MonoBehaviour
 
         SetAllAnimatorsPaused(false);
         IsResolvingEffect = false;
+
+        if (!AnyEnemyRemaining())
+        {
+            OnAllEnemiesDefeated?.Invoke();
+        }
+    }
+
+    // Destroy()는 실제 제거가 프레임 끝까지 미뤄지므로, 방금 죽인 적을 GameObject 존재 여부로 세면
+    // 아직 안 지워진 채로 걸린다 - 대신 각 칸의 occupant(죽을 때 즉시 null로 비워짐)를 직접 센다.
+    // 반사(WeaponReflector)만 남은 경우는 occupant가 안 비워지므로 "남아있음"으로 정확히 잡힌다.
+    private bool AnyEnemyRemaining()
+    {
+        if (ringsInnerToOuter == null) return false;
+
+        foreach (LDY_RingController ring in ringsInnerToOuter)
+        {
+            if (ring == null || ring.Ring == null) continue;
+            for (int i = 0; i < ring.Ring.SlotCount; i++)
+            {
+                if (ring.Ring.GetSlot(i).occupant != null) return true;
+            }
+        }
+
+        return false;
     }
 
     // 대상 칸 하나하나마다 그 칸의 부채꼴을 근사하는 작은 회전된 사각형 SpriteMask를 깔아준다
