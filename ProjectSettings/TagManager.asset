@@ -5,11 +5,12 @@ TagManager:
   serializedVersion: 3
   tags:
   - Enemy
+  - EndZone
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Arrow
   - Water
   - UI
   - 
