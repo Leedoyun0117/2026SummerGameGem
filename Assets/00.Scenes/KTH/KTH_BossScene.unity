@@ -678,11 +678,6 @@ MonoBehaviour:
   movesPerPlayerTurn: 5
   remainingTurnText: {fileID: 1731386894}
   remainingTurnFormat: "\uB0A8\uC740 \uD134 : {0}"
-  mainCamera: {fileID: 889131227}
-  playerTurnZoomSize: 5
-  bossTurnZoomSize: 7
-  cameraMoveDuration: 0.8
-  cameraEase: 7
 --- !u!1 &370353834
 GameObject:
   m_ObjectHideFlags: 0
@@ -1392,6 +1387,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KTH_BossTurn
   attackPatterns:
+  - {fileID: 7956582824783935388}
   - {fileID: 1051798139}
   randomSpawner: {fileID: 0}
 --- !u!4 &673228287
