@@ -35,6 +35,10 @@ public class LDY_TurnTimerUI : MonoBehaviour
             else timerText.color = normalColor;
         }
 
-        if (clockAnimator != null) clockAnimator.speed = remaining > 0f ? 1f : 0f;
+        // 공격 이펙트 재생 중(IsResolvingEffect)에는 타이머가 멈춰 있어서 remaining이 계속 0보다 큰 채로
+        // 유지되는데, 이 조건을 안 보면 매 프레임 speed=1로 되돌려버려서 LDY_AttackTargetController의
+        // 애니메이터 일시정지를 무시하고 시계가 계속 돌게 된다 - 그래서 여기서도 같이 확인해야 한다.
+        bool resolvingEffect = LDY_AttackTargetController.Instance != null && LDY_AttackTargetController.Instance.IsResolvingEffect;
+        if (clockAnimator != null) clockAnimator.speed = (remaining > 0f && !resolvingEffect) ? 1f : 0f;
     }
 }

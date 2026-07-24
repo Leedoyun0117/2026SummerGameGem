@@ -234,6 +234,7 @@ GameObject:
   m_Component:
   - component: {fileID: 716107801}
   - component: {fileID: 716107802}
+  - component: {fileID: 716107803}
   m_Layer: 0
   m_Name: Starfield
   m_TagString: Untagged
@@ -279,6 +280,25 @@ MonoBehaviour:
   driftSpeed: 3
   twinkleSpeedRange: {x: 0.5, y: 1.5}
   alphaRange: {x: 0.15, y: 0.9}
+--- !u!114 &716107803
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 716107800}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38df2ca8db6d5db4d8d4c5cec81f6329, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LDY_UIShootingStars
+  container: {fileID: 716107801}
+  color: {r: 1, g: 1, b: 1, a: 1}
+  intervalRange: {x: 2, y: 6}
+  speedRange: {x: 1200, y: 1800}
+  lengthRange: {x: 150, y: 320}
+  thickness: 4
+  angleRangeDeg: {x: -60, y: -30}
 --- !u!1 &732622275
 GameObject:
   m_ObjectHideFlags: 0

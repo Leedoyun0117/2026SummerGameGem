@@ -24,6 +24,9 @@ public class LDY_BattleTurnManager : MonoBehaviour
 
     private void Update()
     {
+        // 공격 이펙트(빔/관통 연출)가 재생되는 동안은 시간이 멈춘다.
+        if (LDY_AttackTargetController.Instance != null && LDY_AttackTargetController.Instance.IsResolvingEffect) return;
+
         TimeRemaining -= Time.deltaTime;
         if (TimeRemaining <= 0f) HandleTimeout();
     }
