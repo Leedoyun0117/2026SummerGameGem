@@ -30,12 +30,6 @@ public class JCY_ItemManager : MonoBehaviour
             return;
         }
 
-        if (JCY_RunProgress.Instance != null && !JCY_RunProgress.Instance.HasItemCapacity())
-        {
-            Debug.Log("아이템 인벤토리가 가득 찼어요");
-            return;
-        }
-
         StarPieceManager.instance.StarPieceDown(itemSO.cost);
         ApplyItemEffect(itemSO);
         if (JCY_RunProgress.Instance != null) JCY_RunProgress.Instance.NotifyItemPurchased();
@@ -115,7 +109,12 @@ public class JCY_ItemManager : MonoBehaviour
                 break;
 
             case JCY_ItemEffectType.HickeyHickeyBag:
-                if (progress != null) progress.itemCapacityBonus += itemSO.effectAmount;
+                // 히키하이커 가방 - 전투구역(일반 전투/보스) 진입마다 현재체력 회복(수치는 effectAmount)
+                if (progress != null)
+                {
+                    progress.hasHickeyHickeyBag = true;
+                    progress.hickeyHickeyBagHealAmount = itemSO.effectAmount;
+                }
                 break;
 
             case JCY_ItemEffectType.HitchhikerGuide:

@@ -4,8 +4,10 @@ using DG.Tweening;
 
 public class Setting_B : MonoBehaviour
 {
+    public Setting_B instance;
     [Header("설정 패널")]
     [SerializeField] private GameObject _panel;
+    [SerializeField] private GameObject _soundPanel;
 
     [Header("애니메이션 설정")]
     [SerializeField] private float _duration = 0.3f;
@@ -20,6 +22,14 @@ public class Setting_B : MonoBehaviour
 
     private void Awake()
     {
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        instance = this;
+        DontDestroyOnLoad(gameObject);
         // 게임 시작 시 설정 창 닫기
         _panel.transform.localScale = Vector3.zero;
         _panel.SetActive(false);
@@ -77,6 +87,7 @@ public class Setting_B : MonoBehaviour
         _isOpen = true;
         _isAnimating = true;
 
+        Time.timeScale = 0;
         _panel.transform.DOKill();
         _panel.SetActive(true);
         _panel.transform.localScale = Vector3.zero;
@@ -100,6 +111,7 @@ public class Setting_B : MonoBehaviour
         _isOpen = false;
         _isAnimating = true;
 
+        Time.timeScale = 1;
         _panel.transform.DOKill();
 
         _panel.transform
@@ -110,6 +122,32 @@ public class Setting_B : MonoBehaviour
             {
                 _panel.SetActive(false);
                 _isAnimating = false;
+            });
+    }
+
+    public void OpenSoundPanel()
+    {
+        _soundPanel.SetActive(true);
+        _soundPanel.transform.localScale = Vector3.zero;
+
+        _soundPanel.transform
+            .DOScale(Vector3.one, _duration)
+            .SetEase(_openEase)
+            .SetUpdate(true);
+            
+    }
+
+    public void CloseSoundPanel()
+    {
+        _soundPanel.transform.DOKill();
+
+        _soundPanel.transform
+            .DOScale(Vector3.zero, _duration)
+            .SetEase(_closeEase)
+            .SetUpdate(true)
+            .OnComplete(() =>
+            {
+                _soundPanel.SetActive(false);
             });
     }
 

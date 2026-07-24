@@ -382,8 +382,9 @@ public class LDY_AttackTargetController : MonoBehaviour
         {
             Vector3 origin = effectOrigin != null ? effectOrigin.position : transform.position;
 
-            reflectingEnemy.ApplyReflectDamage();
             // 면역 적이라 안 아파해야 하므로 PlayHitReaction(빨개짐/흔들림)은 여기서 부르지 않는다.
+            // 데미지(ApplyReflectDamage)는 버튼을 누르자마자가 아니라, 아래 2)에서 폭발 이펙트가
+            // 실제로 내(플레이어) 위치에 나타나는 시점에 맞춰서 준다.
 
             // 1) 먼저 적이 공격을 흡수하는 연출.
             if (weapon.absorbEffectPrefab != null)
@@ -394,14 +395,21 @@ public class LDY_AttackTargetController : MonoBehaviour
                 yield return new WaitForSeconds(weapon.hitEffectDuration);
             }
 
-            // 2) 그 다음 폭발(hitEffectPrefab)이 적이 아니라 내(플레이어) 위치에서 방출되듯 터진다.
+            // 2) 그 다음 폭발(hitEffectPrefab)이 적이 아니라 내(플레이어) 위치에서 방출되듯 터진다 -
+            //    이 폭발이 나타나는 순간에 데미지를 준다.
             if (weapon.hitEffectPrefab != null)
             {
                 GameObject explosion = Instantiate(weapon.hitEffectPrefab, origin, Quaternion.identity);
                 explosion.transform.localScale *= Mathf.Max(weapon.hitEffectScale, 0.01f);
                 ForceRenderOnTop(explosion);
+                reflectingEnemy.ApplyReflectDamage();
                 Destroy(explosion, weapon.hitEffectDuration);
                 yield return new WaitForSeconds(weapon.hitEffectDuration);
+            }
+            else
+            {
+                // 이 무기에 폭발 이펙트가 따로 없으면(설정 누락 등) 예전처럼 바로 데미지를 준다.
+                reflectingEnemy.ApplyReflectDamage();
             }
 
             Debug.Log($"[LDY_AttackTargetController] '{weapon.weaponName}' 공격 실행 - 면역 적 감지, 공격을 흡수한 뒤 나에게 방출됨");
