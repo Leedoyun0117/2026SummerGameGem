@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: JCY_StarlightLantern
   m_EditorClassIdentifier: Assembly-CSharp::JCY_ItemSO
   itemName: "\uB4F1\uBD88 \uC18D \uBCC4\uBE5B"
-  icon: {fileID: 0}
+  icon: {fileID: 3876564023886880255, guid: 44a443188b06db044ae468827d3c51b9, type: 3}
   cost: 0
   maxHealthUP: 0
   curHealthUP: 0

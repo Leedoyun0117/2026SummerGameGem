@@ -10,7 +10,10 @@ public class Tutorial_Text : MonoBehaviour
     [SerializeField] private float _outTextSpeed = 1;
     [SerializeField] private FadeOut _fadeOut;
 
+    [SerializeField] private GameObject _nextTutorial;
+
     public GameObject _panel1;
+    public GameObject _panel2;
 
     public void TextStart()
     {
@@ -25,15 +28,23 @@ public class Tutorial_Text : MonoBehaviour
             if(i>=0&&i<=2)
             {
                 _panel1.SetActive(true);
+                _panel2.SetActive(false);
+            }
+            else if(i>2&&i<=4)
+            {
+                _panel2.SetActive(true);
+                _panel1.SetActive(false);
             }
             else
             {
                 _panel1.SetActive(false);
+                _panel2.SetActive(false);
             }
             yield return StartCoroutine(TypeText(_storyText[i]));//DoText대용 코르틴
             yield return new WaitForSeconds(_outTextSpeed);
         }
-        
+        _nextTutorial.SetActive(true);
+        gameObject.SetActive(false);
     }
 
     private IEnumerator TypeText(string text)

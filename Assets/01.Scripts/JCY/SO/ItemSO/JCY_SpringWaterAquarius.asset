@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: JCY_SpringWaterAquarius
   m_EditorClassIdentifier: Assembly-CSharp::JCY_ItemSO
   itemName: "\uBB3C\uBCD1\uC790\uB9AC\uC758 \uC0D8\uBB3C"
-  icon: {fileID: 0}
+  icon: {fileID: -8681050800745392574, guid: 44a443188b06db044ae468827d3c51b9, type: 3}
   cost: 0
   maxHealthUP: 0
   curHealthUP: 0

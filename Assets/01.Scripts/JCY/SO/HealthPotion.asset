@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a66c3578b22d3054db886a3c253e332d, type: 3}
   m_Name: HealthPotion
   m_EditorClassIdentifier: Assembly-CSharp::JCY_ItemSO
-  itemName: "\uCCB4\uB7B5 \uD3EC\uC158"
+  itemName: "\uCCB4\uB825 \uD3EC\uC158"
   itemImage: {fileID: 1202883642130021556, guid: 44a443188b06db044ae468827d3c51b9, type: 3}
-  cost: 2
+  cost: 1
   health: 10
   time: 0

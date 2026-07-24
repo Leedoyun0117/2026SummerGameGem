@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f0ff30234db8b544ba01c18198a1bbc, type: 3}
   m_Name: JCY_Magnetite
   m_EditorClassIdentifier: Assembly-CSharp::JCY_ItemSO
-  itemName: "\uBCC4\uBE5B\uC5C6\uB294  \uC790\uCCA0"
+  itemName: "\uBCC4\uBE5B\uC5C6\uB294  \uC790\uCCA0\uC11D"
   icon: {fileID: 7327367632806418437, guid: b15b692b771d36247b59d9d262f2747a, type: 3}
   cost: 0
   maxHealthUP: 0
