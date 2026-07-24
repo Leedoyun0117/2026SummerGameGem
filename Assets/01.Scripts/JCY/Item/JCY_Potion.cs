@@ -5,6 +5,7 @@ public class JCY_Potion : MonoBehaviour
 {
     public JCY_PotionSO itemSO;
     [SerializeField] private TextMeshProUGUI countTxt;
+    [SerializeField] private AudioClip _potionSound;
     
     public void UsePotion()
     {
@@ -26,6 +27,12 @@ public class JCY_Potion : MonoBehaviour
         int Limit = JCY_RunProgress.Instance.PotionPurchaseLimit;
         int point = Limit - count;
         Debug.Log(Limit - count);
+
+        if (_potionSound != null && SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(_potionSound);
+        }
+
         countTxt.text = $"현재 포션 구매 한도:{point.ToString()}";
 
         Debug.Log("포션 사용");
