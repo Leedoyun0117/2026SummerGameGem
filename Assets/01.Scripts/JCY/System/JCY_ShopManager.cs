@@ -1,10 +1,14 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
 public class JCY_ShopManager : MonoBehaviour
 {
     public static JCY_ShopManager instance;
+
     public GameObject[] _items;
+    private List<GameObject> itemList;
+
     public GameObject[] _displayPoint;
     public TextMeshProUGUI[] _displayCost;
     public TextMeshProUGUI[] _displayName;
@@ -20,6 +24,8 @@ public class JCY_ShopManager : MonoBehaviour
 
         instance = this;
         DontDestroyOnLoad(gameObject);
+
+        itemList = new List<GameObject>(_items);
     }
     private void OnEnable()
     {
@@ -28,14 +34,35 @@ public class JCY_ShopManager : MonoBehaviour
 
     public void DisplayItems()
     {
-        for( int i = 0; i < _displayPoint.Length; i++ )
+        for (int i = 0; i < _displayPoint.Length; i++)
         {
-            int index = Random.Range(0 , _items.Length);
-            GameObject obj = Instantiate(_items[index], _displayPoint[i].transform, false);
+            foreach (Transform child in _displayPoint[i].transform)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+
+
+        List<GameObject> displayList = new List<GameObject>(itemList);
+
+        for (int i = 0; i < _displayPoint.Length; i++)
+        {
+            int index = Random.Range(0, displayList.Count);
+
+            GameObject obj = Instantiate(displayList[index], _displayPoint[i].transform, false);
+
             JCY_Item item = obj.GetComponent<JCY_Item>();
             _itemSO = item.ItemSO;
-            _displayCost[i].text = _itemSO.cost.ToString();
+
+            _displayCost[i].text = _itemSO.cost.ToString()+"별조각";
             _displayName[i].text = _itemSO.itemName;
+
+            displayList.RemoveAt(index); // 이번 상점에서만 중복 방지
         }
+    }
+
+    public void RemoveItem(GameObject item)
+    {
+        itemList.Remove(item);
     }
 }
