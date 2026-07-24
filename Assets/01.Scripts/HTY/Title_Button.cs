@@ -12,28 +12,18 @@ public class Title_Button : MonoBehaviour
     [SerializeField] private Ease closeEase = Ease.InOutBack;
 
     [Header("사운드 설정")]
-    [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip clickSound;
 
     private bool checker = false;      // 패널이 열려있는지 여부
     private bool isAnimating = false;  // 애니메이션 진행 중인지 여부 (중복 클릭 방지)
 
-    private void Awake()
-    {
-        // AudioSource가 인스펙터에서 연결 안 되어 있으면 자동으로 붙여서 사용
-        if (audioSource == null)
-        {
-            audioSource = GetComponent<AudioSource>();
-            if (audioSource == null)
-                audioSource = gameObject.AddComponent<AudioSource>();
-        }
-        audioSource.playOnAwake = false;
-    }
 
     private void PlayClickSound()
     {
-        if (clickSound != null)
-            audioSource.PlayOneShot(clickSound);
+        if (clickSound != null && SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(clickSound);
+        }
     }
 
     public void GameStart()

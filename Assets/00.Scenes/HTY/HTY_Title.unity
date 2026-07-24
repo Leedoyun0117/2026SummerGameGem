@@ -1858,21 +1858,25 @@ PrefabInstance:
       propertyPath: m_Name
       value: SetPanel
       objectReference: {fileID: 0}
+    - target: {fileID: 1515715053119600675, guid: 870e4e8c0f94d204bab50bb75040ea98, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1677923357800066592, guid: 870e4e8c0f94d204bab50bb75040ea98, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2789617338544778833, guid: 870e4e8c0f94d204bab50bb75040ea98, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3585237640536810033, guid: 870e4e8c0f94d204bab50bb75040ea98, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5480112580708616073, guid: 870e4e8c0f94d204bab50bb75040ea98, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6405467074611441528, guid: 870e4e8c0f94d204bab50bb75040ea98, type: 3}
       propertyPath: m_Pivot.x
