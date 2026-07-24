@@ -40,6 +40,7 @@ public class KTH_PlayerMovement : MonoBehaviour
     private bool isMoving;
     private bool isOnRing = false;
 
+
     private Vector2 straightDir;
     private float radius;
     private float currentAngle;
@@ -310,7 +311,7 @@ public class KTH_PlayerMovement : MonoBehaviour
                 break;
         }
 
-        if (tile.IsConsumable)
+        if (tile.IsConsumable && tile.CurrentTileType != TileType.Attack)
         {
             tile.UseTile();
         }
@@ -349,16 +350,27 @@ public class KTH_PlayerMovement : MonoBehaviour
 
     private void ProcessAttackTile(KTH_Tile tile)
     {
+        // 이동 중지
         currentTween?.Kill();
         isMoving = false;
 
+        // 플레이어를 타일 중앙으로 이동
         transform.position = tile.transform.position;
 
-        Debug.Log($"[PlayerMovement] 공격 타일 밟음! 보스에게 데미지 전달");
+        KTH_BossStagePlayerAttack attack = FindFirstObjectByType<KTH_BossStagePlayerAttack>();
 
-        EndMovementAndNextTurn();
+        if (attack != null)
+        {
+            attack.SetHammerActive(true);
+            Debug.Log("🔨 해머 활성화");
+        }
+        else
+        {
+            Debug.LogError("KTH_BossStagePlayerAttack을 찾을 수 없습니다.");
+        }
+
+        Debug.Log("[PlayerMovement] ⚔️ 어택 패널 밟음!");
     }
-
     private void ProcessTreasureTile(KTH_Tile tile)
     {
         currentTween?.Kill();

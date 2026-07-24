@@ -34,6 +34,7 @@ public class KTH_NormalAttack : KTH_BossAttack
         // 3. [TODO] 플레이어 데미지 처리 (TakeDamage) 들어갈 자리
         // TakeDamageToPlayer(); 
         Debug.Log("💥 [보스 공격] 타격 판정 (플레이어 데미지 처리 지점)");
+        KTH_PlayerHealth.Instance.TakeDamage(30);
 
         // 4. 애니메이션 파라미터 초기화 (다음 공격을 위해 false)
         if (animator != null)

@@ -85,7 +85,7 @@ public class KTH_AttackObject : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             Debug.Log("💥 [공격 오브젝트] 플레이어와 충돌함!");
-
+            KTH_PlayerHealth.Instance.TakeDamage(20);
             // TODO: 플레이어 데미지 처리 (TakeDamage) 들어갈 자리
         }
     }

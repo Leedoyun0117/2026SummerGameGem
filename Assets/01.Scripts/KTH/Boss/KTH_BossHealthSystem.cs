@@ -4,13 +4,16 @@ using UnityEngine.Events;
 
 public class KTH_BossHealthSystem : MonoBehaviour
 {
-
     [Header("Boss Health Settings")]
     [SerializeField] private float maxHealth = 100f;
-    private float currentHealth;
+    public float currentHealth;
+
+    [Header("Death")]
+    [SerializeField] private Animator animator;
+    [SerializeField] private string dieBoolName = "isDeath";
+    [SerializeField] private float destroyDelay = 2f;
 
     [Header("Events (UI 및 애니메이션 연동용)")]
-    // (현재 체력, 최대 체력)을 전달하는 이벤트
     public UnityEvent<float, float> onHealthChanged;
     public UnityEvent onBossDied;
 
@@ -22,12 +25,14 @@ public class KTH_BossHealthSystem : MonoBehaviour
     {
         currentHealth = maxHealth;
 
-        // 시작 시 UI 초기화를 위해 이벤트 호출
+        if (animator == null)
+            animator = GetComponent<Animator>();
+
         onHealthChanged?.Invoke(currentHealth, maxHealth);
     }
 
     /// <summary>
-    /// 보스에게 데미지를 가할 때 호출하는 함수
+    /// 보스에게 데미지를 가할 때 호출
     /// </summary>
     public void TakeDamage(float damage)
     {
@@ -36,9 +41,8 @@ public class KTH_BossHealthSystem : MonoBehaviour
         currentHealth -= damage;
         currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
 
-        Debug.Log($"💥 [보스 피격] 데미지: {damage} | 남은 체력: {currentHealth}/{maxHealth}");
+        Debug.Log($"💥 [보스 피격] 데미지 : {damage} | 남은 체력 : {currentHealth}/{maxHealth}");
 
-        // 체력 변경 이벤트 호출 (UI 업데이트용)
         onHealthChanged?.Invoke(currentHealth, maxHealth);
 
         if (currentHealth <= 0f)
@@ -48,7 +52,7 @@ public class KTH_BossHealthSystem : MonoBehaviour
     }
 
     /// <summary>
-    /// 체력 회복 함수 (필요 시 사용)
+    /// 체력 회복
     /// </summary>
     public void Heal(float amount)
     {
@@ -68,13 +72,39 @@ public class KTH_BossHealthSystem : MonoBehaviour
         if (IsDead) return;
 
         IsDead = true;
-        Debug.Log("☠️ [보스 사망] 보스가 처치되었습니다!");
 
-        // 사망 이벤트 호출 (애니메이션, 턴 매니저 처리, 게임 승리 연출 등)
+        Debug.Log("☠️ [보스 사망]");
+
+        // 죽는 애니메이션 실행
+        if (animator != null)
+        {
+            animator.SetBool(dieBoolName, true);
+        }
+
+        // 모든 Collider 비활성화
+        Collider2D[] colliders = GetComponentsInChildren<Collider2D>();
+        foreach (Collider2D col in colliders)
+        {
+            col.enabled = false;
+        }
+
+        // Animator와 이 스크립트를 제외한 모든 스크립트 정지
+        MonoBehaviour[] scripts = GetComponents<MonoBehaviour>();
+        foreach (MonoBehaviour script in scripts)
+        {
+            if (script == this)
+                continue;
+
+            if (script is Animator)
+                continue;
+
+            script.enabled = false;
+        }
+
+        // 이벤트 호출
         onBossDied?.Invoke();
 
-        // TODO: 필요 시 보스 오브젝트 비활성화 또는 파괴 로직 추가
-        // Destroy(gameObject, 2.0f);
+        // 애니메이션 종료 후 삭제
+        Destroy(gameObject, destroyDelay);
     }
 }
-
