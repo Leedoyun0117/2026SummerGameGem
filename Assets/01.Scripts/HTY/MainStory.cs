@@ -7,6 +7,9 @@ public class MainStory : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _storyBox;
     [SerializeField] private string[] _storyText;
     [SerializeField] private float _typingSpeed = 0.05f;
+    [SerializeField] private FadeOut _fadeOut;
+
+    
 
     private void Start()
     {
@@ -15,11 +18,16 @@ public class MainStory : MonoBehaviour
 
     private IEnumerator WaitTime()
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1.5f);
         for (int i = 0; i < _storyText.Length; i++)
         {
             yield return StartCoroutine(TypeText(_storyText[i]));//DoText대용 코르틴
             yield return new WaitForSeconds(1f);
+        }
+        yield return new WaitForSeconds(1f);
+        if(_fadeOut!=null)
+        {
+            _fadeOut.Fade_Out();
         }
     }
 
