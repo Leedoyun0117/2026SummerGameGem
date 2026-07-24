@@ -9,12 +9,14 @@ public static class LDY_ProceduralSprite
     private static Sprite softGlowSprite;
     private static Sprite ringSprite;
     private static Sprite softLineSprite;
+    private static Sprite meteorTrailSprite;
 
     public static Sprite Sparkle => sparkleSprite != null ? sparkleSprite : (sparkleSprite = BuildSparkle());
     public static Sprite ThinFrame => thinFrameSprite != null ? thinFrameSprite : (thinFrameSprite = BuildFrame());
     public static Sprite SoftGlow => softGlowSprite != null ? softGlowSprite : (softGlowSprite = BuildSoftGlow());
     public static Sprite Ring => ringSprite != null ? ringSprite : (ringSprite = BuildRing());
     public static Sprite SoftLine => softLineSprite != null ? softLineSprite : (softLineSprite = BuildSoftLine());
+    public static Sprite MeteorTrail => meteorTrailSprite != null ? meteorTrailSprite : (meteorTrailSprite = BuildMeteorTrail());
 
     private static Sprite BuildSparkle()
     {
@@ -95,6 +97,35 @@ public static class LDY_ProceduralSprite
             float alpha = Mathf.Pow(Mathf.Clamp01(1f - dist), 2.2f);
             for (int x = 0; x < width; x++)
                 tex.SetPixel(x, y, new Color(1f, 1f, 1f, alpha));
+        }
+
+        tex.Apply();
+        return Sprite.Create(tex, new Rect(0, 0, width, height), new Vector2(0.5f, 0.5f), height);
+    }
+
+    private static Sprite BuildMeteorTrail()
+    {
+        const int width = 128;
+        const int height = 16;
+        Texture2D tex = new Texture2D(width, height, TextureFormat.RGBA32, false)
+        {
+            wrapMode = TextureWrapMode.Clamp,
+            filterMode = FilterMode.Bilinear
+        };
+
+        float centerY = height * 0.5f;
+        for (int x = 0; x < width; x++)
+        {
+            // 왼쪽(꼬리)은 투명, 오른쪽(머리)으로 갈수록 진해짐
+            float lengthT = x / (float)(width - 1);
+            float headAlpha = Mathf.Pow(lengthT, 1.6f);
+
+            for (int y = 0; y < height; y++)
+            {
+                float dy = Mathf.Abs(y + 0.5f - centerY) / centerY;
+                float widthFalloff = Mathf.Pow(Mathf.Clamp01(1f - dy), 2f);
+                tex.SetPixel(x, y, new Color(1f, 1f, 1f, headAlpha * widthFalloff));
+            }
         }
 
         tex.Apply();
