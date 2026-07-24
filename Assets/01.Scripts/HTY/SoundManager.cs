@@ -62,6 +62,7 @@ public class SoundManager : MonoBehaviour
 
     public void PlayBGM(AudioClip clip)
     {
+        Debug.Log(clip.ToString());
         if (clip == null)
         {
             Debug.LogWarning("SoundManager: 재생할 BGM이 없습니다.");
@@ -78,9 +79,18 @@ public class SoundManager : MonoBehaviour
         if (bgmSource.clip == clip && bgmSource.isPlaying)
             return;
 
+        Debug.Log("Instance = " + Instance.gameObject.name);
+        Debug.Log("This = " + gameObject.name);
+        Debug.Log("AudioSource = " + bgmSource.gameObject.name);
+        Debug.Log("Before = " + (bgmSource.clip == null ? "NULL" : bgmSource.clip.name));
+
         bgmSource.clip = clip;
-        bgmSource.loop = true;
+
+        Debug.Log("After = " + bgmSource.clip.name);
+
         bgmSource.Play();
+
+        Debug.Log("Playing = " + bgmSource.isPlaying);
     }
 
     public void StopBGM()

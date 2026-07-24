@@ -34,6 +34,7 @@ public class JCY_Potion : MonoBehaviour
             case "랜덤 박스":
                 {
                     int backCost = Random.Range(0, itemSO.cost * 2);
+                    StarPieceManager.instance.StarPieceDown(itemSO.cost);
                     StarPieceManager.instance.StarPieceUP(backCost);
                     Debug.Log($"{backCost}획득");
                 }
@@ -56,6 +57,7 @@ public class JCY_Potion : MonoBehaviour
 
             case "리롤 포션":
                 {
+                    StarPieceManager.instance.StarPieceDown(itemSO.cost);
                     JCY_ShopManager.instance.DisplayItems();
                     Debug.Log("리롤");
                 }

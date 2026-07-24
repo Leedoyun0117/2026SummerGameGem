@@ -25,6 +25,10 @@ public class JCY_ShopManager : MonoBehaviour
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField]private GameObject shop_UI;
 
+    [Header("배경음악")]
+    [SerializeField]private AudioClip _shopBGM;
+    [SerializeField] private AudioClip _normalBGM;
+
 
 
     private void Awake()
@@ -51,24 +55,7 @@ public class JCY_ShopManager : MonoBehaviour
 
         DisplayItems();
     }
-    private void Update()
-    {
-        if (Keyboard.current.oKey.wasPressedThisFrame)
-        {
-            OpenShop();
-        }
-
-        if (Keyboard.current.cKey.wasPressedThisFrame)
-        {
-            CloseShop();
-        }
-
-        if(Keyboard.current.mKey.wasPressedThisFrame)
-        {
-            Debug.Log("돈저");
-            StarPieceManager.instance.StarPieceUP(100);
-        }
-    }
+  
 
     public void DisplayItems()
     {
@@ -126,7 +113,12 @@ public class JCY_ShopManager : MonoBehaviour
         countTxt.text = $"현재 포션 구매 한도:{JCY_RunProgress.Instance.PotionPurchaseLimit}";
 
         animator.SetTrigger("Open");
-        
+        if (_shopBGM != null && SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlayBGM(_shopBGM);
+            Debug.Log("BGM 바뀜");
+        }
+
 
         DisplayItems();
     }
@@ -136,7 +128,11 @@ public class JCY_ShopManager : MonoBehaviour
         
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
-
+        if (_normalBGM != null && SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlayBGM(_normalBGM);
+            Debug.Log("BGM 바뀜");
+        }
         animator.SetTrigger("Close");
     }
     public void CloseEnd()
