@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1238805473700862416}
   - component: {fileID: 1506033298150265337}
+  - component: {fileID: 8208803336603567685}
   m_Layer: 0
   m_Name: Enemy_Goblin
   m_TagString: Enemy
@@ -91,3 +92,19 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &8208803336603567685
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 75155365910547679}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d166f433be5f0ef449f7ab29e6516185, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LDY_Enemy
+  enemyType: 1
+  timeoutAttackDamage: 5
+  reflectAgainstShape: 1
+  reflectDamage: 10

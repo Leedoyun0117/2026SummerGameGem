@@ -44,6 +44,11 @@ public class LDY_RingController : MonoBehaviour
     [SerializeField] private float moveDuration = 0.25f;
     [SerializeField] private AnimationCurve moveEase = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
 
+    // 회전할 때 이 트랜스폼(파이 휠 배경 그림)도 슬롯 한 칸 각도만큼 같이 돌려서, 적이 조용히 칸만
+    // 옮기는 게 아니라 "판 자체가 도는" 것처럼 보이게 한다. 타일 위치/콜라이더는 전혀 건드리지 않고
+    // 오직 이 비주얼만 회전시킨다(비워두면 회전 연출 없이 지금처럼 동작).
+    [SerializeField] private Transform wheelVisualTransform;
+
     // 선택되면 활성화되는 노란 테두리 표시 오브젝트(안쪽 경계선 + 바깥쪽 경계선 두 개를 자식으로 담는 루트, 비워둬도 무방).
     // 도넛 모양 링은 두 경계선이 다 강조돼야 "이 두 줄 사이 칸 전체"가 움직인다는 게 명확해진다.
     [Header("선택 강조 표시")]
@@ -280,12 +285,38 @@ public class LDY_RingController : MonoBehaviour
         // 1) 데이터부터 먼저 shift: 실제 오브젝트는 건드리지 않고 어떤 슬롯이 어떤 occupant를 새로 받았는지만 계산
         List<RingSlot> changedSlots = Ring.ShiftOccupants(direction, steps);
 
+        // 판 비주얼 회전은 occupant 이동과 같은 시간 동안 병렬로(따로) 돌아가게 시작만 해두고 기다리지 않는다.
+        if (wheelVisualTransform != null) StartCoroutine(RotateWheelVisual(direction, steps));
+
         // 2) 새로 배정받은 슬롯만 골라서 occupant를 (현재 위치 -> 새 슬롯 worldPosition)으로 이동
         var movers = LDY_SlotMoveAnimator.BuildMovers(changedSlots);
         yield return LDY_SlotMoveAnimator.Animate(movers, moveDuration, moveEase);
 
         IsRotating = false;
         OnRotationComplete?.Invoke(this);
+    }
+
+    // 파이 휠 배경 그림을 슬롯 한 칸 각도(direction*steps만큼)만큼 회전시킨다. 타일 좌표/콜라이더는
+    // 전혀 안 건드리므로 탭 판정이나 occupant 위치 계산에는 아무 영향이 없다 - 순수 시각 효과.
+    // direction=+1(반시계) -> +Z 오일러 회전, direction=-1(시계) -> -Z 오일러 회전 (기존 각도 공식과 동일한 방향 규칙).
+    private IEnumerator RotateWheelVisual(int direction, int steps)
+    {
+        float sliceAngle = 360f / Mathf.Max(Ring.SlotCount, 1);
+        float totalAngle = direction * sliceAngle * steps;
+
+        Quaternion startRot = wheelVisualTransform.localRotation;
+        Quaternion endRot = startRot * Quaternion.Euler(0f, 0f, totalAngle);
+
+        float elapsed = 0f;
+        while (elapsed < moveDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = moveEase.Evaluate(Mathf.Clamp01(elapsed / moveDuration));
+            wheelVisualTransform.localRotation = Quaternion.Slerp(startRot, endRot, t);
+            yield return null;
+        }
+
+        wheelVisualTransform.localRotation = endRot;
     }
 
     // ----------------- 정렬(콤보) 체크 -----------------

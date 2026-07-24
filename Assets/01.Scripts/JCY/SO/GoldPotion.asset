@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: GoldPotion
   m_EditorClassIdentifier: Assembly-CSharp::JCY_ItemSO
   itemName: GoldPotion
-  itemImage: {fileID: 0}
+  itemImage: {fileID: 4166379850747399888, guid: 44a443188b06db044ae468827d3c51b9, type: 3}
   cost: 0
   health: 0
   time: 0
