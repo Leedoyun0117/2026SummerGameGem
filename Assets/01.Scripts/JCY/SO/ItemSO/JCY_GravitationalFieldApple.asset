@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7f0ff30234db8b544ba01c18198a1bbc, type: 3}
-  m_Name: JCY_Diamond
+  m_Name: JCY_GravitationalFieldApple
   m_EditorClassIdentifier: Assembly-CSharp::JCY_ItemSO
-  itemName: "\uB2E4\uC774\uC544\uBAAC\uB4DC"
-  icon: {fileID: -4754989852529570229, guid: 44a443188b06db044ae468827d3c51b9, type: 3}
+  itemName: "\uC911\uB825\uC7A5 \uC0AC\uACFC"
+  icon: {fileID: 888032219008879629, guid: b15b692b771d36247b59d9d262f2747a, type: 3}
   cost: 0
   maxHealthUP: 0
   curHealthUP: 0
