@@ -1,9 +1,11 @@
+using TMPro;
 using UnityEngine;
 
 public class JCY_Potion : MonoBehaviour
 {
     public JCY_PotionSO itemSO;
-
+    [SerializeField] private TextMeshProUGUI countTxt;
+    
     public void UsePotion()
     {
         if (StarPieceManager.instance._starPiece < itemSO.cost)
@@ -15,9 +17,16 @@ public class JCY_Potion : MonoBehaviour
         // 히치하이커 두루마리 - 상점당 포션 구매 한도(기본 2회 + 보너스)를 넘으면 더 못 산다.
         if (JCY_RunProgress.Instance != null && !JCY_RunProgress.Instance.TryConsumePotionPurchase())
         {
+         
             Debug.Log("이번 상점에서 포션 구매 한도를 다 썼어요");
+            Debug.Log(JCY_RunProgress.Instance.PotionPurchaseCountThisShop);
             return;
         }
+        int count = JCY_RunProgress.Instance.PotionPurchaseCountThisShop;
+        int Limit = JCY_RunProgress.Instance.PotionPurchaseLimit;
+        int point = Limit - count;
+        Debug.Log(Limit - count);
+        countTxt.text = $"현재 포션 구매 한도:{point.ToString()}";
 
         Debug.Log("포션 사용");
         switch (itemSO.itemName)

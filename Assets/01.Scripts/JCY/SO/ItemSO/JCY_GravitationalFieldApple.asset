@@ -12,12 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f0ff30234db8b544ba01c18198a1bbc, type: 3}
   m_Name: JCY_GravitationalFieldApple
   m_EditorClassIdentifier: Assembly-CSharp::JCY_ItemSO
-  itemName: "중력장 사과"
+  itemName: "\uC911\uB825\uC7A5 \uC0AC\uACFC"
   icon: {fileID: 888032219008879629, guid: b15b692b771d36247b59d9d262f2747a, type: 3}
   cost: 20
   maxHealthUP: 0
   curHealthUP: 0
-  Description: "현재체력과 최대체력이 서로 바뀌고, 넘친 체력은 3당 1골드로 바뀝니다."
+  Description: "\uD604\uC7AC\uCCB4\uB825\uACFC \uCD5C\uB300\uCCB4\uB825\uC774 \uC11C\uB85C
+    \uBC14\uB00C\uACE0, \uB118\uCE5C \uCCB4\uB825\uC740 3\uB2F9 1\uBCC4\uC870\uAC01\uC73C\uB85C
+    \uBC14\uB01D\uB2C8\uB2E4."
   backStarPiece: 0
   maxTimeUP: 0
   effectType: 6

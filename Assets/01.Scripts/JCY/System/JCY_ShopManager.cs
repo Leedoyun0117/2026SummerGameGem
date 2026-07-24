@@ -1,11 +1,14 @@
 using System.Collections.Generic;
+using System.Drawing;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class JCY_ShopManager : MonoBehaviour
 {
     private JCY_ItemSO _itemSO;
     public static JCY_ShopManager instance;
+    [SerializeField] private TextMeshProUGUI countTxt;
     [Header("아이템 진열")]
     public GameObject[] _items;
     private List<GameObject> itemList;
@@ -20,6 +23,7 @@ public class JCY_ShopManager : MonoBehaviour
     [Header("상점 애니메이션")]
     [SerializeField] private Animator animator;
     [SerializeField] private CanvasGroup canvasGroup;
+    [SerializeField]private GameObject shop_UI;
 
 
 
@@ -36,6 +40,10 @@ public class JCY_ShopManager : MonoBehaviour
 
         itemList = new List<GameObject>(_items);
     }
+    private void Start()
+    {
+        shop_UI.SetActive(false);
+    }
     private void OnEnable()
     {
         // 상점에 새로 진입할 때마다(리롤 포션으로 다시 여는 것과는 별개) 포션 구매 한도를 초기화한다.
@@ -45,14 +53,20 @@ public class JCY_ShopManager : MonoBehaviour
     }
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.C))
+        if (Keyboard.current.oKey.wasPressedThisFrame)
         {
             OpenShop();
         }
 
-        if (Input.GetKeyDown(KeyCode.D))
+        if (Keyboard.current.cKey.wasPressedThisFrame)
         {
             CloseShop();
+        }
+
+        if(Keyboard.current.mKey.wasPressedThisFrame)
+        {
+            Debug.Log("돈저");
+            StarPieceManager.instance.StarPieceUP(100);
         }
     }
 
@@ -104,18 +118,22 @@ public class JCY_ShopManager : MonoBehaviour
 
     public void OpenShop()
     {
-        gameObject.SetActive(true);
+        shop_UI.SetActive(true);
 
         canvasGroup.interactable = true;
         canvasGroup.blocksRaycasts = true;
+        JCY_RunProgress.Instance.ResetPotionPurchaseCount();
+        countTxt.text = $"현재 포션 구매 한도:{JCY_RunProgress.Instance.PotionPurchaseLimit}";
 
         animator.SetTrigger("Open");
+        
 
         DisplayItems();
     }
 
     public void CloseShop()
     {
+        
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
 
@@ -123,6 +141,6 @@ public class JCY_ShopManager : MonoBehaviour
     }
     public void CloseEnd()
     {
-        gameObject.SetActive(false);
+        shop_UI.SetActive(false);
     }
 }
