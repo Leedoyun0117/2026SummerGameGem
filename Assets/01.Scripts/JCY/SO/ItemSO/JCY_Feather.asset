@@ -9,11 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a66c3578b22d3054db886a3c253e332d, type: 3}
-  m_Name: GoldPotion
+  m_Script: {fileID: 11500000, guid: 7f0ff30234db8b544ba01c18198a1bbc, type: 3}
+  m_Name: JCY_Feather
   m_EditorClassIdentifier: Assembly-CSharp::JCY_ItemSO
-  itemName: "\uB79C\uB364 \uBC15\uC2A4"
-  itemImage: {fileID: 4166379850747399888, guid: 44a443188b06db044ae468827d3c51b9, type: 3}
-  cost: 2
-  health: 0
-  time: 0
+  itemName: "\uBC31\uC870\uC790\uB9AC\uC758 \uAE43\uD138"
+  icon: {fileID: 1367688142790633418, guid: 44a443188b06db044ae468827d3c51b9, type: 3}
+  cost: 3
+  maxHealthUP: 0
+  curHealthUP: 0
+  backStarPiece: 0
+  maxTimeUP: 0

@@ -16,6 +16,7 @@ public class StarPieceManager : MonoBehaviour
             return;
         }
 
+        _starUI.text = _starPiece.ToString();
         instance = this;
         DontDestroyOnLoad(gameObject);
     }
