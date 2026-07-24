@@ -4,15 +4,21 @@ using UnityEngine;
 
 public class JCY_ShopManager : MonoBehaviour
 {
+    private JCY_ItemSO _itemSO;
     public static JCY_ShopManager instance;
-
+    [Header("아이템 진열")]
     public GameObject[] _items;
     private List<GameObject> itemList;
 
     public GameObject[] _displayPoint;
     public TextMeshProUGUI[] _displayCost;
     public TextMeshProUGUI[] _displayName;
-    private JCY_ItemSO _itemSO;
+
+    [Header("상점 애니메이션")]
+    [SerializeField] private Animator animator;
+    [SerializeField] private CanvasGroup canvasGroup;
+
+
 
     private void Awake()
     {
@@ -30,6 +36,18 @@ public class JCY_ShopManager : MonoBehaviour
     private void OnEnable()
     {
         DisplayItems();
+    }
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            OpenShop();
+        }
+
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            CloseShop();
+        }
     }
 
     public void DisplayItems()
@@ -76,5 +94,29 @@ public class JCY_ShopManager : MonoBehaviour
     public void RemoveItem(GameObject item)
     {
         itemList.Remove(item);
+    }
+
+    public void OpenShop()
+    {
+        gameObject.SetActive(true);
+
+        canvasGroup.interactable = true;
+        canvasGroup.blocksRaycasts = true;
+
+        animator.SetTrigger("Open");
+
+        DisplayItems();
+    }
+
+    public void CloseShop()
+    {
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
+
+        animator.SetTrigger("Close");
+    }
+    public void CloseEnd()
+    {
+        gameObject.SetActive(false);
     }
 }
