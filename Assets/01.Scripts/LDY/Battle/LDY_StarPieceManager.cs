@@ -102,9 +102,28 @@ public class LDY_StarPieceManager : MonoBehaviour
         if (countText != null) countText.text = Count.ToString();
     }
 
+    // dropUIParent는 원래 있던 씬의 Canvas를 가리키는데, 그 씬이 언로드되면 Unity가 파괴해서 "Missing"
+    // 참조가 된다(LDY_StarPieceUIBinding으로 씬마다 다시 연결해줄 수도 있지만, 깜빡하거나 씬 설정이
+    // 안 맞으면 또 끊긴다) - 그래서 아예 스폰 시점에 매번 확인해서, 없으면 지금 활성 씬에 전체화면
+    // Canvas를 즉석에서 만들어 쓴다. 코드만으로 항상 보장되므로 씬마다 수동으로 연결 안 해도 된다.
+    private void EnsureDropUIParent()
+    {
+        if (dropUIParent != null) return;
+
+        GameObject canvasGO = new GameObject("StarPieceDropCanvas(Auto)", typeof(RectTransform), typeof(Canvas));
+        Canvas canvas = canvasGO.GetComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 1000;
+
+        dropUIParent = (RectTransform)canvasGO.transform;
+        Debug.Log("[LDY_StarPieceManager] dropUIParent가 없어서(Missing/None) 자동으로 새 Canvas를 만들어 대신 씁니다.");
+    }
+
     // 적이 죽은 월드 좌표에서 1~3개의 StarPiece 조각을 스폰한다.
     public void SpawnDrops(Vector3 worldPosition)
     {
+        EnsureDropUIParent();
+
         if (starPieceDropPrefab == null || dropUIParent == null)
         {
             Debug.LogWarning("[LDY_StarPieceManager] Star Piece Drop Prefab 또는 Drop UI Parent가 비어있어서 조각을 스폰하지 못했습니다.");

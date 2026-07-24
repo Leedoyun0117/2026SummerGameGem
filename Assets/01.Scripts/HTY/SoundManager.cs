@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class SoundManager : MonoBehaviour
@@ -10,6 +12,18 @@ public class SoundManager : MonoBehaviour
     [Header("Audio Sources")]
     [SerializeField] private AudioSource bgmSource;
     [SerializeField] private AudioSource sfxSource;
+
+    [Serializable]
+    private struct SfxEntry
+    {
+        public SfxId id;
+        public AudioClip clip;
+    }
+
+    [Header("SFX Library")]
+    [SerializeField] private List<SfxEntry> sfxEntries = new List<SfxEntry>();
+
+    private readonly Dictionary<SfxId, AudioClip> sfxLibrary = new Dictionary<SfxId, AudioClip>();
 
     public float BGMVolume
     {
@@ -56,6 +70,8 @@ public class SoundManager : MonoBehaviour
         {
             Debug.LogError("SoundManager: SFX AudioSource가 연결되지 않았습니다.", this);
         }
+
+        BuildSfxLibrary();
 
         LoadVolume();
     }
@@ -120,6 +136,36 @@ public class SoundManager : MonoBehaviour
 
         // 여러 효과음을 겹쳐서 재생할 수 있음
         sfxSource.PlayOneShot(clip, clampedVolumeScale);
+    }
+
+    /// <summary>
+    /// SfxId로 등록된 효과음을 재생한다. Sfx Entries에 클립이 등록되어 있어야 한다.
+    /// </summary>
+    public void PlaySFX(SfxId id, float volumeScale = 1f)
+    {
+        if (!sfxLibrary.TryGetValue(id, out AudioClip clip) || clip == null)
+        {
+            Debug.LogWarning($"SoundManager: '{id}'에 등록된 효과음 클립이 없습니다.");
+            return;
+        }
+
+        PlaySFX(clip, volumeScale);
+    }
+
+    private void BuildSfxLibrary()
+    {
+        sfxLibrary.Clear();
+
+        foreach (SfxEntry entry in sfxEntries)
+        {
+            if (entry.clip == null)
+                continue;
+
+            if (!sfxLibrary.TryAdd(entry.id, entry.clip))
+            {
+                Debug.LogWarning($"SoundManager: '{entry.id}' 효과음이 Sfx Entries에 중복 등록되어 있습니다.", this);
+            }
+        }
     }
 
     public void StopAllSFX()
