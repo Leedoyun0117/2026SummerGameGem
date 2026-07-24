@@ -11,6 +11,7 @@ using UnityEngine.SceneManagement;
 public class LDY_SceneTransition : MonoBehaviour
 {
     public static LDY_SceneTransition Instance { get; private set; }
+    [SerializeField] private AudioClip _ilesSound;
 
     // 전환 재생 중에는 맵 카메라(드래그/스크롤) 입력을 막는 데 씀 (LDY_MapCameraController에서 참조)
     public bool IsPlaying => isPlaying;
@@ -125,6 +126,11 @@ public class LDY_SceneTransition : MonoBehaviour
             onClosed?.Invoke();
             isPlaying = false;
             yield break;
+        }
+        if (_ilesSound != null && SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(_ilesSound);
+            Debug.Log("BGM 바뀜");
         }
 
         overlay.gameObject.SetActive(true);

@@ -1194,7 +1194,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: c59b50ed1b2a6474c920929c689aa2ff, type: 3}
-  m_PlayOnAwake: 0
+  m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
   Loop: 1
@@ -2351,6 +2351,7 @@ MonoBehaviour:
   canvasGroup: {fileID: 1498028167}
   shop_UI: {fileID: 1498028162}
   _shopBGM: {fileID: 8300000, guid: 3ddf7a86ca9482d44876cffba55301eb, type: 3}
+  _normalBGM: {fileID: 8300000, guid: c59b50ed1b2a6474c920929c689aa2ff, type: 3}
 --- !u!1 &1238239602
 GameObject:
   m_ObjectHideFlags: 0
