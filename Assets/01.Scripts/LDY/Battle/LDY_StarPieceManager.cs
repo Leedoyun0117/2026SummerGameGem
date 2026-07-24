@@ -79,6 +79,11 @@ public class LDY_StarPieceManager : MonoBehaviour
         OnCountChanged?.Invoke(Count);
         UpdateCountText();
 
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(SfxId.CoinGain);
+        }
+
         // 운석의 파편 - 골드를 얻을 때마다 30% 확률로 1을 추가로 더 준다.
         if (JCY_RunProgress.Instance != null) JCY_RunProgress.Instance.NotifyGoldGained();
     }
@@ -135,6 +140,11 @@ public class LDY_StarPieceManager : MonoBehaviour
         {
             Debug.LogWarning("[LDY_StarPieceManager] 카메라를 찾지 못해 조각을 스폰하지 못했습니다.");
             return;
+        }
+
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(SfxId.CoinDrop);
         }
 
         int count = Random.Range(minDropCount, maxDropCount + 1);

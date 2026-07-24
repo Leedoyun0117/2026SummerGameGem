@@ -275,6 +275,12 @@ public class LDY_RingController : MonoBehaviour
     public void Rotate(int direction, int steps = 1)
     {
         if (IsRotating || Ring == null || Ring.SlotCount == 0) return;
+
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(SfxId.MapRotate);
+        }
+
         StartCoroutine(RotateRoutine(direction, steps));
     }
 

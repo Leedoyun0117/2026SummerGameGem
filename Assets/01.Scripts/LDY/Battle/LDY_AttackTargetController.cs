@@ -77,6 +77,11 @@ public class LDY_AttackTargetController : MonoBehaviour
         // 먼 링까지 공격 범위가 넘어가는 걸 막기 위해서다(관통 무기뿐 아니라 망치/검도 동일하게 적용).
         anchorRingIndex = 0;
 
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(SfxId.ModeChange);
+        }
+
         RefreshHighlights();
     }
 
@@ -84,6 +89,12 @@ public class LDY_AttackTargetController : MonoBehaviour
     {
         CurrentWeapon = null;
         IsTargeting = false;
+
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(SfxId.ModeChange);
+        }
+
         HideAllHighlights();
     }
 
@@ -421,6 +432,12 @@ public class LDY_AttackTargetController : MonoBehaviour
                 GameObject absorb = Instantiate(weapon.absorbEffectPrefab, reflectingEnemyPos, Quaternion.identity);
                 ForceRenderOnTop(absorb);
                 Destroy(absorb, weapon.hitEffectDuration);
+
+                if (SoundManager.Instance != null)
+                {
+                    SoundManager.Instance.PlaySFX(SfxId.ExplosionAbsorb);
+                }
+
                 yield return new WaitForSeconds(weapon.hitEffectDuration);
             }
 
@@ -433,6 +450,12 @@ public class LDY_AttackTargetController : MonoBehaviour
                 ForceRenderOnTop(explosion);
                 reflectingEnemy.ApplyReflectDamage();
                 Destroy(explosion, weapon.hitEffectDuration);
+
+                if (SoundManager.Instance != null)
+                {
+                    SoundManager.Instance.PlaySFX(SfxId.Explosion);
+                }
+
                 yield return new WaitForSeconds(weapon.hitEffectDuration);
             }
             else
@@ -480,6 +503,7 @@ public class LDY_AttackTargetController : MonoBehaviour
             if (enemyObj == null) continue;
             if (LDY_StarPieceManager.Instance != null) LDY_StarPieceManager.Instance.SpawnDrops(enemyObj.transform.position);
             if (JCY_RunProgress.Instance != null) JCY_RunProgress.Instance.NotifyEnemyKilled();
+            if (SoundManager.Instance != null) SoundManager.Instance.PlaySFX(SfxId.Death);
             Destroy(enemyObj);
         }
     }
@@ -533,6 +557,11 @@ public class LDY_AttackTargetController : MonoBehaviour
         if (effect.TryGetComponent(out ILDY_RangeEffect rangeEffect))
         {
             rangeEffect.SetRange(innerR, outerR, totalAngle);
+        }
+
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(SfxId.Explosion);
         }
 
         Destroy(effect, weapon.hitEffectDuration);
@@ -597,6 +626,7 @@ public class LDY_AttackTargetController : MonoBehaviour
             {
                 if (LDY_StarPieceManager.Instance != null) LDY_StarPieceManager.Instance.SpawnDrops(occupant.transform.position);
                 if (JCY_RunProgress.Instance != null) JCY_RunProgress.Instance.NotifyEnemyKilled();
+                if (SoundManager.Instance != null) SoundManager.Instance.PlaySFX(SfxId.Death);
                 Destroy(occupant);
             }
         }
@@ -611,6 +641,11 @@ public class LDY_AttackTargetController : MonoBehaviour
         GameObject beam = Instantiate(prefab, fromPos, Quaternion.identity);
         if (beam.TryGetComponent(out ILDY_EffectTarget effectTarget)) effectTarget.TargetPosition = toPos;
         ForceRenderOnTop(beam);
+
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(SfxId.LaserFire);
+        }
 
         Destroy(beam, lifetime);
         return beam;

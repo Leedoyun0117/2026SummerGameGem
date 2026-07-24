@@ -18,6 +18,12 @@ public class LDY_BattleCountdown : MonoBehaviour
     public void Play(Action onComplete)
     {
         if (dimBackground != null) dimBackground.SetActive(true);
+
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(SfxId.CountdownStart);
+        }
+
         StartCoroutine(CountdownRoutine(onComplete));
     }
 

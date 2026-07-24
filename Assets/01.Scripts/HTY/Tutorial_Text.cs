@@ -55,6 +55,12 @@ public class Tutorial_Text : MonoBehaviour
         for (int i = 0; i <= text.Length; i++)
         {
             _storyBox.maxVisibleCharacters = i;
+
+            if (SoundManager.Instance != null)
+            {
+                SoundManager.Instance.PlaySFX(SfxId.Typing);
+            }
+
             yield return new WaitForSeconds(_typingSpeed);
         }
     }

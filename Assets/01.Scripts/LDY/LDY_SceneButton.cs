@@ -9,6 +9,8 @@ public class LDY_SceneButton : MonoBehaviour
 
     public void LoadScene()
     {
+        Debug.Log($"[LDY_SceneButton] LoadScene() 호출됨. sceneName='{sceneName}', 현재 씬='{SceneManager.GetActiveScene().name}'", this);
+
         if (string.IsNullOrEmpty(sceneName))
         {
             Debug.LogWarning("[LDY_SceneButton] sceneName이 비어 있습니다.", this);

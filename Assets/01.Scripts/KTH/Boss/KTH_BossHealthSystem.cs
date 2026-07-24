@@ -38,6 +38,11 @@ public class KTH_BossHealthSystem : MonoBehaviour
 
         Debug.Log($"💥 [보스 피격] 데미지: {damage} | 남은 체력: {currentHealth}/{maxHealth}");
 
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(SfxId.Hit);
+        }
+
         // 체력 변경 이벤트 호출 (UI 업데이트용)
         onHealthChanged?.Invoke(currentHealth, maxHealth);
 
@@ -69,6 +74,11 @@ public class KTH_BossHealthSystem : MonoBehaviour
 
         IsDead = true;
         Debug.Log("☠️ [보스 사망] 보스가 처치되었습니다!");
+
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(SfxId.Death);
+        }
 
         // 사망 이벤트 호출 (애니메이션, 턴 매니저 처리, 게임 승리 연출 등)
         onBossDied?.Invoke();

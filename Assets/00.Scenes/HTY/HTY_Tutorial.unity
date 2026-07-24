@@ -449,6 +449,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 607322059}
+        m_TargetAssemblyTypeName: TutorialBattleCleanup, Assembly-CSharp
+        m_MethodName: DestroyBattleTutorial
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &61376661
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3680,6 +3692,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 607322058}
+  - component: {fileID: 607322059}
   m_Layer: 0
   m_Name: Battle_T
   m_TagString: Untagged
@@ -3706,6 +3719,18 @@ Transform:
   - {fileID: 1106992407}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &607322059
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 607322057}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36bb4577e3a08654592cf67cd2232561, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TutorialBattleCleanup
 --- !u!1 &641449719 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3414455867305121603, guid: 351ae906bd463f94f83abf8355c6b0ce, type: 3}
@@ -6979,7 +7004,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40419b1cc1139a440abc8003f9158534, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LDY_SceneTransition
-  _ilesSound: {fileID: 0}
   overlay: {fileID: 43514970}
   countdown: {fileID: 1284176432}
   textureSize: 256

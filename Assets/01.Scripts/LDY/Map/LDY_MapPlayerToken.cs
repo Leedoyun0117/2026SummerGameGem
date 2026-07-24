@@ -38,6 +38,11 @@ public class LDY_MapPlayerToken : MonoBehaviour
         float distance = Vector2.Distance(start, target);
         float duration = Mathf.Clamp(distance / Mathf.Max(moveSpeed, 1f), minMoveDuration, maxMoveDuration);
 
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(SfxId.StarMove);
+        }
+
         float t = 0f;
         while (t < duration)
         {

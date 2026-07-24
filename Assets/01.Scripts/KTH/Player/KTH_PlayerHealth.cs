@@ -64,6 +64,11 @@ public bool IsDead { get; private set; }
 
         curhp-=damage;
 
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(SfxId.Hit);
+        }
+
         if (curhp <= 0 && reviveCharges > 0)
         {
             reviveCharges--;
@@ -79,6 +84,12 @@ public bool IsDead { get; private set; }
         if (curhp <= 0 && !IsDead)
         {
             IsDead = true;
+
+            if (SoundManager.Instance != null)
+            {
+                SoundManager.Instance.PlaySFX(SfxId.Death);
+            }
+
             OnPlayerDied?.Invoke();
         }
     }

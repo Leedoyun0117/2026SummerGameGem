@@ -53,6 +53,11 @@ public class LDY_StarPieceDrop : MonoBehaviour
         Vector2 flyStart = rt.anchoredPosition;
         Vector2 flyEnd = flyTarget != null ? flyTarget.anchoredPosition : Vector2.zero;
 
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(SfxId.StarMove);
+        }
+
         t = 0f;
         while (t < flyDuration)
         {

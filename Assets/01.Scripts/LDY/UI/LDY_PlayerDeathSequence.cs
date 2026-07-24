@@ -157,6 +157,11 @@ public class LDY_PlayerDeathSequence : MonoBehaviour
         irisOverlay.gameObject.SetActive(true);
         float aspect = Screen.height > 0 ? (float)Screen.width / Screen.height : 1f;
 
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX(SfxId.Iris);
+        }
+
         Paint(screenUV, openRadius, aspect);
         yield return AnimateRadius(screenUV, openRadius, startRadius, fillInDuration, aspect);
 
