@@ -15,9 +15,10 @@ public class MainStory : MonoBehaviour
 
     private IEnumerator WaitTime()
     {
+        yield return new WaitForSeconds(2f);
         for (int i = 0; i < _storyText.Length; i++)
         {
-            yield return StartCoroutine(TypeText(_storyText[i]));
+            yield return StartCoroutine(TypeText(_storyText[i]));//DoText대용 코르틴
             yield return new WaitForSeconds(1f);
         }
     }
