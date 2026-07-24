@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 // 적 종류:
@@ -26,14 +27,72 @@ public class LDY_Enemy : MonoBehaviour
     public LDY_EnemyType EnemyType => enemyType;
     public int TimeoutAttackDamage => timeoutAttackDamage;
 
-    // 이 무기로 맞았을 때 반사되는지 확인하고, 반사되면 플레이어에게 데미지를 주고 true를 반환한다.
+    // 이 무기로 맞으면 반사되는지만 확인한다(데미지 부작용 없음) - 반사 연출(레이저가 먼저 적에게
+    // 맞고, 그 다음 반사되어 나에게 돌아오는)을 다 보여준 뒤에 ApplyReflectDamage를 따로 불러야 할 때 쓴다.
+    public bool WillReflect(LDY_WeaponAttackShape incomingShape)
+    {
+        return enemyType == LDY_EnemyType.WeaponReflector && incomingShape == reflectAgainstShape;
+    }
+
+    // 실제로 플레이어에게 반사 데미지를 준다 - 반사 이펙트가 나에게 도달하는 시점 등, 원하는 타이밍에 호출.
+    public void ApplyReflectDamage()
+    {
+        if (KTH_PlayerHealth.Instance != null) KTH_PlayerHealth.Instance.TakeDamage(reflectDamage);
+    }
+
+    // 이 무기로 맞았을 때 반사되는지 확인하고, 반사되면 즉시 플레이어에게 데미지를 주고 true를 반환한다.
     // true가 반환되면 호출한 쪽(LDY_AttackTargetController)은 이 적을 죽이면 안 된다.
+    // (연출 타이밍을 맞춰야 하면 WillReflect + ApplyReflectDamage를 따로 써야 함 - PierceRoutine이 그 경우)
     public bool TryReflect(LDY_WeaponAttackShape incomingShape)
     {
-        if (enemyType != LDY_EnemyType.WeaponReflector) return false;
-        if (incomingShape != reflectAgainstShape) return false;
-
-        if (KTH_PlayerHealth.Instance != null) KTH_PlayerHealth.Instance.TakeDamage(reflectDamage);
+        if (!WillReflect(incomingShape)) return false;
+        ApplyReflectDamage();
         return true;
+    }
+
+    // 공격을 맞았을 때(죽기 직전) 호출 - 무기의 흔들림 강도/피격 색으로 잠깐 빨개지며 흔들리고,
+    // 무기의 hitCrackleEffect가 켜져 있으면(예: 검) 몸 위에 전기 지지직 효과도 같이 낸다.
+    public void PlayHitReaction(LDY_Weapon weapon)
+    {
+        if (weapon == null) return;
+
+        StartCoroutine(HitReactionRoutine(weapon.hitShakeIntensity, weapon.hitShakeDuration, weapon.hitFlashColor));
+
+        if (weapon.hitCrackleEffect)
+        {
+            SpriteRenderer sr = GetComponentInChildren<SpriteRenderer>();
+            float bodySize = sr != null ? Mathf.Max(sr.bounds.size.x, sr.bounds.size.y) : 1f;
+
+            GameObject go = new GameObject("CrackleEffect");
+            go.transform.SetParent(transform, false);
+            go.transform.localPosition = Vector3.zero;
+
+            LDY_CrackleEffect crackle = go.AddComponent<LDY_CrackleEffect>();
+            crackle.Init(bodySize, weapon.crackleColorA, weapon.crackleColorB, weapon.hitShakeDuration);
+        }
+    }
+
+    private IEnumerator HitReactionRoutine(float intensity, float duration, Color flashColor)
+    {
+        SpriteRenderer sr = GetComponentInChildren<SpriteRenderer>();
+        Color originalColor = sr != null ? sr.color : Color.white;
+        Vector3 originalLocalPos = transform.localPosition;
+
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+
+            if (sr != null) sr.color = Color.Lerp(flashColor, originalColor, t);
+
+            Vector2 offset = Random.insideUnitCircle * intensity * (1f - t);
+            transform.localPosition = originalLocalPos + (Vector3)offset;
+
+            yield return null;
+        }
+
+        if (sr != null) sr.color = originalColor;
+        transform.localPosition = originalLocalPos;
     }
 }
