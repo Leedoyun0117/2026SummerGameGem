@@ -1,4 +1,5 @@
-using System.Collections; // 🔥 코루틴 사용을 위한 네임스페이스
+using System.Collections;
+using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
@@ -14,13 +15,9 @@ public class KTH_PlayerMovement : MonoBehaviour
     [SerializeField] private Ease moveEase = Ease.Linear;
 
     [Header("시작 위치 체크 설정")]
-    [Tooltip("이동 시작 시 패널 유무를 체크할 트랜스폼")]
     [SerializeField] private Transform checkTransform;
-    [Tooltip("패널/발판/화살표 감지 범위를 원형으로 체크할 반지름")]
     [SerializeField] private float checkRadius = 0.3f;
-    [Tooltip("패널이 속한 레이어 Mask (0일 경우 모든 콜라이더 감지)")]
     [SerializeField] private LayerMask pathTileLayer;
-    [Tooltip("체크 전 대기할 시간(초)")]
     [SerializeField] private float checkDelay = 0.1f;
 
     [Header("회전 설정")]
@@ -38,95 +35,92 @@ public class KTH_PlayerMovement : MonoBehaviour
     private float currentAngle;
     private float rotationSign = 1f;
 
+    private Vector3 initialPosition;
+    private Quaternion initialRotation;
+    private Vector2 initialStraightDir;
+
+    private HashSet<GameObject> visitedTiles = new HashSet<GameObject>();
+
     private void Start()
     {
         if (center == null && transform.parent != null)
             center = transform.parent;
 
         straightDir = transform.up;
+
+        initialPosition = transform.position;
+        initialRotation = transform.rotation;
+        initialStraightDir = transform.up;
     }
 
-    /// <summary>
-    /// TurnManager에서 턴이 소진되었을 때 외부에서 호출
-    /// </summary>
+    public void ResetToInitialPosition()
+    {
+        currentTween?.Kill();
+        StopAllCoroutines();
+
+        transform.position = initialPosition;
+        transform.rotation = initialRotation;
+
+        isMoving = false;
+        isOnRing = false;
+        straightDir = initialStraightDir;
+
+        visitedTiles.Clear();
+
+        Debug.Log("[PlayerMovement] 플레이어가 초기 시작 위치 및 방향으로 복귀했습니다.");
+    }
+
     public void StartMovement()
     {
         if (isMoving) return;
 
-        // 🔥 코루틴을 실행하여 딜레이 후 감지 및 이동 시작
+        visitedTiles.Clear();
         StartCoroutine(StartMovementRoutine());
     }
 
-    /// <summary>
-    /// 딜레이를 준 후 물리 연산이 완료되었을 때 패널을 체크하는 코루틴
-    /// </summary>
     private IEnumerator StartMovementRoutine()
     {
         isMoving = true;
 
-        // 🔥 물리 갱신 및 프레임 안정화를 위해 지정한 시간(0.1초) 대기
         if (checkDelay > 0f)
-        {
             yield return new WaitForSeconds(checkDelay);
-        }
         else
-        {
             yield return new WaitForEndOfFrame();
-        }
 
-        // 1. 딜레이 후 CheckTransform 위치의 패널 유무 검사
         bool hasTile = HasTileAtCheckTransform();
 
-        // 2. 패널이 없는 경우: 체크 위치로 이동 후 보스 턴 전환
         if (checkTransform != null && !hasTile)
         {
-            Debug.Log("[PlayerMovement] 체크 위치에 패널이 없습니다! 체크 위치로 이동 후 보스 턴 전환");
+            Debug.Log("[PlayerMovement] 패널 없음 -> 체크 위치 이동 후 보스 턴");
             MoveToCheckTransformAndEndTurn();
             yield break;
         }
 
-        // 3. 패널이 정상적으로 존재하는 경우: 카메라 줌인 후 이동
         if (KTH_CameraMoving.Instance != null)
         {
             KTH_CameraMoving.Instance.ZoomIn();
         }
 
-        isMoving = false; // MoveStep 내부에서 true로 다시 변경함
+        isMoving = false;
         MoveStep();
     }
 
     private bool HasTileAtCheckTransform()
     {
-        if (checkTransform == null)
-        {
-            Debug.LogWarning("[PlayerMovement] CheckTransform이 연결되지 않았습니다.");
-            return true;
-        }
+        if (checkTransform == null) return true;
 
-        Collider2D hit;
-        if (pathTileLayer == 0)
-        {
-            hit = Physics2D.OverlapCircle(checkTransform.position, checkRadius);
-        }
-        else
-        {
-            hit = Physics2D.OverlapCircle(checkTransform.position, checkRadius, pathTileLayer);
-        }
+        Collider2D hit = (pathTileLayer == 0)
+            ? Physics2D.OverlapCircle(checkTransform.position, checkRadius)
+            : Physics2D.OverlapCircle(checkTransform.position, checkRadius, pathTileLayer);
 
         if (hit != null)
         {
-            // 감지된 오브젝트가 플레이어 자신 또는 자식이면 패널이 없는 것으로 간주
             if (hit.gameObject == gameObject || hit.transform.IsChildOf(transform))
-            {
-                Debug.Log($"[PlayerMovement] 감지된 콜라이더가 플레이어 자신({hit.name})이므로 패널 없음 처리");
                 return false;
-            }
 
-            Debug.Log($"[PlayerMovement] 패널 감지 성공: {hit.name}");
             return true;
         }
 
-        Debug.Log("[PlayerMovement] 체크 위치에 패널 없음");
         return false;
     }
 
@@ -139,17 +133,7 @@ public class KTH_PlayerMovement : MonoBehaviour
             .SetEase(moveEase)
             .OnComplete(() =>
             {
-                isMoving = false;
-
-                if (KTH_CameraMoving.Instance != null)
-                {
-                    KTH_CameraMoving.Instance.ZoomOut();
-                }
-
-                if (KTH_TurnManager.Instance != null)
-                {
-                    KTH_TurnManager.Instance.NextTurn();
-                }
+                EndMovementAndNextTurn();
             });
     }
 
@@ -159,13 +143,9 @@ public class KTH_PlayerMovement : MonoBehaviour
         isMoving = true;
 
         if (isOnRing)
-        {
             MoveStepOnRing();
-        }
         else
-        {
             MoveStepStraight();
-        }
     }
 
     private void MoveStepStraight()
@@ -222,26 +202,49 @@ public class KTH_PlayerMovement : MonoBehaviour
     {
         if (other.CompareTag(endZoneTag))
         {
-            Debug.Log($"[PlayerMovement] 맨 끝 콜라이더({other.name}) 충돌! -> 보스 턴 진행");
-            currentTween?.Kill();
-            isMoving = false;
-
-            if (KTH_CameraMoving.Instance != null)
-            {
-                KTH_CameraMoving.Instance.ZoomOut();
-            }
-
-            if (KTH_TurnManager.Instance != null)
-            {
-                KTH_TurnManager.Instance.NextTurn();
-            }
+            EndMovementAndNextTurn();
             return;
         }
 
-        KTH_Arrow arrow = other.GetComponentInParent<KTH_Arrow>();
-        if (arrow == null) return;
+        // 🔥 새 KTH_Tile 컴포넌트 감지
+        KTH_Tile tile = other.GetComponentInParent<KTH_Tile>();
+        if (tile == null) return;
 
-        Vector2 arrowDir = arrow.GetArrowDirection();
+        GameObject tileObj = tile.gameObject;
+
+        // 🔥 이미 밟았던 패널 재방문 처리
+        if (visitedTiles.Contains(tileObj))
+        {
+            Debug.Log($"[PlayerMovement] 이미 밟았던 패널({tileObj.name}) 재방문! -> 이동 종료");
+            EndMovementAndNextTurn();
+            return;
+        }
+
+        visitedTiles.Add(tileObj);
+
+        // 🔥 Enum 타입에 따른 분기 처리
+        switch (tile.CurrentTileType)
+        {
+            case TileType.Arrow:
+                // 1. 화살표인 경우: 기존대로 경로 변경 후 이동 지속
+                ProcessArrowTile(tile);
+                break;
+
+            case TileType.Attack:
+                // 2. 공격 타일인 경우: 보스 공격 후 이동 멈춤 & 턴 전환
+                ProcessAttackTile(tile);
+                break;
+        }
+    }
+
+    /// <summary>
+    /// 화살표 타일 발판 로직
+    /// </summary>
+    private void ProcessArrowTile(KTH_Tile tile)
+    {
+        transform.position = tile.transform.position;
+
+        Vector2 arrowDir = tile.GetArrowDirection();
 
         Vector2 offset = transform.position - center.position;
         radius = offset.magnitude;
@@ -266,6 +269,39 @@ public class KTH_PlayerMovement : MonoBehaviour
         currentTween?.Kill();
         isMoving = false;
         MoveStep();
+    }
+
+    /// <summary>
+    /// 공격 타일 발판 로직
+    /// </summary>
+    private void ProcessAttackTile(KTH_Tile tile)
+    {
+        currentTween?.Kill();
+        isMoving = false;
+
+        // 플레이어 위치를 공격 타일 중앙으로 보정
+        transform.position = tile.transform.position;
+
+        Debug.Log($"[PlayerMovement] 공격 타일({tile.gameObject.name}) 도달 -> 이동 중단 및 보스 턴 전환");
+
+        // 바로 카메라 줌아웃 및 보스 턴으로 전환
+        EndMovementAndNextTurn();
+    }
+
+    private void EndMovementAndNextTurn()
+    {
+        currentTween?.Kill();
+        isMoving = false;
+
+        if (KTH_CameraMoving.Instance != null)
+        {
+            KTH_CameraMoving.Instance.ZoomOut();
+        }
+
+        if (KTH_TurnManager.Instance != null)
+        {
+            KTH_TurnManager.Instance.NextTurn();
+        }
     }
 
     private void RotateTo(Vector2 dir)

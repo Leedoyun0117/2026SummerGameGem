@@ -138,18 +138,22 @@ public class KTH_TurnManager : MonoBehaviour
             // 보스 턴 종료 -> 다시 플레이어 조작 턴으로 복귀, 위치 리셋 및 턴 충전
             case TurnState.BossTurn:
                 currentState = TurnState.PlayerInput;
-                moveCount = 0; // 턴 충전
-                wasRingRotating = false;
-                wasRadialShifting = false;
+                moveCount = 0;
 
-                // 🔥 보스 턴 종료 -> 플레이어 턴으로 돌아올 때 새로운 적 랜덤 스폰!
-                KTH_RandomEnemySpawner spawner = FindFirstObjectByType<KTH_RandomEnemySpawner>();
-                if (spawner != null)
+                // 🔥 보스 턴 종료 후 플레이어를 시작 원위치로 복귀시키기!
+                KTH_PlayerMovement player = FindFirstObjectByType<KTH_PlayerMovement>();
+                if (player != null)
+                {
+                    player.ResetToInitialPosition(); // 이 호출에 의해 원위치 복귀 실행
+                }
+
+                // 새로운 적/화살표 랜덤 스폰
+                KTH_RandomEnemySpawner[] spawners = FindObjectsByType<KTH_RandomEnemySpawner>(FindObjectsSortMode.None);
+                foreach (KTH_RandomEnemySpawner spawner in spawners)
                 {
                     spawner.OnMyTurnSpawn();
                 }
 
-                // 링 선택 매니저 다시 활성화
                 if (LDY_RingSelectionManager.Instance != null)
                 {
                     LDY_RingSelectionManager.Instance.enabled = true;

@@ -9,23 +9,18 @@ public class KTH_RandomEnemySpawner : MonoBehaviour
     public class RandomSpawnGroup
     {
         [Header("스폰 개수 설정")]
-        [Tooltip("targetTileIndices에 등록된 타일들 중 실제로 적을 생성할 타일의 개수")]
         [Min(1)] public int spawnCount = 1;
 
         [Header("필수 생성적 (무조건 1개 이상 배치됨)")]
-        [Tooltip("이 타일들 중 최소 하나에는 이 적이 무조건 들어갑니다.")]
         public GameObject mandatoryEnemyPrefab;
 
         [Header("랜덤 적 목록 (나머지 타일 채우기용)")]
-        [Tooltip("필수 적을 제외한 나머지 타일에 랜덤으로 들어갈 적 프리팹들")]
         public GameObject[] randomEnemyPool;
 
         [Header("배치 가능한 전체 타일 인덱스 목록")]
-        [Tooltip("적 스폰 후보 타일 번호들")]
         public List<int> targetTileIndices = new List<int>();
 
         [Header("옵션")]
-        [Tooltip("체크 시 필수 적을 1개만 배치하지 않고 무작위 개수로 여러 개 배치할 수도 있음")]
         public bool allowMultipleMandatory = false;
     }
 
@@ -35,7 +30,6 @@ public class KTH_RandomEnemySpawner : MonoBehaviour
     private LDY_RingEnemySpawner enemySpawner;
     private LDY_RingController ringController;
 
-    // 🔥 직접 스폰한 화살표/적 게임오브젝트만 기억하는 리스트
     private List<GameObject> spawnedInstances = new List<GameObject>();
 
     private void Awake()
@@ -49,9 +43,6 @@ public class KTH_RandomEnemySpawner : MonoBehaviour
         OnMyTurnSpawn();
     }
 
-    /// <summary>
-    /// 외부(TurnManager 등)에서 플레이어 턴 시작 시 호출하는 메인 스폰 함수
-    /// </summary>
     public void OnMyTurnSpawn()
     {
         StartCoroutine(SpawnRoutine());
@@ -66,22 +57,21 @@ public class KTH_RandomEnemySpawner : MonoBehaviour
             yield return null;
         }
 
-        // 🔥 1. 이 스크립트가 생성했던 화살표/적만 깔끔하게 파괴 (원판은 안전!)
+        // 1. 기존 생성된 타일만 골라서 안전하게 청소
         ClearAndDestroyAllOccupants();
 
-        // 🔥 2. 새로운 무작위 배치 생성
+        yield return new WaitForEndOfFrame();
+
+        // 2. 무작위 타일 생성
         SpawnRandomTiles();
     }
 
-    /// <summary>
-    /// 원판을 건드리지 않고, 이전에 생성된 적/화살표 오브젝트만 정확하게 파괴
-    /// </summary>
     private void ClearAndDestroyAllOccupants()
     {
         if (enemySpawner == null)
             enemySpawner = GetComponent<LDY_RingEnemySpawner>();
 
-        // 1. 직접 관리하던 스폰 오브젝트만 파괴
+        // 1. 추적 리스트에 등록된 타일 파괴
         for (int i = spawnedInstances.Count - 1; i >= 0; i--)
         {
             if (spawnedInstances[i] != null)
@@ -91,7 +81,7 @@ public class KTH_RandomEnemySpawner : MonoBehaviour
         }
         spawnedInstances.Clear();
 
-        // 2. 링 점유 정보(Occupant)의 오브젝트 파괴 및 null 처리
+        // 2. 링 슬롯 데이터 비우기
         if (ringController != null && ringController.Ring != null)
         {
             for (int i = 0; i < ringController.Ring.SlotCount; i++)
@@ -99,25 +89,34 @@ public class KTH_RandomEnemySpawner : MonoBehaviour
                 RingSlot slot = ringController.Ring.GetSlot(i);
                 if (slot != null && slot.occupant != null)
                 {
-                    // 링에 배치된 occupant가 우리가 생성한 것이라면 안전하게 제거
-                    Destroy(slot.occupant);
+                    // WheelVisual 같은 본체 그래픽이 아닌 KTH_Tile 타일인 경우만 삭제
+                    if (slot.occupant.GetComponent<KTH_Tile>() != null)
+                    {
+                        Destroy(slot.occupant);
+                    }
                     slot.occupant = null;
                 }
             }
         }
 
-        // 3. Spawner의 에디터 정보 비우기
+        // 3. 🔥 안전한 파괴: KTH_Tile 컴포넌트를 가진 자식만 골라서 파괴 (WheelVisual 등 링 그래픽 보호)
+        KTH_Tile[] existingTiles = GetComponentsInChildren<KTH_Tile>();
+        foreach (KTH_Tile tile in existingTiles)
+        {
+            if (tile != null && tile.gameObject != null)
+            {
+                Destroy(tile.gameObject);
+            }
+        }
+
         enemySpawner.ClearAllEntries();
     }
 
-    /// <summary>
-    /// 타일을 무작위 추출하여 생성 및 링 슬롯에 배치
-    /// </summary>
     private void SpawnRandomTiles()
     {
         if (spawnGroup.targetTileIndices == null || spawnGroup.targetTileIndices.Count == 0)
         {
-            Debug.LogWarning("[RandomEnemySpawner] 지정된 targetTileIndices 타일 목록이 없습니다.");
+            Debug.LogWarning("[RandomEnemySpawner] targetTileIndices 목록이 비어있습니다.");
             return;
         }
 
@@ -127,7 +126,9 @@ public class KTH_RandomEnemySpawner : MonoBehaviour
         int countToSpawn = Mathf.Clamp(spawnGroup.spawnCount, 1, availableTiles.Count);
         List<int> selectedTiles = availableTiles.GetRange(0, countToSpawn);
 
-        // 1. 필수 적(Mandatory Enemy) 생성
+        Debug.Log($"[RandomEnemySpawner] 이번 턴 선택된 타일 인덱스 목록: {string.Join(", ", selectedTiles)}");
+
+        // 1. 필수 적 생성
         if (spawnGroup.mandatoryEnemyPrefab != null && selectedTiles.Count > 0)
         {
             int mandatoryTileIndex = selectedTiles[0];
@@ -135,7 +136,7 @@ public class KTH_RandomEnemySpawner : MonoBehaviour
             selectedTiles.RemoveAt(0);
         }
 
-        // 2. 나머지 선택된 타일에 랜덤 적 생성
+        // 2. 나머지 선택된 타일에 무작위 생성
         if (spawnGroup.randomEnemyPool != null && spawnGroup.randomEnemyPool.Length > 0)
         {
             foreach (int tileIndex in selectedTiles)
@@ -158,13 +159,8 @@ public class KTH_RandomEnemySpawner : MonoBehaviour
                 }
             }
         }
-
-        Debug.Log($"[RandomEnemySpawner] 원판 유지 + 새로운 타일 {spawnedInstances.Count}개 스폰 완료!");
     }
 
-    /// <summary>
-    /// 프리팹 생성 후 링 슬롯 안착 및 파괴 대상 리스트에 등록
-    /// </summary>
     private void CreateAndPlaceTile(int tileIndex, GameObject prefab)
     {
         if (prefab == null || ringController == null || ringController.Ring == null) return;
@@ -184,12 +180,15 @@ public class KTH_RandomEnemySpawner : MonoBehaviour
 
     private void ShuffleList<T>(List<T> list)
     {
-        for (int i = list.Count - 1; i > 0; i--)
+        System.Random rng = new System.Random();
+        int n = list.Count;
+        while (n > 1)
         {
-            int randomIndex = UnityEngine.Random.Range(0, i + 1);
-            T temp = list[i];
-            list[i] = list[randomIndex];
-            list[randomIndex] = temp;
+            n--;
+            int k = rng.Next(n + 1);
+            T value = list[k];
+            list[k] = list[n];
+            list[n] = value;
         }
     }
 }
