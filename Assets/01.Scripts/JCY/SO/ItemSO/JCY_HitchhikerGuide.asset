@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f0ff30234db8b544ba01c18198a1bbc, type: 3}
+  m_Name: JCY_HitchhikerGuide
+  m_EditorClassIdentifier: Assembly-CSharp::JCY_ItemSO
+  itemName: "\uD788\uD0A4\uD558\uC774\uCEE4 \uC548\uB0B4\uC11C"
+  icon: {fileID: -1895107926291468567, guid: 44a443188b06db044ae468827d3c51b9, type: 3}
+  cost: 0
+  maxHealthUP: 0
+  curHealthUP: 0
+  backStarPiece: 0
+  maxTimeUP: 0

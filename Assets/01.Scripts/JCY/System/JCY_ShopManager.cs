@@ -7,6 +7,7 @@ public class JCY_ShopManager : MonoBehaviour
     public GameObject[] _items;
     public GameObject[] _displayPoint;
     public TextMeshProUGUI[] _displayCost;
+    public TextMeshProUGUI[] _displayName;
     private JCY_ItemSO _itemSO;
 
     private void Awake()
@@ -34,6 +35,7 @@ public class JCY_ShopManager : MonoBehaviour
             JCY_Item item = obj.GetComponent<JCY_Item>();
             _itemSO = item.ItemSO;
             _displayCost[i].text = _itemSO.cost.ToString();
+            _displayName[i].text = _itemSO.itemName;
         }
     }
 }
