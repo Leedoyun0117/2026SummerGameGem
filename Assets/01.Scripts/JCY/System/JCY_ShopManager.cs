@@ -1,18 +1,31 @@
 using System.Collections.Generic;
+using System.Drawing;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class JCY_ShopManager : MonoBehaviour
 {
+    private JCY_ItemSO _itemSO;
     public static JCY_ShopManager instance;
-
+    [SerializeField] private TextMeshProUGUI countTxt;
+    [Header("아이템 진열")]
     public GameObject[] _items;
     private List<GameObject> itemList;
+
+    // 우주의 비밀이 무작위 효과를 뽑을 때 쓰는 전체 아이템 풀(이번 런에서 이미 팔린 것도 포함한 원본 목록)
+    public GameObject[] AllItemPrefabs => _items;
 
     public GameObject[] _displayPoint;
     public TextMeshProUGUI[] _displayCost;
     public TextMeshProUGUI[] _displayName;
-    private JCY_ItemSO _itemSO;
+
+    [Header("상점 애니메이션")]
+    [SerializeField] private Animator animator;
+    [SerializeField] private CanvasGroup canvasGroup;
+    [SerializeField]private GameObject shop_UI;
+
+
 
     private void Awake()
     {
@@ -27,9 +40,34 @@ public class JCY_ShopManager : MonoBehaviour
 
         itemList = new List<GameObject>(_items);
     }
+    private void Start()
+    {
+        shop_UI.SetActive(false);
+    }
     private void OnEnable()
     {
+        // 상점에 새로 진입할 때마다(리롤 포션으로 다시 여는 것과는 별개) 포션 구매 한도를 초기화한다.
+        if (JCY_RunProgress.Instance != null) JCY_RunProgress.Instance.ResetPotionPurchaseCount();
+
         DisplayItems();
+    }
+    private void Update()
+    {
+        if (Keyboard.current.oKey.wasPressedThisFrame)
+        {
+            OpenShop();
+        }
+
+        if (Keyboard.current.cKey.wasPressedThisFrame)
+        {
+            CloseShop();
+        }
+
+        if(Keyboard.current.mKey.wasPressedThisFrame)
+        {
+            Debug.Log("돈저");
+            StarPieceManager.instance.StarPieceUP(100);
+        }
     }
 
     public void DisplayItems()
@@ -76,5 +114,33 @@ public class JCY_ShopManager : MonoBehaviour
     public void RemoveItem(GameObject item)
     {
         itemList.Remove(item);
+    }
+
+    public void OpenShop()
+    {
+        shop_UI.SetActive(true);
+
+        canvasGroup.interactable = true;
+        canvasGroup.blocksRaycasts = true;
+        JCY_RunProgress.Instance.ResetPotionPurchaseCount();
+        countTxt.text = $"현재 포션 구매 한도:{JCY_RunProgress.Instance.PotionPurchaseLimit}";
+
+        animator.SetTrigger("Open");
+        
+
+        DisplayItems();
+    }
+
+    public void CloseShop()
+    {
+        
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
+
+        animator.SetTrigger("Close");
+    }
+    public void CloseEnd()
+    {
+        shop_UI.SetActive(false);
     }
 }

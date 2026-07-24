@@ -14,9 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::JCY_ItemSO
   itemName: "\uC6B4\uC11D\uC758 \uD30C\uD3B8"
   icon: {fileID: -5764648886331791844, guid: b15b692b771d36247b59d9d262f2747a, type: 3}
-  cost: 0
+  cost: 20
   maxHealthUP: 0
   curHealthUP: 0
-  Description: 
+  Description: "\uBCC4\uC870\uAC01\uC744 \uC5BB\uC744 \uB54C\uB9C8\uB2E4 30% \uD655\uB960\uB85C
+    1\uBCC4\uC870\uAC01\uC744 \uB354 \uC5BB\uC2B5\uB2C8\uB2E4."
   backStarPiece: 0
   maxTimeUP: 0
+  effectType: 11
+  effectAmount: 0

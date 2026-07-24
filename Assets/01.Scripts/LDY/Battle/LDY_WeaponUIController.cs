@@ -41,6 +41,8 @@ public class LDY_WeaponUIController : MonoBehaviour
 
     private void Awake()
     {
+        ApplyDamageBonuses();
+
         if (weaponPanel != null) weaponPanel.SetActive(false);
         if (attackButton != null) attackButton.gameObject.SetActive(false);
         if (attackHintUI != null) attackHintUI.SetActive(false);
@@ -63,6 +65,33 @@ public class LDY_WeaponUIController : MonoBehaviour
         }
 
         if (attackButton != null) attackButton.onClick.AddListener(ExecuteAttackFromButton);
+    }
+
+    // 사수자리의 활/태양빛 촛불/가시물고기의 뼛조각 아이템으로 쌓인 무기별 데미지 보너스를 반영한다.
+    // 일반 전투는 적이 항상 한 방에 죽어서 damage 수치 자체는 안 쓰이지만, 설명 텍스트는 보스 전투와
+    // 일관되게 "재련된" 버전으로 보여주기 위해 여기서도 똑같이 적용해둔다.
+    private void ApplyDamageBonuses()
+    {
+        if (weapons == null || JCY_RunProgress.Instance == null) return;
+
+        JCY_RunProgress progress = JCY_RunProgress.Instance;
+        foreach (LDY_Weapon weapon in weapons)
+        {
+            if (weapon == null) continue;
+
+            int bonus = weapon.shape switch
+            {
+                LDY_WeaponAttackShape.Vertical1x4 => progress.bowDamageBonus,
+                LDY_WeaponAttackShape.Square2x2 => progress.explosionDamageBonus,
+                LDY_WeaponAttackShape.Horizontal4x1 => progress.swordDamageBonus,
+                _ => 0,
+            };
+
+            if (bonus <= 0) continue;
+
+            weapon.damage += bonus;
+            weapon.isForged = true;
+        }
     }
 
     private void Start()
@@ -226,8 +255,13 @@ public class LDY_WeaponUIController : MonoBehaviour
             weaponHighlights[index].SetActive(true);
         }
 
+        LDY_Weapon selected = weapons[index];
+        string shownDescription = (selected.isForged && !string.IsNullOrEmpty(selected.forgedDescription))
+            ? selected.forgedDescription
+            : selected.description;
+
         if (descriptionRoutine != null) StopCoroutine(descriptionRoutine);
-        descriptionRoutine = StartCoroutine(SwitchDescriptionRoutine(weapons[index].description));
+        descriptionRoutine = StartCoroutine(SwitchDescriptionRoutine(shownDescription));
     }
 
     private void ExecuteAttackFromButton()

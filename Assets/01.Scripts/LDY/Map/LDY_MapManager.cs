@@ -105,16 +105,16 @@ public class LDY_MapManager : MonoBehaviour
         {
             case LDY_NodeType.Battle:
                 BattleEntryCount++;
-                RequestSceneLoad(battleSceneName, screenUV);
+                RequestSceneLoad(battleSceneName, screenUV, node.type);
                 break;
             case LDY_NodeType.Boss:
-                RequestSceneLoad(bossSceneName, screenUV);
+                RequestSceneLoad(bossSceneName, screenUV, node.type);
                 break;
             case LDY_NodeType.Shop:
-                onShopNodeSelected?.Invoke(node);
+                RequestPopup(screenUV, node, onShopNodeSelected);
                 break;
             case LDY_NodeType.Event:
-                onEventNodeSelected?.Invoke(node);
+                RequestPopup(screenUV, node, onEventNodeSelected);
                 break;
             case LDY_NodeType.Start:
                 CompleteNode(index);
@@ -148,13 +148,22 @@ public class LDY_MapManager : MonoBehaviour
     private bool IsValidIndex(int index) => index >= 0 && index < Nodes.Count;
 
     // 씬 전환 연출(LDY_SceneTransition)이 씬에 있으면 그걸 거쳐서, 없으면 곧바로 씬을 로드
-    private void RequestSceneLoad(string sceneName, Vector2 screenUV)
+    private void RequestSceneLoad(string sceneName, Vector2 screenUV, LDY_NodeType nodeType)
     {
         if (string.IsNullOrEmpty(sceneName)) return;
 
         if (LDY_SceneTransition.Instance != null)
-            LDY_SceneTransition.Instance.PlayIrisCloseThenLoad(screenUV, sceneName);
+            LDY_SceneTransition.Instance.PlayIrisCloseThenLoad(screenUV, sceneName, nodeType);
         else
             SceneManager.LoadScene(sceneName);
+    }
+
+    // 상점/이벤트처럼 씬은 안 넘어가고 팝업만 여는 경우에도, 아이리스가 다 닫힌 뒤에 팝업 이벤트를 발생시킴
+    private void RequestPopup(Vector2 screenUV, LDY_MapNode node, LDY_MapNodeUnityEvent popupEvent)
+    {
+        if (LDY_SceneTransition.Instance != null)
+            LDY_SceneTransition.Instance.PlayIrisCloseThen(screenUV, node.type, () => popupEvent?.Invoke(node));
+        else
+            popupEvent?.Invoke(node);
     }
 }

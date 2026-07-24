@@ -12,10 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f0ff30234db8b544ba01c18198a1bbc, type: 3}
   m_Name: JCY_Feather
   m_EditorClassIdentifier: Assembly-CSharp::JCY_ItemSO
-  itemName: "\uBC31\uC870\uC790\uB9AC\uC758 \uAE43\uD138"
+  itemName: "백조자리의 깃털"
   icon: {fileID: 1367688142790633418, guid: 44a443188b06db044ae468827d3c51b9, type: 3}
-  cost: 3
+  cost: 40
   maxHealthUP: 0
   curHealthUP: 0
+  Description: "이후 아이템을 구매할 때마다 전투 턴 제한시간이 0.75초씩 늘어납니다."
   backStarPiece: 0
   maxTimeUP: 0
+  effectType: 5
+  effectAmount: 0

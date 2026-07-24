@@ -30,16 +30,21 @@ public class LDY_MapNodeView : MonoBehaviour
     private LDY_MapManager manager;
     private LDY_MapNode nodeData;
     private LDY_MapTheme theme;
+    private LDY_MapPlayerToken playerToken;
+    private LDY_MapUIController uiController;
 
     private bool isPulsing;
     private bool isRingActive;
     private float phaseOffset;
     private Color pulseBaseColor;
 
-    public void Initialize(LDY_MapManager manager, LDY_MapNode node, int index, LDY_MapTheme theme)
+    public void Initialize(LDY_MapManager manager, LDY_MapNode node, int index, LDY_MapTheme theme,
+        LDY_MapPlayerToken playerToken, LDY_MapUIController uiController)
     {
         this.manager = manager;
         this.theme = theme;
+        this.playerToken = playerToken;
+        this.uiController = uiController;
         nodeData = node;
         NodeIndex = index;
         phaseOffset = Random.Range(0f, Mathf.PI * 2f);
@@ -115,8 +120,9 @@ public class LDY_MapNodeView : MonoBehaviour
         if (isPulsing)
         {
             float intensity = theme.glowHdrIntensity;
-            Color typeColor = theme.GetTypeGlowColor(nodeData.type);
-            pulseBaseColor = new Color(typeColor.r * intensity, typeColor.g * intensity, typeColor.b * intensity, 1f);
+            bool playerHere = uiController != null && uiController.IsPlayerAt(NodeIndex);
+            Color baseColor = playerHere ? theme.playerGlow : theme.GetTypeGlowColor(nodeData.type);
+            pulseBaseColor = new Color(baseColor.r * intensity, baseColor.g * intensity, baseColor.b * intensity, 1f);
         }
         else
         {
@@ -148,14 +154,36 @@ public class LDY_MapNodeView : MonoBehaviour
 
     private void HandleClick()
     {
-        manager.OnNodeClicked(NodeIndex, GetScreenUV());
+        if (playerToken != null)
+        {
+            // 플레이어가 이 노드로 걸어가서 도착한 뒤, 그 자리(플레이어 위치) 기준으로 처리
+            playerToken.MoveTo(nodeData.position, () =>
+            {
+                uiController?.OnPlayerArrivedAt(NodeIndex);
+                manager.OnNodeClicked(NodeIndex, playerToken.GetScreenUV());
+            });
+        }
+        else
+        {
+            manager.OnNodeClicked(NodeIndex, GetScreenUV());
+        }
     }
 
-    // 씬 전환 아이리스 연출의 중심점으로 쓰기 위한, 이 노드의 화면상 위치(0~1)
+    // 씬 전환 아이리스 연출의 중심점으로 쓰기 위한, 이 노드의 화면상 위치(0~1) (playerToken이 없을 때의 폴백).
+    // 캔버스의 world scale이 CanvasScaler 때문에 실제 픽셀과 안 맞을 수 있으므로 InverseTransformPoint로
+    // 캔버스 로컬 공간으로 정확히 변환한 뒤 canvas.rect(참조 해상도) 기준 0~1 비율을 계산함
     private Vector2 GetScreenUV()
     {
-        Vector3 screenPoint = RectTransformUtility.WorldToScreenPoint(null, RectTransform.position);
-        return new Vector2(screenPoint.x / Screen.width, screenPoint.y / Screen.height);
+        Canvas canvas = GetComponentInParent<Canvas>();
+        if (canvas == null) return new Vector2(0.5f, 0.5f);
+
+        RectTransform canvasRect = (RectTransform)canvas.transform;
+        Vector3 localPos = canvasRect.InverseTransformPoint(RectTransform.position);
+        Rect rect = canvasRect.rect;
+
+        return new Vector2(
+            (localPos.x - rect.xMin) / rect.width,
+            (localPos.y - rect.yMin) / rect.height);
     }
 
     private Sprite GetIcon(LDY_NodeType type)

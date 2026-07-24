@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f0ff30234db8b544ba01c18198a1bbc, type: 3}
   m_Name: JCY_Watermelon
   m_EditorClassIdentifier: Assembly-CSharp::JCY_ItemSO
-  itemName: "\uC6B0\uC8FC\uC815\uAC70\uC7A5 \uAFC0\uC218\uBC15"
+  itemName: "우주정거장 꿀수박"
   icon: {fileID: 5870870447065089172, guid: b15b692b771d36247b59d9d262f2747a, type: 3}
-  cost: 0
-  maxHealthUP: 0
-  curHealthUP: 0
-  Description: 
+  cost: 30
+  maxHealthUP: 5
+  curHealthUP: 20
+  Description: "현재체력이 20 회복되고, 최대체력이 5 증가합니다."
   backStarPiece: 0
   maxTimeUP: 0
+  effectType: 19
+  effectAmount: 0

@@ -61,6 +61,9 @@ public class LDY_MapTheme : ScriptableObject
     public Color shopGlow = new Color32(0x52, 0xC9, 0x7A, 0xFF);
     public Color bossGlow = new Color32(0xB0, 0x52, 0xE0, 0xFF);
 
+    [Header("플레이어가 서있는 노드 글로우 (타입 색보다 우선)")]
+    public Color playerGlow = new Color32(0x5A, 0xC8, 0xE8, 0xFF);
+
     public Color GetTypeGlowColor(LDY_NodeType type)
     {
         switch (type)

@@ -2,9 +2,9 @@ using System.Collections;
 using UnityEngine;
 
 // StarPiece 조각 하나의 연출: 떨어진 자리에서 살짝 튀어올랐다가(bounce) dropDuration 동안 가만히
-// 있다가, 부모(dropUIParent) 기준 anchoredPosition (0,0)으로 flyDuration 동안 날아가면서 점점
-// 작아지다 사라진다("골드가 UI로 빨려들어가는" 느낌). 도착하면 LDY_StarPieceManager로 재화가 더해지고
-// UI 텍스트도 갱신된다.
+// 있다가, 목적지(flyTarget - 없으면 부모 기준 anchoredPosition (0,0))로 flyDuration 동안 날아가면서
+// 점점 작아지다 사라진다("골드가 UI로 빨려들어가는" 느낌). 도착하면 LDY_StarPieceManager로 재화가
+// 더해지고 UI 텍스트도 갱신된다.
 // Screen Space Overlay UI 기준 - LDY_StarPieceManager.SpawnDrops가 시작 위치를 스크린 좌표로 잡아준다.
 [RequireComponent(typeof(RectTransform))]
 public class LDY_StarPieceDrop : MonoBehaviour
@@ -16,10 +16,14 @@ public class LDY_StarPieceDrop : MonoBehaviour
     [SerializeField] private AnimationCurve flyEase = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
 
     private RectTransform rt;
+    private RectTransform flyTarget;
     private int amount;
 
-    public void Init(int starPieceAmount)
+    // flyTarget이 있으면(예: 화면의 플레이어 위치/재화 카운터 아이콘) 그 위치로, 없으면 부모 기준
+    // (0,0)으로 날아간다 - 씬마다(맵/전투) 목적지가 다를 수 있어서 매번 넘겨받는다.
+    public void Init(RectTransform target, int starPieceAmount)
     {
+        flyTarget = target;
         amount = starPieceAmount;
         rt = GetComponent<RectTransform>();
         StartCoroutine(Sequence());
@@ -45,9 +49,9 @@ public class LDY_StarPieceDrop : MonoBehaviour
         float remainingWait = dropDuration - bounceDuration;
         if (remainingWait > 0f) yield return new WaitForSeconds(remainingWait);
 
-        // 3) 부모 기준 (0,0)으로 날아가며 점점 작아짐
+        // 3) 목적지로 날아가며 점점 작아짐 (flyTarget이 있으면 그 위치, 없으면 부모 기준 (0,0))
         Vector2 flyStart = rt.anchoredPosition;
-        Vector2 flyEnd = Vector2.zero;
+        Vector2 flyEnd = flyTarget != null ? flyTarget.anchoredPosition : Vector2.zero;
 
         t = 0f;
         while (t < flyDuration)

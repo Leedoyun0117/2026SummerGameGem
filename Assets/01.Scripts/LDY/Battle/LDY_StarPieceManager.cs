@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 // StarPiece 재화 매니저 - 적이 죽은 자리에 조각을 흩뿌리는 연출(SpawnDrops)을 내고, 조각이 목적지
 // (dropUIParent 기준 anchoredPosition (0,0))에 도착하면 Count를 올리고 UI 텍스트를 갱신한다.
@@ -8,8 +9,11 @@ public class LDY_StarPieceManager : MonoBehaviour
 {
     public static LDY_StarPieceManager Instance { get; private set; }
 
-    [Header("드롭 오브젝트가 생성될 UI 부모 (Screen Space Overlay Canvas 하위) - 조각은 이 부모 기준 (0,0)으로 날아간다")]
+    [Header("드롭 오브젝트가 생성될 UI 부모 (Screen Space Overlay Canvas 하위)")]
     [SerializeField] private RectTransform dropUIParent;
+
+    [Header("조각이 날아가는 목적지(플레이어 위치/재화 카운터 아이콘 등) - 비워두면 dropUIParent 기준 (0,0)으로 날아감")]
+    [SerializeField] private RectTransform flyTarget;
 
     [Header("LDY_StarPieceDrop이 붙은 UI 프리팹(Image 등)")]
     [SerializeField] private GameObject starPieceDropPrefab;
@@ -31,17 +35,51 @@ public class LDY_StarPieceManager : MonoBehaviour
 
     private void Awake()
     {
+        // 맵 <-> 전투 씬을 오가도 재화 UI가 계속 떠 있도록, 이미 하나 있으면(이전 씬에서 넘어온 것)
+        // 이번에 새로 생긴 쪽을 파괴하고, 처음이면 파괴되지 않게 표시해둔다.
+        if (Instance != null && Instance != this)
+        {
+            Destroy(transform.root.gameObject);
+            return;
+        }
+
         Instance = this;
+        // DontDestroyOnLoad는 "최상위(루트)" 오브젝트에만 걸 수 있다 - 이 스크립트가 Canvas 밑
+        // 자식에 붙어있으면 gameObject 그대로는 예외가 나서(그 뒤 초기화가 전부 씹힘) transform.root를 쓴다.
+        DontDestroyOnLoad(transform.root.gameObject);
+
         if (worldCamera == null) worldCamera = Camera.main;
         UpdateCountText();
+
+        // 씬이 바뀌면(맵 <-> 전투) Camera.main도 그 씬의 카메라로 바뀌므로, 캐시해둔 worldCamera를
+        // 새로 잡아준다 - 안 그러면 화면 좌표 계산이 이전 씬 카메라 기준으로 어긋난다.
+        SceneManager.sceneLoaded += (scene, mode) => worldCamera = Camera.main;
     }
 
-    // 조각 하나가 목적지에 도착할 때마다 호출된다(LDY_StarPieceDrop에서).
+    // 조각 하나가 목적지에 도착할 때마다 호출된다(LDY_StarPieceDrop에서). 상점에서 아이템 보상으로
+    // 골드를 지급할 때도(JCY_ItemManager 등) 이 메서드를 그대로 쓴다 - 화폐가 하나로 통합되어 있다.
     public void NotifyPieceCollected(int amount)
     {
         Count += amount;
         OnCountChanged?.Invoke(Count);
         UpdateCountText();
+
+        // 운석의 파편 - 골드를 얻을 때마다 30% 확률로 1을 추가로 더 준다.
+        if (JCY_RunProgress.Instance != null) JCY_RunProgress.Instance.NotifyGoldGained();
+    }
+
+    // 골드를 소비한다(상점 구매 등). 음수로 내려가지 않게 0에서 클램프한다.
+    public void Spend(int amount)
+    {
+        Count = Mathf.Max(0, Count - amount);
+        OnCountChanged?.Invoke(Count);
+        UpdateCountText();
+
+        // 히치하이커 안내서 - 소비 결과 돈이 정확히 0이 되면 50을 되돌려준다.
+        if (Count == 0 && JCY_RunProgress.Instance != null && JCY_RunProgress.Instance.hasHitchhikerGuide)
+        {
+            NotifyPieceCollected(50);
+        }
     }
 
     private void UpdateCountText()
@@ -74,11 +112,19 @@ public class LDY_StarPieceManager : MonoBehaviour
             RectTransform rt = go.GetComponent<RectTransform>();
             if (rt == null) continue;
 
+            // dropUIParent가 속한 Canvas가 다른 UI(예: 화면 아래 SPACE 힌트가 있는 BattleUICanvas)와
+            // Sort Order가 같으면 어느 게 위로 그려질지 안 정해진다 - 이 조각만 오버라이드 캔버스를
+            // 붙여서 확실히 다른 UI보다 위(가장 높은 값)로 그려지게 한다.
+            Canvas overrideCanvas = go.GetComponent<Canvas>();
+            if (overrideCanvas == null) overrideCanvas = go.AddComponent<Canvas>();
+            overrideCanvas.overrideSorting = true;
+            overrideCanvas.sortingOrder = 1000;
+
             Vector2 scatterOffset = Random.insideUnitCircle * scatterRadius;
             rt.position = screenPos + (Vector3)scatterOffset;
 
             LDY_StarPieceDrop drop = go.GetComponent<LDY_StarPieceDrop>();
-            if (drop != null) drop.Init(1);
+            if (drop != null) drop.Init(flyTarget, 1);
         }
     }
 }

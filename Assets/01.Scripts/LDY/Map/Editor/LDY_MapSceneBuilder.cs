@@ -1,4 +1,5 @@
 using System.IO;
+using TMPro;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -40,6 +41,7 @@ public static class LDY_MapSceneBuilder
 
         LDY_MapNodeView nodeViewPrefab = CreateNodePrefab();
         Image linePrefab = CreateLinePrefab();
+        LDY_MapPlayerToken playerTokenPrefab = CreatePlayerTokenPrefab();
 
         GameObject managerGO = new GameObject("MapManager");
         Undo.RegisterCreatedObjectUndo(managerGO, "Build Map Scene");
@@ -49,7 +51,7 @@ public static class LDY_MapSceneBuilder
         Undo.RegisterCreatedObjectUndo(controllerGO, "Build Map Scene");
         LDY_MapUIController controller = controllerGO.AddComponent<LDY_MapUIController>();
 
-        WireController(controller, theme, mapManager, nodeContainer, lineContainer, nodeViewPrefab, linePrefab, background);
+        WireController(controller, theme, mapManager, nodeContainer, lineContainer, nodeViewPrefab, linePrefab, background, playerTokenPrefab);
         SetupCameraController(canvas, background, mapManager, nodeContainer, lineContainer);
         EnsureSceneTransition();
 
@@ -67,6 +69,78 @@ public static class LDY_MapSceneBuilder
             "2) LDY_MapNodeView 프리팹에 타입별 아이콘 스프라이트 연결\n" +
             "3) LDY_MapTheme 애셋에 헤더/본문 폰트 연결",
             "확인");
+    }
+
+    // 이미 LDY_SceneTransition은 있는데(옛날 버전으로 만들어져) 카운트다운만 없는 경우, 그 오브젝트에 붙여줌
+    [MenuItem("LDY/Map/카운트다운만 추가")]
+    private static void AddCountdownOnly()
+    {
+        LDY_SceneTransition transition = Object.FindFirstObjectByType<LDY_SceneTransition>();
+        if (transition == null)
+        {
+            EditorUtility.DisplayDialog("카운트다운 추가", "씬에서 LDY_SceneTransition을 찾을 수 없습니다. 먼저 '씬 전환 연출만 추가'를 실행하세요.", "확인");
+            return;
+        }
+
+        SerializedObject existingSo = new SerializedObject(transition);
+        if (existingSo.FindProperty("countdown").objectReferenceValue != null)
+        {
+            EditorUtility.DisplayDialog("카운트다운 추가", "이미 카운트다운이 연결되어 있습니다.", "확인");
+            return;
+        }
+
+        LDY_BattleCountdown countdown = CreateCountdownText(transition.transform);
+
+        existingSo.FindProperty("countdown").objectReferenceValue = countdown;
+        existingSo.ApplyModifiedProperties();
+
+        EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+        Debug.Log("[LDY_MapSceneBuilder] 카운트다운을 LDY_SceneTransition에 연결했습니다.");
+    }
+
+    // 반투명 딤 배경 + "3, 2, 1, START!" 텍스트 + LDY_BattleCountdown을 parent(SceneTransitionCanvas) 밑에 만들어줌.
+    // 아이리스가 이미 사라진 뒤(=씬이 보이는 상태)에 재생되므로, 카운트다운 자체가 딤 배경과 입력 차단을 들고 있어야 함
+    private static LDY_BattleCountdown CreateCountdownText(Transform parent)
+    {
+        GameObject dimGO = new GameObject("CountdownDim", typeof(RectTransform), typeof(Image));
+        Undo.RegisterCreatedObjectUndo(dimGO, "Add Countdown");
+        dimGO.transform.SetParent(parent, false);
+
+        RectTransform dimRt = (RectTransform)dimGO.transform;
+        dimRt.anchorMin = Vector2.zero;
+        dimRt.anchorMax = Vector2.one;
+        dimRt.offsetMin = Vector2.zero;
+        dimRt.offsetMax = Vector2.zero;
+
+        Image dimImg = dimGO.GetComponent<Image>();
+        dimImg.color = new Color(0f, 0f, 0f, 0.45f); // 보드가 살짝 비쳐 보이는 반투명 - 미리 훑어볼 수 있게
+        dimImg.raycastTarget = true; // 카운트다운 중엔 클릭 막기
+        dimGO.SetActive(false);
+
+        GameObject countdownTextGO = new GameObject("CountdownText", typeof(RectTransform));
+        countdownTextGO.transform.SetParent(dimGO.transform, false);
+
+        RectTransform countdownRt = (RectTransform)countdownTextGO.transform;
+        countdownRt.anchorMin = countdownRt.anchorMax = new Vector2(0.5f, 0.5f);
+        countdownRt.pivot = new Vector2(0.5f, 0.5f);
+        countdownRt.anchoredPosition = Vector2.zero;
+        countdownRt.sizeDelta = new Vector2(600f, 300f);
+
+        TextMeshProUGUI countdownText = countdownTextGO.AddComponent<TextMeshProUGUI>();
+        countdownText.text = "3";
+        countdownText.fontSize = 140f;
+        countdownText.alignment = TextAlignmentOptions.Center;
+        countdownText.color = Color.black;
+        countdownText.fontStyle = FontStyles.Bold;
+        countdownText.raycastTarget = false;
+
+        LDY_BattleCountdown countdown = parent.gameObject.AddComponent<LDY_BattleCountdown>();
+        SerializedObject countdownSo = new SerializedObject(countdown);
+        countdownSo.FindProperty("dimBackground").objectReferenceValue = dimGO;
+        countdownSo.FindProperty("countdownText").objectReferenceValue = countdownText;
+        countdownSo.ApplyModifiedProperties();
+
+        return countdown;
     }
 
     // 씬 전환(아이리스) 연출용 오브젝트가 없으면 만들어줌. 다른 씬에서 로드돼도 유지되는 DontDestroyOnLoad 싱글톤
@@ -97,10 +171,17 @@ public static class LDY_MapSceneBuilder
         RawImage rawImage = overlayGO.GetComponent<RawImage>();
         rawImage.raycastTarget = false;
 
+        // "3, 2, 1, START!" 텍스트 - IrisOverlay 위(형제 순서상 뒤)에 그려지도록 같은 Canvas 밑에 둠
+        LDY_BattleCountdown countdown = CreateCountdownText(canvasGO.transform);
+
         LDY_SceneTransition transition = canvasGO.AddComponent<LDY_SceneTransition>();
         SerializedObject so = new SerializedObject(transition);
         so.FindProperty("overlay").objectReferenceValue = rawImage;
+        so.FindProperty("countdown").objectReferenceValue = countdown;
         so.ApplyModifiedProperties();
+
+        // 에디터에서 생성할 때는 Awake()가 실행되지 않아 평소 숨김 처리가 안 먹으므로 여기서 직접 꺼줌
+        overlayGO.SetActive(false);
     }
 
     // Background를 드래그/스크롤 입력을 받는 대상으로 삼아 LDY_MapCameraController를 붙이고 연결
@@ -117,6 +198,29 @@ public static class LDY_MapSceneBuilder
         so.FindProperty("viewportRect").objectReferenceValue = canvas.GetComponent<RectTransform>();
         so.FindProperty("canvas").objectReferenceValue = canvas;
         so.ApplyModifiedProperties();
+    }
+
+    // 기존 씬에 플레이어 토큰만 추가하고 싶을 때 (씬을 통째로 다시 만들 필요 없음).
+    // MapUIController를 찾아서 playerTokenPrefab 필드만 연결해줌
+    [MenuItem("LDY/Map/플레이어 토큰만 추가")]
+    private static void AddPlayerTokenOnly()
+    {
+        LDY_MapUIController controller = Object.FindFirstObjectByType<LDY_MapUIController>();
+        if (controller == null)
+        {
+            EditorUtility.DisplayDialog("플레이어 토큰 추가", "씬에서 'LDY_MapUIController'를 찾을 수 없습니다.", "확인");
+            return;
+        }
+
+        EnsureFolder(PrefabFolder);
+        LDY_MapPlayerToken prefab = CreatePlayerTokenPrefab();
+
+        SerializedObject so = new SerializedObject(controller);
+        so.FindProperty("playerTokenPrefab").objectReferenceValue = prefab;
+        so.ApplyModifiedProperties();
+
+        EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+        Debug.Log("[LDY_MapSceneBuilder] 플레이어 토큰을 MapUIController에 연결했습니다. Play 하면 자동으로 생성됩니다.");
     }
 
     // 기존 씬에 별가루 배경만 추가하고 싶을 때 (씬을 통째로 다시 만들 필요 없음).
@@ -373,8 +477,31 @@ public static class LDY_MapSceneBuilder
         return prefabAsset.GetComponent<Image>();
     }
 
+    private const string PlayerTokenPrefabPath = PrefabFolder + "/LDY_MapPlayerToken.prefab";
+
+    private static LDY_MapPlayerToken CreatePlayerTokenPrefab()
+    {
+        GameObject root = new GameObject("LDY_MapPlayerToken", typeof(RectTransform), typeof(Image));
+        RectTransform rt = (RectTransform)root.transform;
+        rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(0.5f, 0.5f);
+        rt.sizeDelta = new Vector2(28f, 28f);
+
+        Image image = root.GetComponent<Image>();
+        image.sprite = LDY_ProceduralSprite.Sparkle;
+        image.color = new Color32(0xE9, 0xE2, 0xD6, 0xFF);
+        image.raycastTarget = false;
+
+        root.AddComponent<LDY_MapPlayerToken>();
+
+        GameObject prefabAsset = PrefabUtility.SaveAsPrefabAsset(root, PlayerTokenPrefabPath);
+        Object.DestroyImmediate(root);
+
+        return prefabAsset.GetComponent<LDY_MapPlayerToken>();
+    }
+
     private static void WireController(LDY_MapUIController controller, LDY_MapTheme theme, LDY_MapManager manager,
-        RectTransform nodeContainer, RectTransform lineContainer, LDY_MapNodeView nodeViewPrefab, Image linePrefab, Image background)
+        RectTransform nodeContainer, RectTransform lineContainer, LDY_MapNodeView nodeViewPrefab, Image linePrefab,
+        Image background, LDY_MapPlayerToken playerTokenPrefab)
     {
         SerializedObject so = new SerializedObject(controller);
         so.FindProperty("theme").objectReferenceValue = theme;
@@ -384,6 +511,7 @@ public static class LDY_MapSceneBuilder
         so.FindProperty("nodeViewPrefab").objectReferenceValue = nodeViewPrefab;
         so.FindProperty("linePrefab").objectReferenceValue = linePrefab;
         so.FindProperty("backgroundPanel").objectReferenceValue = background;
+        so.FindProperty("playerTokenPrefab").objectReferenceValue = playerTokenPrefab;
         so.ApplyModifiedProperties();
     }
 }

@@ -442,6 +442,7 @@ public class LDY_AttackTargetController : MonoBehaviour
         {
             if (enemyObj == null) continue;
             if (LDY_StarPieceManager.Instance != null) LDY_StarPieceManager.Instance.SpawnDrops(enemyObj.transform.position);
+            if (JCY_RunProgress.Instance != null) JCY_RunProgress.Instance.NotifyEnemyKilled();
             Destroy(enemyObj);
         }
     }
@@ -490,6 +491,7 @@ public class LDY_AttackTargetController : MonoBehaviour
         GameObject effect = Instantiate(prefab, spawnPos, Quaternion.Euler(0f, 0f, centerAngleDeg));
         effect.transform.localScale *= Mathf.Max(weapon.hitEffectScale, 0.01f);
         ForceRenderOnTop(effect);
+        ForceLocalSimulationSpace(effect);
 
         if (effect.TryGetComponent(out ILDY_RangeEffect rangeEffect))
         {
@@ -557,6 +559,7 @@ public class LDY_AttackTargetController : MonoBehaviour
             if (occupant != null)
             {
                 if (LDY_StarPieceManager.Instance != null) LDY_StarPieceManager.Instance.SpawnDrops(occupant.transform.position);
+                if (JCY_RunProgress.Instance != null) JCY_RunProgress.Instance.NotifyEnemyKilled();
                 Destroy(occupant);
             }
         }
@@ -588,6 +591,19 @@ public class LDY_AttackTargetController : MonoBehaviour
             {
                 if (material != null) material.renderQueue = 4000;
             }
+        }
+    }
+
+    // 파티클 시스템의 Simulation Space가 "World"로 되어 있으면, 이 오브젝트에 아무리 회전을 줘도
+    // 방출 방향/모양 자체는 월드 좌표 기준으로 고정돼서 회전을 안 따라간다(그래서 범위가 아래쪽을
+    // 향할 때 마스킹으로 잘라내면 그 자리에 실제 파티클이 없어서 텅 비어 보이는 문제가 생김).
+    // SpawnRangeFittedEffect처럼 각도에 맞춰 회전시켜서 쓰는 이펙트는 Local로 강제해서 회전을 따라가게 한다.
+    private static void ForceLocalSimulationSpace(GameObject go)
+    {
+        foreach (ParticleSystem ps in go.GetComponentsInChildren<ParticleSystem>())
+        {
+            ParticleSystem.MainModule main = ps.main;
+            main.simulationSpace = ParticleSystemSimulationSpace.Local;
         }
     }
 }
