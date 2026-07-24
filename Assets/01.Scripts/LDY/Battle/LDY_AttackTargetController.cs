@@ -29,6 +29,11 @@ public class LDY_AttackTargetController : MonoBehaviour
     [Header("무기 적중 이펙트(레이저 등)가 나오는 시작 위치 - 비워두면 이 컨트롤러의 위치")]
     [SerializeField] private Transform effectOrigin;
 
+    // 배틀 보드 안에서 "플레이어 위치"를 나타내는 기준점. KTH_PlayerHealth.transform.position은
+    // (오버월드/맵 등 다른 좌표계일 수 있어서) 배틀 보드 스케일과 안 맞을 수 있으므로, 배틀 관련
+    // 로직(예: LDY_BattleTurnManager의 파편 공격 조준)은 KTH_PlayerHealth 대신 이 값을 써야 한다.
+    public Vector3 PlayerBattlePosition => effectOrigin != null ? effectOrigin.position : transform.position;
+
     public bool IsTargeting { get; private set; }
     public LDY_Weapon CurrentWeapon { get; private set; }
 
@@ -357,18 +362,58 @@ public class LDY_AttackTargetController : MonoBehaviour
     // 잘라주므로, 이펙트 프리팹 자체는 이보다 훨씬 커도 상관없다.
     private IEnumerator SimultaneousRoutine(LDY_Weapon weapon, List<RingSlot> targeted, List<TargetCell> cells)
     {
+        // 범위 안에 이 무기에 면역(반사)인 적이 하나라도 있으면, 폭발 자체가 통째로 취소되고
+        // (범위 안 다른 적들도 아무도 안 죽음) 대신 나(플레이어)에게 반사 데미지가 들어간다.
+        LDY_Enemy reflectingEnemy = null;
+        Vector3 reflectingEnemyPos = Vector3.zero;
+        foreach (RingSlot slot in targeted)
+        {
+            if (slot.occupant == null) continue;
+            LDY_Enemy candidate = slot.occupant.GetComponent<LDY_Enemy>();
+            if (candidate != null && candidate.WillReflect(weapon.shape))
+            {
+                reflectingEnemy = candidate;
+                reflectingEnemyPos = slot.occupant.transform.position;
+                break;
+            }
+        }
+
+        if (reflectingEnemy != null)
+        {
+            Vector3 origin = effectOrigin != null ? effectOrigin.position : transform.position;
+
+            reflectingEnemy.ApplyReflectDamage();
+            // 면역 적이라 안 아파해야 하므로 PlayHitReaction(빨개짐/흔들림)은 여기서 부르지 않는다.
+
+            // 1) 먼저 적이 공격을 흡수하는 연출.
+            if (weapon.absorbEffectPrefab != null)
+            {
+                GameObject absorb = Instantiate(weapon.absorbEffectPrefab, reflectingEnemyPos, Quaternion.identity);
+                ForceRenderOnTop(absorb);
+                Destroy(absorb, weapon.hitEffectDuration);
+                yield return new WaitForSeconds(weapon.hitEffectDuration);
+            }
+
+            // 2) 그 다음 폭발(hitEffectPrefab)이 적이 아니라 내(플레이어) 위치에서 방출되듯 터진다.
+            if (weapon.hitEffectPrefab != null)
+            {
+                GameObject explosion = Instantiate(weapon.hitEffectPrefab, origin, Quaternion.identity);
+                explosion.transform.localScale *= Mathf.Max(weapon.hitEffectScale, 0.01f);
+                ForceRenderOnTop(explosion);
+                Destroy(explosion, weapon.hitEffectDuration);
+                yield return new WaitForSeconds(weapon.hitEffectDuration);
+            }
+
+            Debug.Log($"[LDY_AttackTargetController] '{weapon.weaponName}' 공격 실행 - 면역 적 감지, 공격을 흡수한 뒤 나에게 방출됨");
+            yield break;
+        }
+
         int hitCount = 0;
         var toKill = new List<GameObject>();
 
         foreach (RingSlot slot in targeted)
         {
             if (slot.occupant == null) continue;
-
-            LDY_Enemy enemy = slot.occupant.GetComponent<LDY_Enemy>();
-            if (enemy != null && enemy.TryReflect(weapon.shape))
-            {
-                continue; // 반사됨 - 적은 그대로 두고(안 죽음) 플레이어만 데미지를 입는다(TryReflect 내부 처리).
-            }
 
             hitCount++;
             toKill.Add(slot.occupant);
@@ -444,6 +489,7 @@ public class LDY_AttackTargetController : MonoBehaviour
 
         GameObject effect = Instantiate(prefab, spawnPos, Quaternion.Euler(0f, 0f, centerAngleDeg));
         effect.transform.localScale *= Mathf.Max(weapon.hitEffectScale, 0.01f);
+        ForceRenderOnTop(effect);
 
         if (effect.TryGetComponent(out ILDY_RangeEffect rangeEffect))
         {
@@ -474,6 +520,7 @@ public class LDY_AttackTargetController : MonoBehaviour
                 if (weapon.impactEffectPrefab != null)
                 {
                     GameObject impact = Instantiate(weapon.impactEffectPrefab, slot.occupant.transform.position, Quaternion.identity);
+                    ForceRenderOnTop(impact);
                     Destroy(impact, stepDelay);
                 }
                 yield return new WaitForSeconds(stepDelay);
@@ -500,6 +547,7 @@ public class LDY_AttackTargetController : MonoBehaviour
             if (weapon.impactEffectPrefab != null)
             {
                 GameObject impact = Instantiate(weapon.impactEffectPrefab, occupant.transform.position, Quaternion.identity);
+                ForceRenderOnTop(impact);
                 Destroy(impact, stepDelay);
             }
             if (enemy != null) enemy.PlayHitReaction(weapon);
@@ -522,9 +570,24 @@ public class LDY_AttackTargetController : MonoBehaviour
 
         GameObject beam = Instantiate(prefab, fromPos, Quaternion.identity);
         if (beam.TryGetComponent(out ILDY_EffectTarget effectTarget)) effectTarget.TargetPosition = toPos;
+        ForceRenderOnTop(beam);
 
         Destroy(beam, lifetime);
         return beam;
     }
 
+    // UI Canvas(Screen Space Camera)가 실제 거리와 상관없이 렌더 큐 순서 때문에 월드 이펙트를 가리는
+    // 경우가 있어서(투명/알파블렌드 오브젝트는 깊이를 안 쓰고 렌더 큐 순서로만 겹침이 정해짐),
+    // 이 공격 이펙트들의 머티리얼 렌더 큐를 UI보다 확실히 뒤(위)로 강제로 밀어준다.
+    // 씬에 있는 모든 이펙트 스폰 지점(빔/폭발/임팩트/범위 이펙트)에서 Instantiate 직후 호출한다.
+    private static void ForceRenderOnTop(GameObject go)
+    {
+        foreach (Renderer renderer in go.GetComponentsInChildren<Renderer>())
+        {
+            foreach (Material material in renderer.materials)
+            {
+                if (material != null) material.renderQueue = 4000;
+            }
+        }
+    }
 }
