@@ -104,7 +104,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 3084608146936409875}
+  - {fileID: 2356347338591647896}
   - {fileID: 8298022642127361622}
   - {fileID: 3748340337585196617}
   m_Father: {fileID: 494014655428257295}
@@ -137,14 +137,62 @@ MonoBehaviour:
     shape: 0
     description: "1x4\uB85C\n\uC801\uC744 \uACF5\uACA9\uD558\uB294\n\uD3C9\uBC94\uD55C
       \uD65C"
+    damage: 10
+    forgedDescription: 
+    hitEffectPrefab: {fileID: 0}
+    hitEffectDuration: 0.6
+    hitEffectScale: 3
+    hitEffectFromOrigin: 1
+    isPiercing: 0
+    impactEffectPrefab: {fileID: 0}
+    reflectEffectPrefab: {fileID: 0}
+    absorbEffectPrefab: {fileID: 0}
+    hitShakeIntensity: 0.15
+    hitShakeDuration: 0.25
+    hitFlashColor: {r: 1, g: 0.2, b: 0.2, a: 1}
+    hitCrackleEffect: 0
+    crackleColorA: {r: 1, g: 0.5, b: 0, a: 1}
+    crackleColorB: {r: 1, g: 0.95, b: 0.2, a: 1}
   - weaponName: "\uB9DD\uCE58"
     shape: 1
     description: "2x2\uB85C\n\uC801\uC744 \uACF5\uACA9\uD558\uB294\n\uD3C9\uBC94\uD55C
       \uB9DD\uCE58"
+    damage: 10
+    forgedDescription: 
+    hitEffectPrefab: {fileID: 0}
+    hitEffectDuration: 0.6
+    hitEffectScale: 3
+    hitEffectFromOrigin: 1
+    isPiercing: 0
+    impactEffectPrefab: {fileID: 0}
+    reflectEffectPrefab: {fileID: 0}
+    absorbEffectPrefab: {fileID: 0}
+    hitShakeIntensity: 0.15
+    hitShakeDuration: 0.25
+    hitFlashColor: {r: 1, g: 0.2, b: 0.2, a: 1}
+    hitCrackleEffect: 0
+    crackleColorA: {r: 1, g: 0.5, b: 0, a: 1}
+    crackleColorB: {r: 1, g: 0.95, b: 0.2, a: 1}
   - weaponName: "\uAC80"
     shape: 2
     description: "4x1\uB85C\n\uC801\uC744 \uACF5\uACA9\uD558\uB294\n\uD3C9\uBC94\uD55C
       \uAC80"
+    damage: 10
+    forgedDescription: 
+    hitEffectPrefab: {fileID: 0}
+    hitEffectDuration: 0.6
+    hitEffectScale: 3
+    hitEffectFromOrigin: 1
+    isPiercing: 0
+    impactEffectPrefab: {fileID: 0}
+    reflectEffectPrefab: {fileID: 0}
+    absorbEffectPrefab: {fileID: 0}
+    hitShakeIntensity: 0.15
+    hitShakeDuration: 0.25
+    hitFlashColor: {r: 1, g: 0.2, b: 0.2, a: 1}
+    hitCrackleEffect: 0
+    crackleColorA: {r: 1, g: 0.5, b: 0, a: 1}
+    crackleColorB: {r: 1, g: 0.95, b: 0.2, a: 1}
   attackButton: {fileID: 0}
   attackHintUI: {fileID: 4136081698455409043}
   weaponHighlights: []
@@ -690,6 +738,147 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1368341157320988748}
   m_CullTransparentMesh: 1
+--- !u!1 &2066753250751751632
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4053456991729198961}
+  - component: {fileID: 51845029870426789}
+  - component: {fileID: 1303835049440929292}
+  m_Layer: 0
+  m_Name: GuideKey
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &4053456991729198961
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2066753250751751632}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 494014655428257295}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 559, y: -264}
+  m_SizeDelta: {x: 200, y: 50}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &51845029870426789
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2066753250751751632}
+  m_CullTransparentMesh: 1
+--- !u!114 &1303835049440929292
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2066753250751751632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_text: "                 -\uC870\uC791\uD0A4 \uAC00\uC774\uB4DC-\n1~4\uBC88 :
+    \uAC01 \uD574\uB2F9\uD558\uB294 \uCE78 \uC120\uD0DD\n\u2190,  \u2192 : \uC67C\uCABD\uC73C\uB85C
+    \uD68C\uC804 / \uC624\uB978\uCABD\uC73C\uB85C \uD68C\uC804\nShift : \uBC00\uAE30
+    \uBAA8\uB4DC\uB85C \uBCC0\uACBD\n\u2191,  \u2193 : \uBC00\uAE30 \uBAA8\uB4DC\uC5D0\uC11C
+    \uC704\uCABD \uC544\uB798\uCABD\uC73C\uB85C \uBC00\uC218 \uC788\uC74C\n "
+  m_isRightToLeft: 0
+  m_fontAsset: {fileID: 11400000, guid: da27f203cbd68704e84f681ef4878847, type: 2}
+  m_sharedMaterial: {fileID: 5534148193836559634, guid: da27f203cbd68704e84f681ef4878847, type: 2}
+  m_fontSharedMaterials: []
+  m_fontMaterial: {fileID: 0}
+  m_fontMaterials: []
+  m_fontColor32:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+  m_enableVertexGradient: 0
+  m_colorMode: 3
+  m_fontColorGradient:
+    topLeft: {r: 1, g: 1, b: 1, a: 1}
+    topRight: {r: 1, g: 1, b: 1, a: 1}
+    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
+    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColorGradientPreset: {fileID: 0}
+  m_spriteAsset: {fileID: 0}
+  m_tintAllSprites: 0
+  m_StyleSheet: {fileID: 0}
+  m_TextStyleHashCode: -1183493901
+  m_overrideHtmlColors: 0
+  m_faceColor:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontSize: 30
+  m_fontSizeBase: 30
+  m_fontWeight: 400
+  m_enableAutoSizing: 0
+  m_fontSizeMin: 18
+  m_fontSizeMax: 72
+  m_fontStyle: 0
+  m_HorizontalAlignment: 1
+  m_VerticalAlignment: 256
+  m_textAlignment: 65535
+  m_characterSpacing: 0
+  m_characterHorizontalScale: 1
+  m_wordSpacing: 0
+  m_lineSpacing: 0
+  m_lineSpacingMax: 0
+  m_paragraphSpacing: 0
+  m_charWidthMaxAdj: 0
+  m_TextWrappingMode: 1
+  m_wordWrappingRatios: 0.4
+  m_overflowMode: 0
+  m_linkedTextComponent: {fileID: 0}
+  parentLinkedComponent: {fileID: 0}
+  m_enableKerning: 0
+  m_ActiveFontFeatures: 6e72656b
+  m_enableExtraPadding: 0
+  checkPaddingRequired: 0
+  m_isRichText: 1
+  m_EmojiFallbackSupport: 1
+  m_parseCtrlCharacters: 1
+  m_isOrthographic: 1
+  m_isCullingEnabled: 0
+  m_horizontalMapping: 0
+  m_verticalMapping: 0
+  m_uvLineOffset: 0
+  m_geometrySortingOrder: 0
+  m_IsTextObjectScaleStatic: 0
+  m_VertexBufferAutoSizeReduction: 0
+  m_useMaxVisibleDescender: 1
+  m_pageToDisplay: 1
+  m_margin: {x: 0, y: 0, z: -287.3184, w: 0}
+  m_isUsingLegacyAnimationComponent: 0
+  m_isVolumetricText: 0
+  m_hasFontAssetChanged: 0
+  m_baseMaterial: {fileID: 0}
+  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &2326273622440895153
 GameObject:
   m_ObjectHideFlags: 0
@@ -1639,6 +1828,100 @@ MonoBehaviour:
   duration: 0.35
   fadeAlso: 1
   playOnEnable: 1
+--- !u!1 &4645126918643672103
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2356347338591647896}
+  - component: {fileID: 8233549966531841313}
+  - component: {fileID: 8677495362091788899}
+  - component: {fileID: 119463733370843558}
+  m_Layer: 0
+  m_Name: Image
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &2356347338591647896
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4645126918643672103}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.03, y: 1.03, z: 1.03}
+  m_ConstrainProportionsScale: 1
+  m_Children:
+  - {fileID: 3084608146936409875}
+  m_Father: {fileID: 7638609419120177657}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 80, y: -305}
+  m_SizeDelta: {x: 320.16, y: 449.49}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &8233549966531841313
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4645126918643672103}
+  m_CullTransparentMesh: 1
+--- !u!114 &8677495362091788899
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4645126918643672103}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.8509804, g: 0.7490196, b: 0.54901963, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: -5177388603050735206, guid: 71ebafeef3c03457483266a33ab2b270, type: 3}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!114 &119463733370843558
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4645126918643672103}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0384146e77c85347b4eafee82c28254, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LDY_UISlideIn
+  fromDirection: 2
+  distance: 200
+  duration: 0.35
+  fadeAlso: 1
+  playOnEnable: 1
 --- !u!1 &5153509513156402870
 GameObject:
   m_ObjectHideFlags: 0
@@ -1830,12 +2113,60 @@ MonoBehaviour:
   - weaponName: "\uC138\uB85C 1x4"
     shape: 0
     description: 
+    damage: 10
+    forgedDescription: 
+    hitEffectPrefab: {fileID: 0}
+    hitEffectDuration: 0.6
+    hitEffectScale: 3
+    hitEffectFromOrigin: 1
+    isPiercing: 0
+    impactEffectPrefab: {fileID: 0}
+    reflectEffectPrefab: {fileID: 0}
+    absorbEffectPrefab: {fileID: 0}
+    hitShakeIntensity: 0.15
+    hitShakeDuration: 0.25
+    hitFlashColor: {r: 1, g: 0.2, b: 0.2, a: 1}
+    hitCrackleEffect: 0
+    crackleColorA: {r: 1, g: 0.5, b: 0, a: 1}
+    crackleColorB: {r: 1, g: 0.95, b: 0.2, a: 1}
   - weaponName: "\uC0AC\uAC01\uD615 2x2"
     shape: 1
     description: 
+    damage: 10
+    forgedDescription: 
+    hitEffectPrefab: {fileID: 0}
+    hitEffectDuration: 0.6
+    hitEffectScale: 3
+    hitEffectFromOrigin: 1
+    isPiercing: 0
+    impactEffectPrefab: {fileID: 0}
+    reflectEffectPrefab: {fileID: 0}
+    absorbEffectPrefab: {fileID: 0}
+    hitShakeIntensity: 0.15
+    hitShakeDuration: 0.25
+    hitFlashColor: {r: 1, g: 0.2, b: 0.2, a: 1}
+    hitCrackleEffect: 0
+    crackleColorA: {r: 1, g: 0.5, b: 0, a: 1}
+    crackleColorB: {r: 1, g: 0.95, b: 0.2, a: 1}
   - weaponName: "\uAC00\uB85C 4x1"
     shape: 2
     description: 
+    damage: 10
+    forgedDescription: 
+    hitEffectPrefab: {fileID: 0}
+    hitEffectDuration: 0.6
+    hitEffectScale: 3
+    hitEffectFromOrigin: 1
+    isPiercing: 0
+    impactEffectPrefab: {fileID: 0}
+    reflectEffectPrefab: {fileID: 0}
+    absorbEffectPrefab: {fileID: 0}
+    hitShakeIntensity: 0.15
+    hitShakeDuration: 0.25
+    hitFlashColor: {r: 1, g: 0.2, b: 0.2, a: 1}
+    hitCrackleEffect: 0
+    crackleColorA: {r: 1, g: 0.5, b: 0, a: 1}
+    crackleColorB: {r: 1, g: 0.95, b: 0.2, a: 1}
   attackButton: {fileID: 0}
   attackHintUI: {fileID: 4136081698455409043}
   weaponHighlights: []
@@ -1872,11 +2203,12 @@ RectTransform:
   m_GameObject: {fileID: 6050435384796940671}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7638609419120177657}
   - {fileID: 7982371239895609896}
+  - {fileID: 4053456991729198961}
   - {fileID: 2316984732831598647}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2395,7 +2727,6 @@ GameObject:
   - component: {fileID: 3084608146936409875}
   - component: {fileID: 5773939073641563376}
   - component: {fileID: 3522056020164344178}
-  - component: {fileID: 8152707501707617879}
   m_Layer: 0
   m_Name: Background
   m_TagString: Untagged
@@ -2412,7 +2743,7 @@ RectTransform:
   m_GameObject: {fileID: 7543439347558848843}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9708738, y: 0.9708738, z: 0.9708738}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6473224552461437320}
@@ -2420,11 +2751,11 @@ RectTransform:
   - {fileID: 8641084999983413734}
   - {fileID: 3872205874501278980}
   - {fileID: 6285640905805492853}
-  m_Father: {fileID: 7638609419120177657}
+  m_Father: {fileID: 2356347338591647896}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 320.08002, y: -335}
+  m_AnchoredPosition: {x: 160.04738, y: -224.74503}
   m_SizeDelta: {x: 320.16, y: 449.4807}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5773939073641563376
@@ -2465,23 +2796,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &8152707501707617879
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7543439347558848843}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c0384146e77c85347b4eafee82c28254, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LDY_UISlideIn
-  fromDirection: 2
-  distance: 200
-  duration: 0.35
-  fadeAlso: 1
-  playOnEnable: 1
 --- !u!1 &7547079508182981837
 GameObject:
   m_ObjectHideFlags: 0

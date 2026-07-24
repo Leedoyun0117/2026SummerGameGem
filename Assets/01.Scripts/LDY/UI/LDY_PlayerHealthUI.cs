@@ -24,6 +24,12 @@ public class LDY_PlayerHealthUI : MonoBehaviour
     private Vector2 heartOriginalPos;
     private Coroutine shakeRoutine;
 
+    // LDY_PlayerDeathSequence가 사망 연출(위로 튀었다가 떨어짐)을 재생할 때 이 하트의 RectTransform을 그대로 씀
+    public RectTransform HeartRectTransform => heartImage != null ? heartImage.rectTransform : null;
+
+    // LDY_DamageScreenEffect가 데미지 시 빨갛게 물들이는 연출을 재생할 때 이 하트의 Image를 그대로 씀
+    public Image HeartImage => heartImage;
+
     private void Start()
     {
         if (heartImage != null) heartOriginalPos = heartImage.rectTransform.anchoredPosition;

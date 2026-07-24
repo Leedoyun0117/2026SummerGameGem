@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::JCY_ItemSO
   itemName: "\uB79C\uB364 \uBC15\uC2A4"
   itemImage: {fileID: 4166379850747399888, guid: 44a443188b06db044ae468827d3c51b9, type: 3}
-  cost: 2
+  cost: 5
   health: 0
   time: 0

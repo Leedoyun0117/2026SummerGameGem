@@ -14,11 +14,16 @@ public int CurrentHP => curhp;
 
 public event System.Action<int, int> OnHealthChanged;
 
+// 체력이 0 이하로 떨어져 죽음이 확정된 순간(부활 소진 이후) 딱 1번 호출된다 - 사망 연출(LDY_PlayerDeathSequence)이 이걸 구독한다.
+public event System.Action OnPlayerDied;
+
 [Header("개발자 테스트용 - D키를 누르면 데미지 1을 입는다")]
 [SerializeField] private bool devDamageKeyEnabled = true;
 
 // 토성의 반지 - 현재체력이 0 이하가 되는 순간을 1회에 한해 막아주는 부활 횟수.
 public int reviveCharges;
+
+public bool IsDead { get; private set; }
 
     private void Awake()
     {
@@ -55,6 +60,8 @@ public int reviveCharges;
     }
     public void TakeDamage(int damage)
     {
+        if (IsDead) return;
+
         curhp-=damage;
 
         if (curhp <= 0 && reviveCharges > 0)
@@ -63,8 +70,17 @@ public int reviveCharges;
             curhp = 10;
         }
 
+        if (curhp <= 0) curhp = 0;
+
         OnHealthChanged?.Invoke(curhp, maxhp);
-        if(curhp <= 0) Destroy(gameObject);
+
+        // 사망 연출(하트가 튀었다가 떨어지고, 화면이 검게 줄어들며 Defeat 후 씬 이동)은
+        // LDY_PlayerDeathSequence가 이 이벤트를 구독해서 재생한다 - 여기서 바로 파괴하지 않는다.
+        if (curhp <= 0 && !IsDead)
+        {
+            IsDead = true;
+            OnPlayerDied?.Invoke();
+        }
     }
     public void PlusMaxHp(int plushp)=>
         maxhp += plushp;

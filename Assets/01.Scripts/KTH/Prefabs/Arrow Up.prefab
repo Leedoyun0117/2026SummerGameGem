@@ -29,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -6.08262, y: 2.01592, z: 0}
-  m_LocalScale: {x: 0.70537, y: 0.70537, z: 0.70537}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8250655107234527937}
@@ -106,9 +106,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff4d375b33788a34399228dc6f9dfb54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KTH_Arrow
-  center: {fileID: 0}
+  tileType: 0
+  isConsumable: 0
+  centerName: Center
   pointOutward: 1
   angleOffset: 0
+  selectAttack: {fileID: 0}
+  treasureAnimator: {fileID: 0}
+  isOpenParamName: isOpen
+  itemPrefabs: []
+  itemSpawnCount: 3
 --- !u!61 &5157788000867033098
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -181,7 +188,7 @@ Transform:
   m_GameObject: {fileID: 7584927190365387520}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.01, y: -0.04, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

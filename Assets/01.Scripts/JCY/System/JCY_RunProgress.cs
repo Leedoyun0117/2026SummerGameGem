@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 // 런(한 판) 전체에서 유지되는 상점 아이템들의 지속 효과/카운터를 모아두는 곳.
@@ -16,17 +17,13 @@ public class JCY_RunProgress : MonoBehaviour
     [Header("턴 시간 보너스 (블랙홀 조각 + 백조자리의 깃털)")]
     public float turnDurationBonus;
 
-    [Header("아이템/포션 구매 한도 보너스 (히키하이커 가방 / 히치하이커 두루마리)")]
-    public int itemCapacityBonus;
+    [Header("포션 구매 한도 보너스 (히치하이커 두루마리)")]
     public int potionPurchaseLimitBonus;
 
-    private const int BaseItemCapacity = 10;
     private const int BasePotionPurchaseLimit = 2;
 
-    public int ItemCapacity => BaseItemCapacity + itemCapacityBonus;
     public int PotionPurchaseLimit => BasePotionPurchaseLimit + potionPurchaseLimitBonus;
 
-    public int OwnedItemCount { get; private set; }
     public int PotionPurchaseCountThisShop { get; private set; }
 
     [Header("패시브 소지 플래그")]
@@ -36,6 +33,10 @@ public class JCY_RunProgress : MonoBehaviour
     public bool hasHitchhikerGuide;
     public bool hasStarlightLantern;
     public int tinyAsteroidCount;
+
+    [Header("히키하이커 가방 - 전투구역(보스 포함) 진입 시 현재체력 회복량")]
+    public bool hasHickeyHickeyBag;
+    public int hickeyHickeyBagHealAmount;
 
     private int killCountSinceLastHeal;
     private bool grantingMeteoriteBonus; // NotifyGoldGained -> NotifyPieceCollected -> NotifyGoldGained 재귀 방지
@@ -73,11 +74,16 @@ public class JCY_RunProgress : MonoBehaviour
     // 백조자리의 깃털 효과(구매마다 최대시간 0.75 증가)가 여기서 걸린다.
     public void NotifyItemPurchased()
     {
-        OwnedItemCount++;
         if (hasFeather) turnDurationBonus += 0.75f;
     }
 
-    public bool HasItemCapacity() => OwnedItemCount < ItemCapacity;
+    // 히키하이커 가방 - 전투구역(일반 전투/보스 모두)에 진입할 때마다 현재체력을 회복시킨다.
+    // LDY_BattleTurnManager.Start()/BossTurn.Start()에서 각각 호출된다.
+    public void NotifyCombatZoneEntered()
+    {
+        if (!hasHickeyHickeyBag) return;
+        if (KTH_PlayerHealth.Instance != null) KTH_PlayerHealth.Instance.Heal(hickeyHickeyBagHealAmount);
+    }
 
     public bool TryConsumePotionPurchase()
     {

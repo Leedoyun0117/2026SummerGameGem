@@ -1,11 +1,14 @@
 using System.Collections.Generic;
+using System.Drawing;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class JCY_ShopManager : MonoBehaviour
 {
     private JCY_ItemSO _itemSO;
     public static JCY_ShopManager instance;
+    [SerializeField] private TextMeshProUGUI countTxt;
     [Header("아이템 진열")]
     public GameObject[] _items;
     private List<GameObject> itemList;
@@ -20,6 +23,11 @@ public class JCY_ShopManager : MonoBehaviour
     [Header("상점 애니메이션")]
     [SerializeField] private Animator animator;
     [SerializeField] private CanvasGroup canvasGroup;
+    [SerializeField]private GameObject shop_UI;
+
+    [Header("배경음악")]
+    [SerializeField]private AudioClip _shopBGM;
+    [SerializeField] private AudioClip _normalBGM;
 
 
 
@@ -36,6 +44,10 @@ public class JCY_ShopManager : MonoBehaviour
 
         itemList = new List<GameObject>(_items);
     }
+    private void Start()
+    {
+        shop_UI.SetActive(false);
+    }
     private void OnEnable()
     {
         // 상점에 새로 진입할 때마다(리롤 포션으로 다시 여는 것과는 별개) 포션 구매 한도를 초기화한다.
@@ -43,18 +55,7 @@ public class JCY_ShopManager : MonoBehaviour
 
         DisplayItems();
     }
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            OpenShop();
-        }
-
-        if (Input.GetKeyDown(KeyCode.D))
-        {
-            CloseShop();
-        }
-    }
+  
 
     public void DisplayItems()
     {
@@ -104,25 +105,38 @@ public class JCY_ShopManager : MonoBehaviour
 
     public void OpenShop()
     {
-        gameObject.SetActive(true);
+        shop_UI.SetActive(true);
 
         canvasGroup.interactable = true;
         canvasGroup.blocksRaycasts = true;
+        JCY_RunProgress.Instance.ResetPotionPurchaseCount();
+        countTxt.text = $"현재 포션 구매 한도:{JCY_RunProgress.Instance.PotionPurchaseLimit}";
 
         animator.SetTrigger("Open");
+        if (_shopBGM != null && SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlayBGM(_shopBGM);
+            Debug.Log("BGM 바뀜");
+        }
+
 
         DisplayItems();
     }
 
     public void CloseShop()
     {
+        
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
-
+        if (_normalBGM != null && SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlayBGM(_normalBGM);
+            Debug.Log("BGM 바뀜");
+        }
         animator.SetTrigger("Close");
     }
     public void CloseEnd()
     {
-        gameObject.SetActive(false);
+        shop_UI.SetActive(false);
     }
 }

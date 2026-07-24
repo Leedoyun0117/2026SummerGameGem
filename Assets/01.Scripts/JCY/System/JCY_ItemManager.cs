@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Drawing;
+using TMPro;
 using UnityEngine;
 
 // 상점 아이템(20종) 구매 처리 + 효과 적용을 담당한다.
@@ -8,6 +10,8 @@ using UnityEngine;
 public class JCY_ItemManager : MonoBehaviour
 {
     public static JCY_ItemManager instance;
+    [SerializeField] private TextMeshProUGUI countTxt;
+
 
     private void Awake()
     {
@@ -23,12 +27,6 @@ public class JCY_ItemManager : MonoBehaviour
         if (starPiece < itemSO.cost)
         {
             Debug.Log("돈 없어요");
-            return;
-        }
-
-        if (JCY_RunProgress.Instance != null && !JCY_RunProgress.Instance.HasItemCapacity())
-        {
-            Debug.Log("아이템 인벤토리가 가득 찼어요");
             return;
         }
 
@@ -104,10 +102,19 @@ public class JCY_ItemManager : MonoBehaviour
 
             case JCY_ItemEffectType.HickeyHicerScroll:
                 if (progress != null) progress.potionPurchaseLimitBonus += itemSO.effectAmount;
+                int count = JCY_RunProgress.Instance.PotionPurchaseCountThisShop;
+                int Limit = JCY_RunProgress.Instance.PotionPurchaseLimit;
+                int point = Limit - count;
+                countTxt.text = $"현재 포션 구매 한도:{point}";
                 break;
 
             case JCY_ItemEffectType.HickeyHickeyBag:
-                if (progress != null) progress.itemCapacityBonus += itemSO.effectAmount;
+                // 히키하이커 가방 - 전투구역(일반 전투/보스) 진입마다 현재체력 회복(수치는 effectAmount)
+                if (progress != null)
+                {
+                    progress.hasHickeyHickeyBag = true;
+                    progress.hickeyHickeyBagHealAmount = itemSO.effectAmount;
+                }
                 break;
 
             case JCY_ItemEffectType.HitchhikerGuide:
