@@ -51,6 +51,7 @@ public static class LDY_MapSceneBuilder
 
         WireController(controller, theme, mapManager, nodeContainer, lineContainer, nodeViewPrefab, linePrefab, background);
         SetupCameraController(canvas, background, mapManager, nodeContainer, lineContainer);
+        EnsureSceneTransition();
 
         Selection.activeGameObject = managerGO;
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
@@ -66,6 +67,40 @@ public static class LDY_MapSceneBuilder
             "2) LDY_MapNodeView 프리팹에 타입별 아이콘 스프라이트 연결\n" +
             "3) LDY_MapTheme 애셋에 헤더/본문 폰트 연결",
             "확인");
+    }
+
+    // 씬 전환(아이리스) 연출용 오브젝트가 없으면 만들어줌. 다른 씬에서 로드돼도 유지되는 DontDestroyOnLoad 싱글톤
+    private static void EnsureSceneTransition()
+    {
+        if (Object.FindFirstObjectByType<LDY_SceneTransition>() != null) return;
+
+        GameObject canvasGO = new GameObject("SceneTransitionCanvas", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler));
+        Undo.RegisterCreatedObjectUndo(canvasGO, "Build Map Scene");
+
+        Canvas canvas = canvasGO.GetComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 1000; // 항상 다른 UI보다 위에
+
+        CanvasScaler scaler = canvasGO.GetComponent<CanvasScaler>();
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = new Vector2(1920f, 1080f);
+
+        GameObject overlayGO = new GameObject("IrisOverlay", typeof(RectTransform), typeof(RawImage));
+        overlayGO.transform.SetParent(canvasGO.transform, false);
+
+        RectTransform overlayRt = (RectTransform)overlayGO.transform;
+        overlayRt.anchorMin = Vector2.zero;
+        overlayRt.anchorMax = Vector2.one;
+        overlayRt.offsetMin = Vector2.zero;
+        overlayRt.offsetMax = Vector2.zero;
+
+        RawImage rawImage = overlayGO.GetComponent<RawImage>();
+        rawImage.raycastTarget = false;
+
+        LDY_SceneTransition transition = canvasGO.AddComponent<LDY_SceneTransition>();
+        SerializedObject so = new SerializedObject(transition);
+        so.FindProperty("overlay").objectReferenceValue = rawImage;
+        so.ApplyModifiedProperties();
     }
 
     // Background를 드래그/스크롤 입력을 받는 대상으로 삼아 LDY_MapCameraController를 붙이고 연결
@@ -114,6 +149,21 @@ public static class LDY_MapSceneBuilder
 
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
         Debug.Log("[LDY_MapSceneBuilder] Starfield를 MapCanvas 아래에 추가했습니다.");
+    }
+
+    // 기존 씬에 씬 전환(아이리스) 연출만 추가하고 싶을 때
+    [MenuItem("LDY/Map/씬 전환 연출만 추가")]
+    private static void AddSceneTransitionOnly()
+    {
+        if (Object.FindFirstObjectByType<LDY_SceneTransition>() != null)
+        {
+            EditorUtility.DisplayDialog("씬 전환 연출 추가", "이미 LDY_SceneTransition이 씬에 존재합니다.", "확인");
+            return;
+        }
+
+        EnsureSceneTransition();
+        EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+        Debug.Log("[LDY_MapSceneBuilder] 씬 전환 연출을 추가했습니다. Battle/Boss 노드를 클릭하면 자동으로 재생됩니다.");
     }
 
     // 씬 구조(Canvas/MapManager/MapUIController)는 그대로 두고 노드·라인 프리팹만 최신 구조로 다시 생성.

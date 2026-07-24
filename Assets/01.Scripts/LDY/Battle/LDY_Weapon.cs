@@ -25,6 +25,9 @@ public class LDY_Weapon
     [Tooltip("관통 도중 반사(WeaponReflector)를 만나면 거기서 멈추고 이 효과가 적 위치 -> 발사 위치로 나간다(반사 연출). 비워두면 데미지만 들어가고 이펙트는 없음")]
     public GameObject reflectEffectPrefab;
 
+    [Tooltip("비관통 무기(예: 망치)에서 면역(반사) 적을 만나면, 폭발이 나(플레이어)에게 옮겨가기 전에 이 이펙트가 먼저 그 적 위치에서 재생된다 - '흡수하는' 연출용(예: LDY_AbsorbEffect)")]
+    public GameObject absorbEffectPrefab;
+
     [Header("피격 리액션 - 맞은 적이 빨개지면서 흔들림 (무기마다 강도를 다르게 조절 가능)")]
     public float hitShakeIntensity = 0.15f;
     public float hitShakeDuration = 0.25f;

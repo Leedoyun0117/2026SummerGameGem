@@ -19,6 +19,11 @@ public class LDY_Enemy : MonoBehaviour
 
     [Header("NoAbility 전용 - 턴 시간 초과 시 플레이어에게 입히는 원거리 데미지")]
     [SerializeField] private int timeoutAttackDamage = 5;
+    [Tooltip("턴 시간 초과 시 이 적 위치에서 플레이어 쪽으로 나가는 원거리 공격 이펙트(화염 파편 등). 비워두면 이펙트 없이 데미지만 들어감")]
+    [SerializeField] private GameObject timeoutAttackEffectPrefab;
+    [Tooltip("공격하는 동안 이 적 몸의 LDY_BurningEffect 불꽃이 이 배율만큼 커졌다가 공격이 끝나면 다시 줄어든다 (LDY_BurningEffect가 없으면 무시됨)")]
+    [SerializeField] private float attackFlareUpMultiplier = 1.6f;
+    [SerializeField] private float attackFlareRampDuration = 0.15f;
 
     [Header("WeaponReflector 전용 - 이 모양의 무기로 맞으면 반사(안 죽고 플레이어가 데미지를 입음)")]
     [SerializeField] private LDY_WeaponAttackShape reflectAgainstShape;
@@ -26,6 +31,26 @@ public class LDY_Enemy : MonoBehaviour
 
     public LDY_EnemyType EnemyType => enemyType;
     public int TimeoutAttackDamage => timeoutAttackDamage;
+
+    private LDY_FragmentChargeEffect fragmentCharge;
+
+    private void Awake()
+    {
+        fragmentCharge = GetComponentInChildren<LDY_FragmentChargeEffect>();
+    }
+
+    // LDY_BattleTurnManager가 매 프레임 턴 진행도(0~1)를 넘겨준다 - 몸 옆에 LDY_FragmentChargeEffect가
+    // 있으면 그 진행도만큼 파편이 점점 모이는 것처럼 보인다(없으면 그냥 무시됨).
+    public void SetFragmentChargeProgress(float progress)
+    {
+        if (fragmentCharge != null) fragmentCharge.SetProgress(progress);
+    }
+
+    // 시간 초과로 실제 공격이 나갈 때 호출 - 모여있던 파편이 확 사라지며 정리된다.
+    public void ReleaseFragmentCharge()
+    {
+        if (fragmentCharge != null) fragmentCharge.Release();
+    }
 
     // 이 무기로 맞으면 반사되는지만 확인한다(데미지 부작용 없음) - 반사 연출(레이저가 먼저 적에게
     // 맞고, 그 다음 반사되어 나에게 돌아오는)을 다 보여준 뒤에 ApplyReflectDamage를 따로 불러야 할 때 쓴다.
@@ -38,6 +63,44 @@ public class LDY_Enemy : MonoBehaviour
     public void ApplyReflectDamage()
     {
         if (KTH_PlayerHealth.Instance != null) KTH_PlayerHealth.Instance.TakeDamage(reflectDamage);
+    }
+
+    // 턴 시간 초과 원거리 공격 이펙트를 이 적 위치에서 targetPosition(플레이어) 쪽으로 재생하고,
+    // 그 이펙트가 실제로 도착하는 데 걸리는 시간을 돌려준다(ILDY_TravelEffect 구현 시) - 호출한 쪽에서
+    // 이 시간만큼 기다렸다가 데미지를 주면 "맞는 순간"과 데미지 타이밍이 맞아떨어진다.
+    public float PlayTimeoutAttackEffect(Vector3 targetPosition)
+    {
+        if (timeoutAttackEffectPrefab == null)
+        {
+            Debug.LogWarning($"[LDY_Enemy] {name}: Timeout Attack Effect Prefab이 비어있어서 파편 이펙트를 못 냈습니다(데미지는 그대로 들어감).");
+            return 0f;
+        }
+
+        Debug.Log($"[LDY_Enemy] {name}: 턴 시간 초과 - 파편 이펙트 발사 ({timeoutAttackEffectPrefab.name})");
+        GameObject effect = Instantiate(timeoutAttackEffectPrefab, transform.position, Quaternion.identity);
+        if (effect.TryGetComponent(out ILDY_EffectTarget effectTarget)) effectTarget.TargetPosition = targetPosition;
+
+        // Screen Space Camera Canvas의 UI는 실제 거리와 상관없이 렌더 큐 순서로 겹침이 정해지는 경우가
+        // 있어서, 이 이펙트가 화면 아래쪽 등 UI와 겹칠 때도 항상 보이도록 렌더 큐를 확실히 뒤(위)로 민다.
+        foreach (Renderer renderer in effect.GetComponentsInChildren<Renderer>())
+        {
+            foreach (Material material in renderer.materials)
+            {
+                if (material != null) material.renderQueue = 4000;
+            }
+        }
+
+        float travelDuration = effect.TryGetComponent(out ILDY_TravelEffect travelEffect) ? travelEffect.TravelDuration : 0f;
+
+        // 공격하는 동안 불타는 이펙트가 있으면 커졌다가, 파편이 도착할 즈음 다시 원래 크기로 줄어든다.
+        LDY_BurningEffect burning = GetComponentInChildren<LDY_BurningEffect>();
+        if (burning != null)
+        {
+            float holdDuration = Mathf.Max(travelDuration - attackFlareRampDuration * 2f, 0f);
+            burning.FlareUp(attackFlareUpMultiplier, attackFlareRampDuration, holdDuration);
+        }
+
+        return travelDuration;
     }
 
     // 이 무기로 맞았을 때 반사되는지 확인하고, 반사되면 즉시 플레이어에게 데미지를 주고 true를 반환한다.

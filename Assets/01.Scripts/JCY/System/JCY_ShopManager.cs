@@ -34,24 +34,36 @@ public class JCY_ShopManager : MonoBehaviour
 
     public void DisplayItems()
     {
+
         for (int i = 0; i < _displayPoint.Length; i++)
         {
             foreach (Transform child in _displayPoint[i].transform)
             {
                 Destroy(child.gameObject);
             }
+
+            _displayCost[i].text = "";
+            _displayName[i].text = "";
         }
 
 
         List<GameObject> displayList = new List<GameObject>(itemList);
 
-        for (int i = 0; i < _displayPoint.Length; i++)
+        int displayCount = Mathf.Min(_displayPoint.Length, displayList.Count);
+
+
+        for (int i = 0; i < displayCount; i++)
         {
+
             int index = Random.Range(0, displayList.Count);
 
-            GameObject obj = Instantiate(displayList[index], _displayPoint[i].transform, false);
+            GameObject prefab = displayList[index];
+            GameObject obj = Instantiate(prefab, _displayPoint[i].transform, false);
 
             JCY_Item item = obj.GetComponent<JCY_Item>();
+            item.OriginPrefab = prefab;
+            item.DisplayIndex = i;
+
             _itemSO = item.ItemSO;
 
             _displayCost[i].text = _itemSO.cost.ToString()+"별조각";

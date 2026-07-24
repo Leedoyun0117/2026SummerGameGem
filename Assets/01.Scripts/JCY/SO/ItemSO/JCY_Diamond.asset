@@ -17,6 +17,6 @@ MonoBehaviour:
   cost: 0
   maxHealthUP: 0
   curHealthUP: 0
-  Description: 
-  backStarPiece: 0
+  Description: "\uB3C8 \uC8FC\uB294\uC560"
+  backStarPiece: 35
   maxTimeUP: 0

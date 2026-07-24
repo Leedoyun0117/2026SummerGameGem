@@ -17,6 +17,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/00.Scenes/HTY/HTY_Tutorial.unity
     guid: 87846b68ee1ac16439a26bea683db3c1
+  - enabled: 1
+    path: Assets/00.Scenes/LDY/LDY_TestScene.unity
+    guid: ce6aa3ff96e52f446905c539df6d70b0
+  - enabled: 1
+    path: Assets/00.Scenes/LDY/LDY_BattleScene.unity
+    guid: 54aa3182e5fce8341a5fc75bc08ec2d9
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
