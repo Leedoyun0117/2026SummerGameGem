@@ -395,7 +395,9 @@ public class LDY_AttackTargetController : MonoBehaviour
 
         foreach (GameObject enemyObj in toKill)
         {
-            if (enemyObj != null) Destroy(enemyObj);
+            if (enemyObj == null) continue;
+            if (LDY_StarPieceManager.Instance != null) LDY_StarPieceManager.Instance.SpawnDrops(enemyObj.transform.position);
+            Destroy(enemyObj);
         }
     }
 
@@ -504,7 +506,11 @@ public class LDY_AttackTargetController : MonoBehaviour
 
             yield return new WaitForSeconds(stepDelay);
 
-            if (occupant != null) Destroy(occupant);
+            if (occupant != null)
+            {
+                if (LDY_StarPieceManager.Instance != null) LDY_StarPieceManager.Instance.SpawnDrops(occupant.transform.position);
+                Destroy(occupant);
+            }
         }
     }
 
