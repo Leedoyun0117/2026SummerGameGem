@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Drawing;
+using TMPro;
 using UnityEngine;
 
 // 상점 아이템(20종) 구매 처리 + 효과 적용을 담당한다.
@@ -8,6 +10,8 @@ using UnityEngine;
 public class JCY_ItemManager : MonoBehaviour
 {
     public static JCY_ItemManager instance;
+    [SerializeField] private TextMeshProUGUI countTxt;
+
 
     private void Awake()
     {
@@ -104,6 +108,10 @@ public class JCY_ItemManager : MonoBehaviour
 
             case JCY_ItemEffectType.HickeyHicerScroll:
                 if (progress != null) progress.potionPurchaseLimitBonus += itemSO.effectAmount;
+                int count = JCY_RunProgress.Instance.PotionPurchaseCountThisShop;
+                int Limit = JCY_RunProgress.Instance.PotionPurchaseLimit;
+                int point = Limit - count;
+                countTxt.text = $"현재 포션 구매 한도:{point}";
                 break;
 
             case JCY_ItemEffectType.HickeyHickeyBag:

@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 // 런(한 판) 전체에서 유지되는 상점 아이템들의 지속 효과/카운터를 모아두는 곳.
