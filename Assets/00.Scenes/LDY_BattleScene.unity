@@ -4995,7 +4995,8 @@ MonoBehaviour:
   riseDuration: 0.5
   fallDistance: 400
   fallDuration: 0.5
-  hideOnDeath: []
+  hideOnDeath:
+  - {fileID: 1012696451}
   defeatCanvasRoot: {fileID: 1203345927}
   defeatGroup: {fileID: 1203345929}
   defeatText: {fileID: 903419579}
