@@ -1719,13 +1719,29 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6405467074611441528, guid: 870e4e8c0f94d204bab50bb75040ea98, type: 3}
       insertIndex: -1
       addedObject: {fileID: 875697404}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1515715053119600675, guid: 870e4e8c0f94d204bab50bb75040ea98, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1403076037}
   m_SourcePrefab: {fileID: 100100000, guid: 870e4e8c0f94d204bab50bb75040ea98, type: 3}
 --- !u!224 &1403076036 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6405467074611441528, guid: 870e4e8c0f94d204bab50bb75040ea98, type: 3}
   m_PrefabInstance: {fileID: 1403076035}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1403076037
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1123349076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 978261a3ea2146147873e50087be687a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LDY_SceneButton
+  sceneName: HTY_Title
 --- !u!1 &1407018678
 GameObject:
   m_ObjectHideFlags: 0
@@ -2131,6 +2147,18 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 558209641}
+        m_TargetAssemblyTypeName: LDY_SceneButton, Assembly-CSharp
+        m_MethodName: LoadScene
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1403076037}
         m_TargetAssemblyTypeName: LDY_SceneButton, Assembly-CSharp
         m_MethodName: LoadScene
         m_Mode: 1
