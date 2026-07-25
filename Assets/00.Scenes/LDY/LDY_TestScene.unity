@@ -878,7 +878,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::JCY_ItemManager
   countTxt: {fileID: 1222983473}
-  _useSound: {fileID: 0}
+  _useSound: {fileID: 8300000, guid: e1c956d91845a5448979dd92930eb28d, type: 3}
 --- !u!4 &259759301
 Transform:
   m_ObjectHideFlags: 0
@@ -3642,7 +3642,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40419b1cc1139a440abc8003f9158534, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LDY_SceneTransition
-  _ilesSound: {fileID: 8300000, guid: c7a74ee8ac52d7c45932b35dc5f5c772, type: 3}
   overlay: {fileID: 1507616550}
   countdown: {fileID: 1330158857}
   textureSize: 256
@@ -3741,6 +3740,7 @@ MonoBehaviour:
   countdownText: {fileID: 839725215}
   secondsPerNumber: 1
   startHoldDuration: 0.6
+  _matchBGM: {fileID: 8300000, guid: 52f34081fc42dfe4b932334555b8c3e7, type: 3}
 --- !u!1 &1339439434
 GameObject:
   m_ObjectHideFlags: 0
