@@ -1199,17 +1199,17 @@ MonoBehaviour:
   - id: 7
     clip: {fileID: 8300000, guid: 321884c95ac63e748b6174a8d2a2595d, type: 3}
   - id: 8
-    clip: {fileID: 8300000, guid: 341f055787c457644a125ff3cff759ce, type: 3}
+    clip: {fileID: 8300000, guid: acb866264c97b874a834e011636ac742, type: 3}
   - id: 9
     clip: {fileID: 8300000, guid: f01ff0e568147734bb54b223e4a9e0c9, type: 3}
   - id: 10
     clip: {fileID: 8300000, guid: d208e123fa19755429967e019d74d37d, type: 3}
   - id: 11
-    clip: {fileID: 8300000, guid: d7541aa39499ce040bbb99e5e9df2b04, type: 3}
+    clip: {fileID: 8300000, guid: 5c9f8ce0848b8a14ab9840c28dd880ec, type: 3}
   - id: 12
-    clip: {fileID: 8300000, guid: 67f66a7d18b690c418c64915a7a9d02d, type: 3}
+    clip: {fileID: 8300000, guid: 80c591318de9c22458e1e1fc1d490d90, type: 3}
   - id: 13
-    clip: {fileID: 8300000, guid: d7541aa39499ce040bbb99e5e9df2b04, type: 3}
+    clip: {fileID: 8300000, guid: 5c9f8ce0848b8a14ab9840c28dd880ec, type: 3}
   - id: 14
     clip: {fileID: 8300000, guid: c232541c00fe3aa45a639e71802987c7, type: 3}
   - id: 15
@@ -2185,6 +2185,7 @@ MonoBehaviour:
   countdownText: {fileID: 355239092}
   secondsPerNumber: 1
   startHoldDuration: 0.6
+  _matchBGM: {fileID: 0}
 --- !u!114 &1640641827
 MonoBehaviour:
   m_ObjectHideFlags: 0
