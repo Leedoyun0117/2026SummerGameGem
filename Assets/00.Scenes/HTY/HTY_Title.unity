@@ -1183,6 +1183,41 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SoundManager
   bgmSource: {fileID: 703139631}
   sfxSource: {fileID: 703139630}
+  sfxEntries:
+  - id: 0
+    clip: {fileID: 8300000, guid: 186f79c3defbaaf4ea6df98ea7e18ef8, type: 3}
+  - id: 5
+    clip: {fileID: 8300000, guid: f3e7a1aaada86f846b8958c5976d4ff0, type: 3}
+  - id: 1
+    clip: {fileID: 8300000, guid: c9dbd12f48205bd4f9ee2cd87ecfe446, type: 3}
+  - id: 2
+    clip: {fileID: 8300000, guid: d75e9bb5b3219904daf2eb24c190fa07, type: 3}
+  - id: 4
+    clip: {fileID: 8300000, guid: 24f8f6e999e423e498361ceb4d79c885, type: 3}
+  - id: 6
+    clip: {fileID: 8300000, guid: e7c2a88f878d1d244ba62a6261742be2, type: 3}
+  - id: 7
+    clip: {fileID: 8300000, guid: 321884c95ac63e748b6174a8d2a2595d, type: 3}
+  - id: 8
+    clip: {fileID: 8300000, guid: 341f055787c457644a125ff3cff759ce, type: 3}
+  - id: 9
+    clip: {fileID: 8300000, guid: f01ff0e568147734bb54b223e4a9e0c9, type: 3}
+  - id: 10
+    clip: {fileID: 8300000, guid: d208e123fa19755429967e019d74d37d, type: 3}
+  - id: 11
+    clip: {fileID: 8300000, guid: d7541aa39499ce040bbb99e5e9df2b04, type: 3}
+  - id: 12
+    clip: {fileID: 8300000, guid: bf83523118f8890498e028c161d430b8, type: 3}
+  - id: 13
+    clip: {fileID: 8300000, guid: d7541aa39499ce040bbb99e5e9df2b04, type: 3}
+  - id: 14
+    clip: {fileID: 8300000, guid: c232541c00fe3aa45a639e71802987c7, type: 3}
+  - id: 15
+    clip: {fileID: 8300000, guid: c7a74ee8ac52d7c45932b35dc5f5c772, type: 3}
+  - id: 16
+    clip: {fileID: 8300000, guid: ea16693baab995d4191072ce9626494f, type: 3}
+  - id: 3
+    clip: {fileID: 0}
 --- !u!4 &703139633
 Transform:
   m_ObjectHideFlags: 0
