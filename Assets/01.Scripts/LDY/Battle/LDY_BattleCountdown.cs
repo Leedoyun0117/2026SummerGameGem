@@ -14,6 +14,7 @@ public class LDY_BattleCountdown : MonoBehaviour
     [SerializeField] private TMP_Text countdownText;
     [SerializeField] private float secondsPerNumber = 1f;
     [SerializeField] private float startHoldDuration = 0.6f;
+    [SerializeField] private AudioClip _matchBGM;
 
     public void Play(Action onComplete)
     {
@@ -23,6 +24,13 @@ public class LDY_BattleCountdown : MonoBehaviour
         {
             SoundManager.Instance.PlaySFX(SfxId.CountdownStart);
         }
+
+        if (_matchBGM != null && SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlayBGM(_matchBGM);
+            Debug.Log("BGM 바뀜");
+        }
+
 
         StartCoroutine(CountdownRoutine(onComplete));
     }

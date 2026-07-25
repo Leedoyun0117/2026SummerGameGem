@@ -1,7 +1,9 @@
 using System;
 using UnityEngine;
 using UnityEngine.Events;
-
+using UnityEngine.SceneManagement;
+using DG.Tweening;
+using UnityEngine.UI;
 public class KTH_BossHealthSystem : MonoBehaviour
 {
     [Header("Boss Health Settings")]
@@ -17,6 +19,12 @@ public class KTH_BossHealthSystem : MonoBehaviour
     public UnityEvent<float, float> onHealthChanged;
     public UnityEvent onBossDied;
 
+    [Header("HP Bar")]
+    [SerializeField] private Image hpBar;
+    [SerializeField] private float hpBarTweenTime = 0.3f;
+
+    private Tween hpTween;
+
     public float CurrentHealth => currentHealth;
     public float MaxHealth => maxHealth;
     public bool IsDead { get; private set; } = false;
@@ -28,6 +36,9 @@ public class KTH_BossHealthSystem : MonoBehaviour
         if (animator == null)
             animator = GetComponent<Animator>();
 
+        if (hpBar != null)
+            hpBar.fillAmount = 1f;
+
         onHealthChanged?.Invoke(currentHealth, maxHealth);
     }
 
@@ -36,19 +47,19 @@ public class KTH_BossHealthSystem : MonoBehaviour
     /// </summary>
     public void TakeDamage(float damage)
     {
-        if (IsDead) return;
-
         currentHealth -= damage;
         currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
 
-        Debug.Log($"💥 [보스 피격] 데미지 : {damage} | 남은 체력 : {currentHealth}/{maxHealth}");
+        float ratio = currentHealth / maxHealth;
 
-        if (SoundManager.Instance != null)
+        if (hpBar != null)
         {
-            SoundManager.Instance.PlaySFX(SfxId.Hit);
+            hpTween?.Kill();
+            hpTween = hpBar
+                .DOFillAmount(ratio, hpBarTweenTime)
+                .SetEase(Ease.OutQuad);
         }
 
-        // 체력 변경 이벤트 호출 (UI 업데이트용)
         onHealthChanged?.Invoke(currentHealth, maxHealth);
 
         if (currentHealth <= 0f)
@@ -66,6 +77,16 @@ public class KTH_BossHealthSystem : MonoBehaviour
 
         currentHealth += amount;
         currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
+
+        float ratio = currentHealth / maxHealth;
+
+        if (hpBar != null)
+        {
+            hpTween?.Kill();
+            hpTween = hpBar
+                .DOFillAmount(ratio, hpBarTweenTime)
+                .SetEase(Ease.OutQuad);
+        }
 
         onHealthChanged?.Invoke(currentHealth, maxHealth);
     }
@@ -114,6 +135,8 @@ public class KTH_BossHealthSystem : MonoBehaviour
 
         // 이벤트 호출
         onBossDied?.Invoke();
+
+        SceneManager.LoadScene("End Scene");
 
         // 애니메이션 종료 후 삭제
         Destroy(gameObject, destroyDelay);
