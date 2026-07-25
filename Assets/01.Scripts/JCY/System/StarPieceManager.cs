@@ -16,12 +16,14 @@ public class StarPieceManager : MonoBehaviour
     {
         if (instance != null && instance != this)
         {
-            Destroy(gameObject);
+            Destroy(transform.root.gameObject);
             return;
         }
 
         instance = this;
-        DontDestroyOnLoad(gameObject);
+        // DontDestroyOnLoad는 "최상위(루트)" 오브젝트에만 걸 수 있다 - 이 스크립트가 Canvas 밑
+        // 자식에 붙어있으면 gameObject 그대로는 예외가 나서(그 뒤 초기화가 전부 씹힘) transform.root를 쓴다.
+        DontDestroyOnLoad(transform.root.gameObject);
     }
 
     private void Start()

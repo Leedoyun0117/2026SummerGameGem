@@ -3,7 +3,6 @@ using System.Text;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 
@@ -47,13 +46,11 @@ public class KTH_EventSystem : MonoBehaviour
     private Event currentEvent;
     private Coroutine typingCoroutine;
 
+    // 맵에서 상점처럼 팝업으로 껐다 켰다 재사용되므로, Start()가 아니라 OnEnable()에서 매번 새로 뽑아야
+    // 두 번째로 이벤트 노드에 들어갔을 때도 이전 결과가 아니라 새 이벤트가 나온다.
     private void OnEnable()
     {
-        check = 0; 
-    }
-
-    private void Start()
-    {
+        check = 0;
         ShowRandomType();
     }
 
@@ -110,7 +107,7 @@ public class KTH_EventSystem : MonoBehaviour
         // 타이핑이 끝날 시간(0.7초) + 다 읽을 시간(resultHoldDuration)만큼 대기
         yield return new WaitForSeconds(0.7f + resultHoldDuration);
 
-        CloseEvent();
+        StartCoroutine(CloseEvent());
     }
 
     private Event GetRandomAdByWeight()
@@ -146,7 +143,7 @@ public class KTH_EventSystem : MonoBehaviour
 
             if (currentEvent == null)
             {
-                CloseEvent();
+                StartCoroutine(CloseEvent());
                 return;
             }
 
@@ -186,32 +183,44 @@ public class KTH_EventSystem : MonoBehaviour
     private void HandleGold(int amount)
     {
         StartCoroutine(TypeText("이건 나의 작은 선물이라네 (별의 조각 +2)", 0.7f));
-        StarPieceManager.instance.StarPieceUP(amount);
+        // StarPieceManager(JCY)는 JCY_TestScene에만 놓여있는 래퍼라 맵에서 곧바로 이벤트로 들어오면
+        // instance가 없어 NullReferenceException이 났다 - 실제 재화를 들고 있는 LDY_StarPieceManager를 직접 부른다.
+        LDY_StarPieceManager.Instance?.NotifyPieceCollected(amount);
     }
 
 
     private void HandleGambling(int startP, int winP,int loseP)
     {
-        StarPieceManager.instance.StarPieceDown(startP);
+        LDY_StarPieceManager.Instance?.Spend(startP);
 
         bool win = Random.value < gamblingWinChance;
 
         if (win)
         {
             StartCoroutine(TypeText("덜컹! 자판기에서 별의 조각 꾸러미가 떨어졌다! (별의 조각 +3)",0.7f));
-            StarPieceManager.instance.StarPieceUP(winP);
+            LDY_StarPieceManager.Instance?.NotifyPieceCollected(winP);
         }
         else
         {
             StartCoroutine(TypeText("화면에 ‘상품 준비 중’이라는 문구만 계속 깜빡인다. 아무 일도 일어나지 않았다. 경고음과 함께 자판기가 별의 조각을 삼켜버렸다. 환불 버튼은 고장 난 것 같다. (별의 조각 1 소실)", 0.7f));
-            StarPieceManager.instance.StarPieceDown(loseP);
+            LDY_StarPieceManager.Instance?.Spend(loseP);
         }
     }
 
+    // 맵의 상점처럼 팝업으로 쓰이므로, 씬을 넘기지 않고 팝업만 닫아서 맵으로 돌아간다.
+    // KTH_EventSystem이 실제 팝업 루트(맵의 LDY_EventUIOpener가 켜고 끄는 eventUI)의 자식에 붙어있을
+    // 수도 있어서, 자기 자신만 끄면 부모(진짜 보이는 패널)는 계속 켜진 채로 남는다 - 그래서 진짜 루트를
+    // 아는 LDY_EventUIOpener 쪽 Close()를 대신 호출한다. 맵이 아니라 KTH_TestScene처럼 오프너 없이
+    // 단독으로 쓰는 경우를 위해, 오프너가 없으면 예전처럼 자기 자신을 끈다.
     private IEnumerator CloseEvent()
     {
-        yield return new WaitForSeconds(4f);
-        SceneManager.LoadScene("LDY_TestScene");
+        yield return new WaitForSeconds(3f);
+
+        LDY_EventUIOpener opener = FindObjectOfType<LDY_EventUIOpener>();
+        if (opener != null)
+            opener.Close();
+        else
+            gameObject.SetActive(false);
     }
 
    

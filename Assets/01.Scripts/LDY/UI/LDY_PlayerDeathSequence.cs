@@ -139,6 +139,11 @@ public class LDY_PlayerDeathSequence : MonoBehaviour
 
         yield return new WaitForSecondsRealtime(defeatHoldDuration);
 
+        // 체력/별의 조각 UI는 DontDestroyOnLoad라서 씬을 옮겨도 안 죽고 타이틀 화면까지 그대로 따라와 보인다.
+        // Destroy하면 다음 판을 시작할 때 다시 만들 방법이 없으니, SetActive(false)로만 꺼서 나중에 재사용한다.
+        if (KTH_PlayerHealth.Instance != null) KTH_PlayerHealth.Instance.transform.root.gameObject.SetActive(false);
+        if (LDY_StarPieceManager.Instance != null) LDY_StarPieceManager.Instance.transform.root.gameObject.SetActive(false);
+
         SceneManager.LoadScene(destinationSceneName);
     }
 

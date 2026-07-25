@@ -6,7 +6,13 @@
       "Bash(git checkout *)",
       "Bash(grep -n \"&527880076$\\\\|&527880077$\\\\|&527880078$\\\\|&527880079$\" \"c:/Dev/2026SummerGameGem/Assets/00.Scenes/LDY/LDY_TestScene.unity\")",
       "Bash(grep -n \"&256707867$\" \"c:/Dev/2026SummerGameGem/Assets/00.Scenes/LDY/LDY_TestScene.unity\")",
-      "Bash(xargs grep -liE \"soundmanager|audiomanager\")"
+      "Bash(xargs grep -liE \"soundmanager|audiomanager\")",
+      "Bash(grep -n \"^--- !u!114 &44583971$\" HTY_Tutorial.unity)",
+      "Bash(awk -F: '{print $1}')",
+      "Bash(grep -c \"m_Name: Clock$\" \"c:/Dev/2026SummerGameGem/Assets/00.Scenes/LDY/LDY_BattleScene1.unity\")",
+      "Bash(grep -c \"m_Name: LDY_TurnTimerUI$\" \"c:/Dev/2026SummerGameGem/Assets/00.Scenes/LDY/LDY_BattleScene1.unity\")",
+      "Bash(grep -n \"m_Name: LDY_TurnTimerUI$\" \"c:/Dev/2026SummerGameGem/Assets/00.Scenes/LDY/LDY_BattleScene1.unity\")",
+      "Bash(grep -n \"^--- !u!.* &1030957048$\" \"c:/Dev/2026SummerGameGem/Assets/00.Scenes/LDY/LDY_BattleScene1.unity\")"
     ]
   }
 }

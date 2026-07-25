@@ -31,6 +31,9 @@ public bool IsDead { get; private set; }
         // 넘어온 것) 이번에 새로 생긴 쪽을 파괴하고, 처음이면 파괴되지 않게 표시해둔다.
         if (Instance != null && Instance != this)
         {
+            // 이 씬에 체력 UI가 다시 배치되어 있다는 건 실제 게임플레이 씬(맵/전투)에 들어왔다는 뜻이다.
+            // 죽어서 타이틀로 갈 때 SetActive(false)로 꺼뒀을 수 있으니 여기서 다시 켜준다.
+            Instance.transform.root.gameObject.SetActive(true);
             Destroy(transform.root.gameObject);
             return;
         }
