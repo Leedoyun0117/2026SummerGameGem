@@ -2164,10 +2164,10 @@ MonoBehaviour:
   holdDuration: 1.2
   duration: 1.2
   updatesPerSecond: 24
-  battleColor: {r: 0.8784314, g: 0.1882353, b: 0.1882353, a: 1}
-  eventColor: {r: 0.8784314, g: 0.8156863, b: 0.1882353, a: 1}
-  shopColor: {r: 0.1882353, g: 0.7529412, b: 0.3137255, a: 1}
-  bossColor: {r: 0.5647059, g: 0.1882353, b: 0.7529412, a: 1}
+  battleColor: {r: 0, g: 0, b: 0, a: 1}
+  eventColor: {r: 0, g: 0, b: 0, a: 1}
+  shopColor: {r: 0, g: 0, b: 0, a: 1}
+  bossColor: {r: 0, g: 0, b: 0, a: 1}
   defaultColor: {r: 0, g: 0, b: 0, a: 1}
 --- !u!114 &1640641826
 MonoBehaviour:
@@ -2185,6 +2185,7 @@ MonoBehaviour:
   countdownText: {fileID: 355239092}
   secondsPerNumber: 1
   startHoldDuration: 0.6
+  _matchBGM: {fileID: 0}
 --- !u!114 &1640641827
 MonoBehaviour:
   m_ObjectHideFlags: 0
