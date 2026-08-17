@@ -106,6 +106,15 @@ public bool IsDead { get; private set; }
         OnHealthChanged?.Invoke(curhp, maxhp);
     }
 
+    // 사망 후 처음(LDY_TestScene)으로 돌아갈 때 호출 - curhp만 채우는 SetToFull()과 달리
+    // IsDead도 같이 풀어줘야 TakeDamage()가 다시 반응한다(IsDead가 true인 동안은 맨 위에서 곧바로 return됨).
+    public void ResetForNewRun()
+    {
+        curhp = maxhp;
+        IsDead = false;
+        OnHealthChanged?.Invoke(curhp, maxhp);
+    }
+
     // 중력장 사과 - 현재체력과 최대체력 수치를 맞바꾸고, 그 결과 새 최대체력을 넘어선 만큼(초과분)을 돌려준다.
     // (초과분은 호출한 쪽에서 골드로 환전한다)
     public int SwapCurrentAndMax()

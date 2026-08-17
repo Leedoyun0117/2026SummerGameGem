@@ -79,8 +79,19 @@ public class JCY_ShopManager : MonoBehaviour
         DisplayItems();
     }
 
-   
+    private void Update()
+    {
+        if (Keyboard.current == null) return;
 
+        if (Keyboard.current.oKey.wasPressedThisFrame)
+            OpenShop();
+
+        if (Keyboard.current.cKey.wasPressedThisFrame)
+            CloseShop();
+
+        if (Keyboard.current.mKey.wasPressedThisFrame && StarPieceManager.instance != null)
+            StarPieceManager.instance.StarPieceUP(100);
+    }
 
     public void DisplayItems()
     {
@@ -147,6 +158,10 @@ public class JCY_ShopManager : MonoBehaviour
             Debug.LogWarning("[JCY_ShopManager] shop_UI가 비어있어서 상점을 열 수 없습니다.");
             return;
         }
+
+        // 이미 열려있는 상태에서 또 열려고 하면(O 다시 누르기, 별 다시 클릭 등) DisplayItems()가 다시
+        // 불려서 진열된 아이템이 리롤되어 버린다 - 이미 열려있으면 아무것도 하지 않고 무시한다.
+        if (shop_UI.activeSelf) return;
 
         shop_UI.SetActive(true);
 

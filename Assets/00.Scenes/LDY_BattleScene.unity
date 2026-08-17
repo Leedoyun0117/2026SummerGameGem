@@ -5002,7 +5002,7 @@ MonoBehaviour:
   defeatText: {fileID: 903419579}
   defeatFadeDuration: 0.5
   defeatHoldDuration: 1.5
-  destinationSceneName: HTY_Title
+  destinationSceneName: LDY_TestScene
 --- !u!4 &1888908230
 Transform:
   m_ObjectHideFlags: 0
